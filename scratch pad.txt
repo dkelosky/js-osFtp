@@ -1,0 +1,434 @@
+my node modules go here
+
+
+I used these for npm install:
+
+- npm config rm proxy
+- npm config rm https-proxy
+
+- npm config set registry http://registry.npmjs.org/ 
+  (instead of https) and got things to work...
+  
+  See http://jjasonclark.com/how-to-setup-node-behind-web-proxy/
+  
+  
+  oldmain2.js
+  ===========
+  /*
+ * Copyright (c) 2012 Adobe Systems Incorporated. All rights reserved.
+ *  
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"), 
+ * to deal in the Software without restriction, including without limitation 
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+ * and/or sell copies of the Software, and to permit persons to whom the 
+ * Software is furnished to do so, subject to the following conditions:
+ *  
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *  
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+ * DEALINGS IN THE SOFTWARE.
+ * 
+ */
+
+
+/*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4,
+maxerr: 50, browser: true */
+/*global $, define, brackets */
+
+/**
+ * Generally this is how things work:
+ *
+ * require() for path relative to my extension folder
+ * brackets.getModule() for brackets core, like utils/NativeApp documented here: 
+ *    http://brackets.io/docs/current/
+ *
+ * https://github.com/adobe/brackets/wiki/Brackets-Node-Process:-Overview-for-Developers
+ * =====================================================================================
+ *
+ * This is the excerpt of what you do to call nodeJs stuff from inside of brackets
+ *
+ *
+ * Brackets has a Node.js process integrated into the shell. This is useful for adding functionality 
+ * that requires deeper native OS access than provided by the Brackets shell - for example, running command-line processes.
+ * 
+ * This document provides a quickstart guide for extension implementers on how to work with Node in Brackets, 
+ * and also discusses the architecture of the Node integration in Brackets.
+ *
+ */
+
+define(function (require, exports, module) {
+    "use strict";
+
+  /**
+   * Here will get some stuff from brackets core which is documented here:
+   *   http://brackets.io/docs/current/
+   */
+  var ExtensionUtils = brackets.getModule("utils/ExtensionUtils"),
+      NodeDomain     = brackets.getModule("utils/NodeDomain");
+
+  /**
+  * Example of using a brackets built in:
+  *   var NativeApp      = brackets.getModule("utils/NativeApp"),
+  *   NativeApp.openURLInDefaultBrowser("www.facebook.com");
+  *
+  * Node access is done through a domain - historically named - and this is
+  * different than the domain word usage in node itself
+  */
+  var simpleDomain  = new NodeDomain("simple", ExtensionUtils.getModulePath(module, "node/SimpleDomain"));
+
+  // Helper function that runs the simple.getMemory command and
+  // logs the result to the console
+  function logMemory() {
+    simpleDomain.exec("getMemory", false)
+    .done(function (memory) {
+      console.log("[brackets-simple-node] Memory: %d bytes free", memory);
+    }).fail(function (err) {
+      console.error("[brackets-simple-node] failed to run simple.getMemory", err);
+    });
+  }
+  
+  // Helper function that runs the simple.getMemory command and
+  // logs the result to the console
+  function logData(data) {
+    simpleDomain.exec("logText", data)
+    .done(function () {
+      console.log("function is done");
+    }).fail(function () {
+      console.error("function had an error");
+    });
+  }  
+  
+  // Helper function that runs the simple.getMemory command and
+  // logs the result to the console
+  function runShellCommand(command) {
+    simpleDomain.exec("runCommand", command)
+    .done(function () {
+      console.log("function is done");
+    }).fail(function () {
+      console.error("function had an error");
+    });
+  }
+
+  // Log memory when extension is loaded
+  logMemory();
+  
+  logData("@@@@@TEST");
+  
+  runShellCommand("dir");
+  
+});
+  
+  
+  oldmain.js
+  ==========
+  /*jslint vars: true, plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
+/*global define, $, brackets, window */
+
+/** Simple extension that adds a "File > Hello World" menu item */
+define(function (require, exports, module) {
+    "use strict";
+
+    //var http = brackets.getModule("www/thirdparty/CodeMirror/mode/http");
+    
+    var CommandManager = brackets.getModule("command/CommandManager"),
+        Menus          = brackets.getModule("command/Menus");
+        
+
+
+    // Function to run when the menu item is clicked
+    function handleHelloWorld() {
+      //  
+        $.ajax({
+            url: "http://www.jsontest.com/#ip",
+            type: "GET",
+            success: function (res) {
+                console.log(res);
+            },
+            error: function (jqXHR, res) {
+                console.log(res);
+            }
+        });
+/*
+        var options = {
+            host: "http://www.jsontest.com",
+            port: "80",
+            path: "/#ip",
+            method: "GET"
+        };
+        
+        //function in here is a function without a name
+    //    var request = http.request(options, function (response) {
+   //         console.log("STATUS: " + response.statusCode);
+   //         console.log("HEADERS: " + JSON.stringify(response.headers));
+    //    });
+   // /    */
+        
+        window.alert("Hello, world!ddd4ddd");
+        console.log("happy birthday");
+    }
+
+
+    // First, register a command - a UI-less object associating an id to a handler
+    var MY_COMMAND_ID = "helloworld.sayhello";   // package-style naming to avoid collisions
+    CommandManager.register("Hello World", MY_COMMAND_ID, handleHelloWorld);
+
+    // Then create a menu item bound to the command
+    // The label of the menu item is the name we gave the command (see above)
+    var menu = Menus.getMenu(Menus.AppMenuBar.FILE_MENU);
+    menu.addMenuItem(MY_COMMAND_ID);
+
+    // We could also add a key binding at the same time:
+    //menu.addMenuItem(MY_COMMAND_ID, "Ctrl-Alt-W");
+    // (Note: "Ctrl" is automatically mapped to "Cmd" on Mac)
+});
+  
+  
+  SimpleDomain.js
+  ===============
+  
+  /*
+ * Copyright (c) 2012 Adobe Systems Incorporated. All rights reserved.
+ *  
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"), 
+ * to deal in the Software without restriction, including without limitation 
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+ * and/or sell copies of the Software, and to permit persons to whom the 
+ * Software is furnished to do so, subject to the following conditions:
+ *  
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *  
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+ * DEALINGS IN THE SOFTWARE.
+ * 
+ */
+
+/*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4,
+maxerr: 50, node: true */
+/*global */
+
+/**
+ * Usually, when you make a change to code in a Brackets extension, you can 
+ * just reload Brackets to see the effect. However, the Node process isn't 
+ * restarted when you reload Brackets. In order to see the effect of changes 
+ * you make in Node code, you can use Debug > Restart Node, or quit and restart Brackets entirely.
+ *
+ * I created a packge.json file from here:
+ *   https://github.com/sergi/jsftp/blob/master/package.json
+ *
+ * I naviaged to extensions folder in Windows command prompt and used "npm install".
+ * 
+ * Note on third-party modules: Convention recommends putting any third-party modules inside a "node_modules" directory
+ * that lives inside the "node" directory. For development, Node modules can be installed through npm by
+ * putting a "package.json" file in the "node" directory and running npm install from inside that directory.
+ * 
+ * Naviaget to C:\Users\KELDA16\AppData\Roaming\Brackets\extensions\user\testExtension\node in Windows CMD.  See README.txt.
+ * run "npm install jsftp" - this adds modules to node_modules folder.
+ * 
+ * This is dumb and doesnt work.
+ * =============================
+ * 
+ * By doing this (and adding "node/node_modules" to your .gitignore) you can avoid checking third party code
+ * into your repo. For distribution, the actual bits of any third-party modules should be bundled in to the
+ * zip - Brackets doesn't run npm install when installing an extension. (This is recommended practice
+ * in the Node community to ensure that all end users get the same bits. 
+ * See http://www.futurealoof.com/posts/nodemodules-in-git.html)
+ * 
+ * 
+ * http://stackoverflow.com/questions/14458508/node-js-shell-command-execution
+ */
+
+(function () {
+  "use strict";
+
+  //https://nodejs.org/api/os.html
+  var os = require("os");
+
+  function cmdGetMemory(total) {
+    console.log("@TEST");
+
+
+    if (total) {
+      return os.totalmem();
+    } else {
+      return os.freemem();
+    }
+  }
+  
+  function cmdLogText(text) {
+    console.log("@TEST text is - " + text);
+  } 
+  
+  
+  
+  
+  
+  function cmdRunCommand(text) {
+    
+    console.log("@TEST text isssssssss - " + text);
+    
+      var command = new run_cmd(
+      'cmd.exe', null,
+      function (me, buffer) {
+        me.stdout += buffer.toString()
+      },
+      function () {
+        console.log(foo.stdout)
+      }
+    );
+  }
+
+    
+  
+  
+  
+  function run_cmd2(cmd, args, callBack ) {
+    var spawn = require('child_process').spawn;
+    var child = spawn(cmd, args);
+    var resp = "";
+
+    child.stdout.on('data', function (buffer) { 
+      resp += buffer.toString();
+      console.log("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+    });
+    child.stdout.on('end', function() { 
+      callBack (resp); 
+      console.log("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+    });
+  } // ()
+  
+  //var testt = new run_cmd2( "dir", [], function(text) { console.log (text) });
+  
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+  function run_cmd(cmd, args, cb, end) {
+    var spawn = require('child_process').spawn,
+      child = spawn(cmd, args),
+      me = this;
+    child.stdout.on('data', function (buffer) {
+      cb(me, buffer)
+    });
+    child.stdout.on('end', end);
+  }
+
+  // Run C:\Windows\System32\netstat.exe -an
+  /*var foo = new run_cmd(
+    'netstat.exe', ['-an'],
+    function (me, buffer) {
+      me.stdout += buffer.toString()
+    },
+    function () {
+      console.log(foo.stdout)
+    }
+  );
+  */
+  var bar = new run_cmd2('hostname', [], function(text) { console.log (text) });
+
+
+  
+  
+  
+  var newexec = require('child_process').exec; //,
+  // newchild;
+
+  var newchild = newexec('cmd.exe dir',
+    function (error, stdout, stderr) {
+      console.log('stdout: ' + stdout);
+      console.log('stderr: ' + stderr);
+      if (error !== null) {
+        console.log('exec error: ' + error);
+      }
+    });
+  
+  
+  
+  
+  
+  
+  
+  
+  /**
+   * Initializes the test domain with several test commands.
+   * @param {DomainManager} domainManager The DomainManager for the server
+   */
+  function init(domainManager) {
+    if (!domainManager.hasDomain("simple")) {
+      domainManager.registerDomain("simple", {
+        major: 0,
+        minor: 1
+      });
+    }
+    domainManager.registerCommand(
+      "simple", // domain name
+      "getMemory", // command name
+      cmdGetMemory, // command handler function
+      false, // this command is synchronous in Node
+      "Returns the total or free memory on the user's system in bytes", [{
+        name: "total", // parameters
+        type: "string",
+        description: "True to return total memory, false to return free memory"
+      }], [{
+        name: "memory", // return values
+        type: "number",
+        description: "amount of memory in bytes"
+      }]
+    );
+    domainManager.registerCommand(
+      "simple", // domain name
+      "logText", // command name
+      cmdLogText, // command handler function
+      false, // this command is synchronous in Node
+      "Logs text that is passed to it", [{
+        name: "text", // parameters
+        type: "string",
+        description: "True to return total memory, false to return free memory"
+      }], []
+    );
+    domainManager.registerCommand(
+      "simple", // domain name
+      "runCommand", // command name
+      cmdRunCommand, // command handler function
+      false, // this command is synchronous in Node
+      "Logs text that is passed to it", [{
+        name: "text", // parameters
+        type: "string",
+        description: "True to return total memory, false to return free memory"
+      }], []
+    );
+  }
+
+
+  exports.init = init;
+
+}());
