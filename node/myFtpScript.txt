@@ -1,0 +1,6 @@
+open CA11 
+kelda16
+vbnm4567
+cd /u/users/nfs/netmaster/diagnostics/telnetconn  
+get telnetconn.html
+quit 

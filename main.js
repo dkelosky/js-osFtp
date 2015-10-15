@@ -7,8 +7,8 @@ define(function (require, exports, module) {
   var simpleDomain = new NodeDomain('ftp', ExtensionUtils.getModulePath(module, 'node/FtpDomain'));
 
   //run FTP commands passed as input
-  console.log('runFtpCommand("passed text");');
-  runFtpCommand('passed text');
+  console.log('runFtpCommand("...");');
+  runFtpCommand('myFtpScript.txt');
 
   /**
    * Function wrapper for invoke our domain function

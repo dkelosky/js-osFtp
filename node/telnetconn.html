@@ -1,0 +1,76 @@
+<div id="page-container">
+
+  <!--
+  Telnet Criteria
+  -->
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">
+          <button type="button" class="btn btn-primary-outline btn-class primary-btn" data-toggle="collapse" data-target="#telnetconn-criteria-form">Telnet Criteria</button>
+        </div>
+
+        <div class="include-html" data-includefile="diagnostics/telnetconn/html/telnetconnCriteriaForm.html" data-donefun="performLoadComplete"></div>
+
+      </div>
+    </div>
+  </div>
+
+  <!--
+  Telnet Results
+  -->
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header" id="telnetconn-telnet-results-header"></div>
+        <div class="card-block">
+          <div class="table-responsive" id="telnetconn-telnet-results"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!--
+Activate Packet Trace Modal
+-->
+<div class="include-html" data-includefile="diagnostics/common/html/activatePacketTrace.html"></div>
+
+<!--
+View Packet Trace Modal
+-->
+<div class="include-html" data-includefile="diagnostics/common/html/viewPacketTrace.html"></div>
+
+<!--
+Inactivate Packet Trace Modal
+-->
+<div class="include-html" data-includefile="diagnostics/common/html/inactivatePacketTrace.html"></div>
+
+<!--
+Clear Packet Trace Modal
+-->
+<div class="include-html" data-includefile="diagnostics/common/html/clearPacketTrace.html"></div>
+
+<!--
+Telnet Information Modal
+-->
+<div class="include-html" data-includefile="diagnostics/telnetconn/html/telnetconnDiagnosticsModal.html"></div>
+
+<!--
+Drop Success Modal
+-->
+<div class="include-html" data-includefile="diagnostics/telnetconn/html/telnetconnDropSuccessModal.html"></div>
+
+<!--
+Execute script
+-->
+<script>
+  /**
+   * Get the script to enable dynamic stuff
+   * Shortens this file and allows us to extract the JavaScript
+   * into a separate file
+   */
+  $.getScript('js/includeHtml.js');
+  $.getScript('diagnostics/telnetconn/telnetconn.js');
+</script>

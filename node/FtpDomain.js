@@ -43,15 +43,19 @@
    * Command handler
    * @param {string} text Text data that is passed to the process
    */
-  function doFtp(text) {
-    console.log('input text was: ' + text);
+  function doFtp(ftpScriptFile) {
+
+    //log input script file
+    console.log('Input file specified was: ' + ftpScriptFile);
+
     //var bar = new runProcess('hostname', [], function(text) { console.log(text) });
-    var bar = new runProcess('ftp', [], function(text) { console.log(text) });
+    var bar = new runProcess('ftp', ['-s:' + ftpScriptFile], function(response) { console.log(response) });
+    //var bar = new runProcess('ftp', ['-d'], null, function(response) { console.log(response) });
   }
 
 
 
-  function runProcess(cmd, args, callBack ) {
+  function runProcess(cmd, args, callBack) {
 
     var spawn = require('child_process').spawn;
     var fs = require('fs'); //file system
@@ -67,6 +71,7 @@
        * 'Positive integer' - integer is file descriptor (fd) that is currently open
        * 'null,undefined' - means use defaults ('pipe' for stdin, stdout, and stder, else 'ignore')
        */
+      cwd: 'C:\\Users\\KELDA16\\AppData\\Roaming\\Brackets\\extensions\\user\\osFtp\\node',
       stdio: [
         'pipe',  //'pipe' is an option            --- child.stdin is shorthand for stdio[0]
         'pipe', //fs.openSync('out.txt', 'w'), // --- child.stdout is shorthand for stdio[1]
@@ -74,11 +79,15 @@
         ]
     };
 
+    console.log('args: ' + args);
+    //var child = spawn(cmd, args, options);
     var child = spawn(cmd, args, options);
     var resp = '';
 
+    console.log('Current working directory: ' + options.cwd);
 
-    child.stdin.write('op ca11\n');
+    //console.log('inData: ' + inData);
+    child.stdin.write('\n');
     child.stdin.end();
 
 
@@ -94,7 +103,7 @@
      *  - see https://nodejs.org/api/stream.html
      */
     child.stdout.on('data', function (buffer) {
-      console.log('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&');
+      console.log('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& - DATA');
 
       //build response
       resp += buffer.toString();
@@ -103,10 +112,10 @@
     child.stdout.on('end', function() {
 
       //provide text response to callback
-      console.log('callBack(resp);');
-      callBack(resp);
+      console.log('callBack(cmd: resp);');
+      callBack(cmd + ': ' + resp);
 
-      console.log('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&');
+      console.log('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& - END');
     });
   }
 
