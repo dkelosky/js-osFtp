@@ -1,0 +1,8 @@
+.helloworld-panel h1 {
+        color: red;
+}
+
+.helloworld-panel p {
+        color: blue;
+        font-weight: bold;
+}
