@@ -43,7 +43,7 @@ define(function (require, exports, module) {
 
   //run FTP commands passed as input
   console.log('runFtpCommand("...");');
-  runFtpCommand('myFtpScript.txt');
+  runFtpCommand('ftpScript.txt');
 
   /**
    * Function wrapper for invoke our domain function
