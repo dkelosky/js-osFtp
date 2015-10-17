@@ -10,36 +10,34 @@ define(function (require, exports, module) {
   var CommandManager = brackets.getModule("command/CommandManager");
   var Menus = brackets.getModule("command/Menus");
   var PanelManager = brackets.getModule("view/PanelManager");
+  var WorskspaceManager = brackets.getModule("view/WorkspaceManager");
   var AppInit = brackets.getModule("utils/AppInit");
 
 
-      var HELLOWORLD_EXECUTE = "helloworld.execute";
+      var OSFTP_EXECUTE = "osftp.execute";
     var panel;
     var panelHtml     = require("text!panel.html");
 
-   function log(s) {
-            console.log("[helloworld5] "+s);
-    }
-      function handleHelloWorld() {
+      function handleOsFtp() {
         if(panel.isVisible()) {
             panel.hide();
-            CommandManager.get(HELLOWORLD_EXECUTE).setChecked(false);
+            CommandManager.get(OSFTP_EXECUTE).setChecked(false);
         } else {
             panel.show();
-            CommandManager.get(HELLOWORLD_EXECUTE).setChecked(true);
+            CommandManager.get(OSFTP_EXECUTE).setChecked(true);
         }
     }
 
     AppInit.appReady(function () {
 
-        log("Hello from HelloWorld5.");
         ExtensionUtils.loadStyleSheet(module, "osftp.css");
-        CommandManager.register("Run HelloWorld", HELLOWORLD_EXECUTE, handleHelloWorld);
+        CommandManager.register("Run OS Ftp", OSFTP_EXECUTE, handleOsFtp);
 
         var menu = Menus.getMenu(Menus.AppMenuBar.VIEW_MENU);
-        menu.addMenuItem(HELLOWORLD_EXECUTE);
+        menu.addMenuItem(OSFTP_EXECUTE);
 
-        panel = PanelManager.createBottomPanel(HELLOWORLD_EXECUTE, $(panelHtml),200);
+        //panel = PanelManager.createBottomPanel(OSFTP_EXECUTE, $(panelHtml),200);
+        panel = WorskspaceManager.createBottomPanel(OSFTP_EXECUTE, $(panelHtml),200);
 
     });
 
