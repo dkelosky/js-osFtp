@@ -43,25 +43,29 @@ define(function (require, exports, module) {
   var COMMAND_NEW_SITE_ID_PM_CONTEXTUAL = COMMAND_NEW_SITE_ID + '_pm_contextual'; //project set
 
   //preference ids
+  var PREF_HOST = 'localhost';
+  var PREF_ROOT = 'root';
   var PREF_USER = 'user';
   var PREF_PASS = 'password';
-  var PREF_HOST = 'localhost';
 
   //preference default values
+  var PREF_DFLT_HOST = 'localhost';
+  var PREF_DFLT_ROOT = 'root';
   var PREF_DFLT_USER = 'user';
   var PREF_DFLT_PASS = 'password';
-  var PREF_DFLT_HOST = 'localhost';
 
   var osFtpPreferences = PreferencesManager.getExtensionPrefs(COMMAND_RUN_SCRIPT_ID);
 
+  var host = osFtpPreferences.get(PREF_HOST) || PREF_DFLT_HOST;
+  var root = osFtpPreferences.get(PREF_ROOT) || PREF_DFLT_ROOT;
   var user = osFtpPreferences.get(PREF_USER) || PREF_DFLT_USER;
   var pass = osFtpPreferences.get(PREF_PASS) || PREF_DFLT_PASS;
-  var host = osFtpPreferences.get(PREF_HOST) || PREF_DFLT_HOST;
 
   console.log('Preferences are: ' +
+    'host - ' + host + ', ' +
+    'root - ' + root + ', ' +
     'user - ' + user + ', ' +
-    'pass - ' + pass + ', ' +
-    'host - ' + host
+    'pass - ' + pass
   );
 
   AppInit.appReady(function () {
@@ -97,34 +101,50 @@ define(function (require, exports, module) {
 
   });
 
-
 function handleNewSite() {
 
-  Dialog.showModalDialog(null, //class
+  var inputDialog = Dialog.showModalDialog(null, //class
     'Add New Site', //title
     'Host:' +
     '<br>' +
-    '<input type="text" name="host">' +
+    '<input id="input-host" type="text">' +
     '<br>' +
     'Root:' +
     '<br>' +
-    '<input type="text" name="root">' +
+    '<input id="input-root" type="text">' +
     '<br>' +
     '<form>' +
     'User:' +
     '<br>' +
-    '<input type="text" name="user">' +
+    '<input id="input-user" type="text">' +
     '<br>' +
     'Password:' +
     '<br>' +
-    '<input type="password" name="password">' +
+    '<input id="input-password" type="password">' +
     '</form>',
     null, //buttons
     true); //auto dismiss
 
+  inputDialog.done(function () {
+
+
+    var host = $('#input-host').val();
+    var root = $('#input-root').val();
+    var user = $('#input-user').val();
+    var pass = $('#input-pass').val();
+
+    console.log('Dialog inputs are: ' +
+      'host - ' + host + ', ' +
+      'root - ' + root + ', ' +
+      'user - ' + user + ', ' +
+      'pass - ' + pass
+    );
+
+
+
+  });
+
 }
-
-
 
   function handleRunScript() {
 
