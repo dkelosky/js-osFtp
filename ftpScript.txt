@@ -1,7 +1,0 @@
-op some_host
-user 
-some_user 
-some_password
-prompt
-...
-quit
