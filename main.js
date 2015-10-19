@@ -1,70 +1,77 @@
+/**
+ * @TODO - NLS
+ * @TODO - proper file structure (e.g. .html goes in /templates)
+ * @TODO - common strcuture
+ * @TODO - comment / doc
+ * @TODO - settings
+ * @TODO - add debugging
+ * @TODO - add dialog for errors
+ * @TODO - allow for automatically building of FTP command syntax and prompt user for usename and password
+ * @TODO - error check handling, don't allow to execut a director as an ftp script for example
+ */
 define(function (require, exports, module) {
   'use strict';
 
-  var ExtensionUtils = brackets.getModule('utils/ExtensionUtils');
-  var NodeDomain = brackets.getModule('utils/NodeDomain');
+  var NodeDomain      = brackets.getModule('utils/NodeDomain');
+  var ExtensionUtils  = brackets.getModule('utils/ExtensionUtils');
+  var osFtpDomain    = new NodeDomain('ftp', ExtensionUtils.getModulePath(module, 'node/FtpDomain'));
 
-  var simpleDomain = new NodeDomain('ftp', ExtensionUtils.getModulePath(module, 'node/FtpDomain'));
+  var CommandManager  = brackets.getModule('command/CommandManager');
+  var Menus           = brackets.getModule('command/Menus');
+  var AppInit         = brackets.getModule('utils/AppInit');
 
+  var Project         = brackets.getModule('project/ProjectManager');
 
-  var CommandManager = brackets.getModule("command/CommandManager");
-  var Menus = brackets.getModule("command/Menus");
-  var PanelManager = brackets.getModule("view/PanelManager");
-  var WorskspaceManager = brackets.getModule("view/WorkspaceManager");
-  var AppInit = brackets.getModule("utils/AppInit");
+  var COMMAND_LABEL             = 'OS FTP';
+  var COMMAND_ID                = 'osftp';
+  var COMMAND_ID_EXECUTE        = COMMAND_ID + 'Execute';
+  var COMMAND_ID_WM_CONTEXTUAL  = COMMAND_ID + 'WM_Contextual'; //working set
+  var COMMAND_ID_PM_CONTEXTUAL  = COMMAND_ID + 'PM_Contextual'; //project set
 
+  AppInit.appReady(function () {
 
-      var OSFTP_EXECUTE = "osftp.execute";
-    var panel;
-    var panelHtml     = require("text!panel.html");
+    var contextMenu;
 
-      function handleOsFtp() {
-        if(panel.isVisible()) {
-            panel.hide();
-            CommandManager.get(OSFTP_EXECUTE).setChecked(false);
-        } else {
-            panel.show();
-            CommandManager.get(OSFTP_EXECUTE).setChecked(true);
-        }
-    }
+    //register handlers for two menu contexts
+    CommandManager.register(COMMAND_LABEL, COMMAND_ID_WM_CONTEXTUAL, handleOsFtp);
+    CommandManager.register(COMMAND_LABEL, COMMAND_ID_PM_CONTEXTUAL, handleOsFtp);
 
-    AppInit.appReady(function () {
+    //add menu item for working set
+    contextMenu = Menus.getContextMenu(Menus.ContextMenuIds.WORKING_SET_CONTEXT_MENU);
+    contextMenu.addMenuDivider();
+    contextMenu.addMenuItem(COMMAND_ID_WM_CONTEXTUAL);
 
-        ExtensionUtils.loadStyleSheet(module, "osftp.css");
-        CommandManager.register("Run OS Ftp", OSFTP_EXECUTE, handleOsFtp);
+    //add menu item for project set
+    contextMenu = Menus.getContextMenu(Menus.ContextMenuIds.PROJECT_MENU);
+    contextMenu.addMenuDivider();
+    contextMenu.addMenuItem(COMMAND_ID_PM_CONTEXTUAL);
 
-        var menu = Menus.getMenu(Menus.AppMenuBar.VIEW_MENU);
-        menu.addMenuItem(OSFTP_EXECUTE);
+  });
 
-        //panel = PanelManager.createBottomPanel(OSFTP_EXECUTE, $(panelHtml),200);
-        panel = WorskspaceManager.createBottomPanel(OSFTP_EXECUTE, $(panelHtml),200);
-
-    });
-
-  //run FTP commands passed as input
-  console.log('runFtpCommand("...");');
-  runFtpCommand('ftpScript.txt');
+  function handleOsFtp() {
+    runFtpCommand(Project.getSelectedItem().fullPath);
+  }
 
   /**
-   * Function wrapper for invoke our domain function
-   * @param {string} text Text to pass to ftp.exe
+   * Function wrapper to invoke our domain function
+   * @param {string} scriptFile File to use as an ftp script file
    */
-  function runFtpCommand(text) {
+  function runFtpCommand(scriptFile) {
 
     //invoke domain function
-    simpleDomain.exec('doFtp', text)
+    osFtpDomain.exec('doFtp', scriptFile)
 
     //listen for done
     .done(
       function () {
-        console.log('Completed: doFtp(text);');
+        console.log('Completed: doFtp(scriptFile' + scriptFile + ' );');
       }
     )
 
     //listen for faile
     .fail(
       function () {
-        console.error('Error in: doFtp(text);');
+        console.error('Error in: doFtp(scriptFile' + scriptFile + ');');
       }
     )
   }

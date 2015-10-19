@@ -1,2 +1,9 @@
-op localhost
-bye
+op ca11
+user 
+kelda16 
+vbnm4567
+prompt
+cd /u/users/nfs/netmaster/diagnostics/telnetconn
+lcd C:\Users\KELDA16\Desktop
+get telnetconn.html
+quit

@@ -4,7 +4,7 @@
   
   /**
    * Initialize this domain
-   * @param {[[Type]]} domainManager [[Description]]
+   * @param {Object} domainManager See Brackets documentation on the domainManger object
    */
   function init(domainManager) {
     
@@ -25,9 +25,9 @@
       doFtp, // command handler function
       false, // this command is synchronous in Node
       'overal description goes here', [{
-        name: 'input1', // parameters
+        name: 'scriptFile', // parameters
         type: 'string',
-        description: 'input 1 desc goes here'
+        description: 'Fully qualified FTP script file to execute'
       }], [{
         name: 'output1', // return values
         type: 'number',
@@ -41,81 +41,84 @@
 
   /**
    * Command handler
-   * @param {string} text Text data that is passed to the process
+   * @param {string} ftpScriptFile Fully qualified FTP script file to execute
    */
   function doFtp(ftpScriptFile) {
 
     //log input script file
     console.log('Input file specified was: ' + ftpScriptFile);
 
-    //var bar = new runProcess('hostname', [], function(text) { console.log(text) });
-    var bar = new runProcess('ftp', ['-s:' + ftpScriptFile], function(response) { console.log(response) });
-    //var bar = new runProcess('ftp', ['-d'], null, function(response) { console.log(response) });
+    //run ftp with options to suppress auto login and to supply a script file
+    var bar = new runProcess('ftp', ['-ns:' + ftpScriptFile], function(response) {
+      console.log('Command response was: \n' + response)
+    });
   }
 
 
-
+  /**
+   * Wrapper for spawning a child process
+   * @param {String} cmd      Executable command
+   * @param {String} args     Arguments for cmd executable
+   * @param {Function} callBack Callback for function complete
+   */
   function runProcess(cmd, args, callBack) {
 
     var spawn = require('child_process').spawn;
-    var fs = require('fs'); //file system
-    var fs = require('stream'); //stream
+    var fs = require('fs');                       //file system
+    var fs = require('stream');                   //stream
 
     var options = {
 
       /**
-       * 'pipe' - pipe parent to child for stdio
-       * 'ipc' - WTF
-       * 'ignore'
-       * 'Stream object' - ttyl, file, socket, or pipe
+       * 'pipe'             - pipe parent to child for stdio
+       * 'ipc'              - ???
+       * 'ignore'           - ???
+       * 'Stream object'    - ttyl, file, socket, or pipe
        * 'Positive integer' - integer is file descriptor (fd) that is currently open
-       * 'null,undefined' - means use defaults ('pipe' for stdin, stdout, and stder, else 'ignore')
+       * 'null,undefined'   - means use defaults ('pipe' for stdin, stdout, and stder, else 'ignore')
        */
-      cwd: 'C:\\Users\\KELDA16\\AppData\\Roaming\\Brackets\\extensions\\user\\osFtp\\node',
       stdio: [
-        'pipe',  //'pipe' is an option            --- child.stdin is shorthand for stdio[0]
-        'pipe', //fs.openSync('out.txt', 'w'), // --- child.stdout is shorthand for stdio[1]
-        'pipe' //fs.openSync('err.txt', 'w') //   --- child.stderr is shorthand for stdio[3]
+        'pipe', //'pipe' is an option          --- child.stdin is shorthand for stdio[0]
+        'pipe', //fs.openSync('out.txt', 'w'), --- child.stdout is shorthand for stdio[1]
+        'pipe'  //fs.openSync('err.txt', 'w')  --- child.stderr is shorthand for stdio[3]
         ]
     };
 
-    console.log('args: ' + args);
-    //var child = spawn(cmd, args, options);
+    //log our spawn
+    console.log('Spawning command: ' + cmd + ' ' + args);
+
+    //spawn
     var child = spawn(cmd, args, options);
+
+    //init response variable
     var resp = '';
 
-    console.log('Current working directory: ' + options.cwd);
-
-    //console.log('inData: ' + inData);
-    child.stdin.write('\n');
+    //must end input
     child.stdin.end();
 
-
+    //log if error data present
     child.on('error', function (err) {
+
+      //log error
       console.log('Failed to start child process.' + err.message);
+
     });
 
-
-    /**
-     * stdout.on registers a listener
-     *
-     * the first parameter in the on method is the event we're listening for (e.g. listening for the 'data' event here)
-     *  - see https://nodejs.org/api/stream.html
-     */
+    //listen for data present
     child.stdout.on('data', function (buffer) {
-      console.log('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& - DATA');
 
-      //build response
+      //append to and build response
       resp += buffer.toString();
     });
 
+    //listen for end of data
     child.stdout.on('end', function() {
 
       //provide text response to callback
-      console.log('callBack(cmd: resp);');
-      callBack(cmd + ': ' + resp);
+      callBack(resp);
 
-      console.log('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& - END');
+      //log that we reached the end
+      console.log('End of output reached');
     });
   }
 
