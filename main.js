@@ -55,8 +55,6 @@ define(function (require, exports, module) {
 
   var EXECUTE = '_execute';
 
-  var NODE_DIRECTORY = '/node/';
-
   var FTP_SCRIPT_FILE_EXTENSION = '.txt';
 
   var FTP_BINARY_EXTENSIONS = ['class'];
@@ -540,8 +538,11 @@ define(function (require, exports, module) {
       //build our ftp script
       var ftpScript = buildFtpScriptForFile(itemFullPath, session);
 
+      //get node folder in this extension
+      var extensionDir = File.getNativeModuleDirectoryPath(module) + '/node/';
+
       //select the file name we want to create
-      var scriptFileName = File.getDirectoryPath(itemFullPath) + NODE_DIRECTORY + session.host + FTP_SCRIPT_FILE_EXTENSION
+      var scriptFileName = extensionDir + session.host + FTP_SCRIPT_FILE_EXTENSION;
 
       //invoke node js to build and run our ftp script file
       runFtpCommandStdin(scriptFileName, ftpScript);
@@ -687,14 +688,14 @@ define(function (require, exports, module) {
     //listen for done
     .done(
       function () {
-        console.log('Completed: doFtp(' + scriptFile + ');');
+        console.log('Completed: doFtp(\n' + scriptFile + ');');
       }
     )
 
     //listen for faile
     .fail(
       function () {
-        console.error('Error in: doFtp(' + scriptFile + ');');
+        console.error('Error in: doFtp(\n' + scriptFile + ');');
       }
     )
   }
@@ -711,14 +712,14 @@ define(function (require, exports, module) {
     //listen for done
     .done(
       function () {
-        console.log('Completed: doFtpStdin(' + file + ', ' + data + ');');
+        console.log('Completed: doFtpStdin(\n' + file + ', \n' + data + ');');
       }
     )
 
     //listen for faile
     .fail(
       function () {
-        console.error('Error in: doFtpStdin(' + file + ', ' + data + ');');
+        console.error('Error in: doFtpStdin(\n' + file + ', \n' + data + ');');
       }
     )
   }
