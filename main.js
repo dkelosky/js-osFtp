@@ -98,6 +98,10 @@ define(function (require, exports, module) {
   });
 
 
+  /**
+   * Remove items from the context menu
+   * @param {String} id Id to remove from the context menu
+   */
   function removeFromContextMenus(id) {
 
     //function vars
@@ -289,7 +293,7 @@ define(function (require, exports, module) {
     //show the dialog and return the object
     return Dialog.showModalDialog(
       null,           //class
-      'FTP Site', //title
+      title,          //title
       bodyHtml,       //body html
       buttons,        //button array
       false);         //disable auto dismiss
@@ -308,7 +312,7 @@ define(function (require, exports, module) {
     var oldSession = false;
 
     var nameVal = '';
-    var rootVal = '';
+    var hostVal = '';
     var rootVal = '';
     var userVal = '';
     var passVal = '';
@@ -323,7 +327,7 @@ define(function (require, exports, module) {
       oldSession = true;
 
       nameVal = sites[oldSessionIndex].name;
-      rootVal = sites[oldSessionIndex].host;
+      hostVal = sites[oldSessionIndex].host;
       rootVal = sites[oldSessionIndex].root;
       userVal = sites[oldSessionIndex].user;
       passVal = sites[oldSessionIndex].pass;
@@ -338,7 +342,7 @@ define(function (require, exports, module) {
 
     var inputFields = [
       {label: 'Name:', id: name_id, value: nameVal, type: 'text'},
-      {label: 'Host:', id: host_id, value: rootVal, type: 'text'},
+      {label: 'Host:', id: host_id, value: hostVal, type: 'text'},
       {label: 'Root:', id: root_id, value: rootVal, type: 'text'},
       {label: 'User:', id: user_id, value: userVal, type: 'text'},
       {label: 'Password:', id: pass_id, value: passVal, type: 'password'}
@@ -799,6 +803,38 @@ define(function (require, exports, module) {
 
 
   /**
+   * Shows the failure dialog
+   * @returns {Object} Dialog object after open
+   */
+  function showFailDialog(data) {
+
+    //log this
+    console.log('showFailDialog()');
+
+
+    //create the body html
+    var bodyHtml = '';
+
+    //init html tag
+    bodyHtml += '<p>';
+
+    //init html tag
+    bodyHtml += data;
+
+    //term html tag
+    bodyHtml += '</p>';
+
+    //show the dialog and return the object
+    return Dialog.showModalDialog(
+      null,           //class
+      'FTP Failure',  //title
+      bodyHtml,       //body html
+      null,           //button array
+      true);          //disable auto dismiss
+
+    }
+
+  /**
    * Function wrapper to invoke our domain function
    * @param {string} scriptFile File to use as an ftp script file
    */
@@ -842,6 +878,7 @@ define(function (require, exports, module) {
     .fail(
       function () {
         console.error('Error in: doFtpStdin(\n' + file + ', \n' + data + ');');
+        showFailDialog('Failure information goes here...');
       }
     )
   }

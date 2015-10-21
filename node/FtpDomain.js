@@ -95,8 +95,16 @@
     fs.closeSync(newFile);
 
     //run ftp with options to suppress auto login and to supply a script file
-    var bar = new runProcess('ftp', ['-ns:' + file], function(response) {
-      console.log('Command response was: \n' + response)
+    var bar = new runProcess('ftp', ['-ns:' + file], function(response, isError) {
+
+      if (isError) {
+        console.log('Error response was: \n' + response)
+
+      }
+
+      else {
+        console.log('Command response was: \n' + response)
+      }
     });
   }
 
@@ -137,6 +145,7 @@
 
     //init response variable
     var resp = '';
+    var failResp = '';
 
     //must end input
     child.stdin.end();
@@ -154,16 +163,36 @@
 
       //append to and build response
       resp += buffer.toString();
+
+    });
+
+    //listen for data present
+    child.stderr.on('data', function (buffer) {
+
+      //append to and build response
+      failResp += buffer.toString();
+
     });
 
     //listen for end of data
     child.stdout.on('end', function() {
 
       //provide text response to callback
-      callBack(resp);
+      callBack(resp, false);
 
       //log that we reached the end
-      console.log('End of output reached');
+      console.log('End of stdout reached');
+    });
+
+
+    //listen for end of data
+    child.stderr.on('end', function() {
+
+      //provide text response to callback
+      callBack(failResp, true);
+
+      //log that we reached the end
+      console.log('End of stderr reached');
     });
   }
 
