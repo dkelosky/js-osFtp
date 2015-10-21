@@ -15,7 +15,7 @@
         minor: 1
       });
     }
-    
+
     /**
      * The last three parameters of each domainManager are documentation for api usage
      */
@@ -29,6 +29,31 @@
         type: 'string',
         description: 'Fully qualified FTP script file to execute'
       }], [{
+        name: 'output1', // return values
+        type: 'number',
+        description: 'output 1 desc goes here'
+      }]
+    );
+
+    /**
+     * The last three parameters of each domainManager are documentation for api usage
+     */
+    domainManager.registerCommand(
+      'ftp', // domain name
+      'doFtpStdin', // command name
+      doFtpStdin, // command handler function
+      false, // this command is synchronous in Node
+      'overal description goes here', [{
+        name: 'scriptFile', // parameters
+        type: 'string',
+        description: 'Fully qualified FTP script file to execute'
+      },
+                                       {
+
+                              name: 'scriptFile', // parameters
+        type: 'string',
+        description: 'Fully qualified FTP script file to execute'
+                                       }], [{
         name: 'output1', // return values
         type: 'number',
         description: 'output 1 desc goes here'
@@ -54,6 +79,32 @@
     });
   }
 
+  /**
+   * Command handler
+   * @param {string} ftpScriptFile Fully qualified FTP script file to execute
+   */
+  function doFtpStdin(file, data) {
+
+    //log input script file
+
+    var scriptFile = 'createdFtpScript.txt'
+    var fs = require('fs');                       //file system
+    //var ps = require('process');                       //file system
+
+   // console.log('dir is ' + process.cwd());
+
+    var newFile = fs.openSync(file, 'w')
+    fs.writeSync(newFile, data);
+    fs.closeSync(newFile);
+
+
+
+    //run ftp with options to suppress auto login and to supply a script file
+    var bar = new runProcess('ftp', ['-ns:' + file], function(response) {
+      console.log('Command response was: \n' + response)
+    });
+  }
+
 
   /**
    * Wrapper for spawning a child process
@@ -64,7 +115,6 @@
   function runProcess(cmd, args, callBack) {
 
     var spawn = require('child_process').spawn;
-    var fs = require('fs');                       //file system
     var fs = require('stream');                   //stream
 
     var options = {
