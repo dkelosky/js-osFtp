@@ -1,8 +1,10 @@
 /**
+ * @TODO - Package and publish
  * @TODO - NLS, define strings in extenal file
  * @TODO - proper file structure (e.g. .html goes in /templates)
  * @TODO - common strcuture
  * @TODO - comment / doc
+ * @TODO - error reporting
  * @TODO - settings
  * @TODO - add debugging
  * @TODO - add dialog for errors
@@ -36,11 +38,11 @@ define(function (require, exports, module) {
 
   var Dialog = brackets.getModule('widgets/Dialogs');
 
-  var COMMAND_RUN_SCRIPT_LABEL            = 'Run as FTP Script';
-  var COMMAND_RUN_SCRIPT_ID               = 'osftp_run_script';
+  var COMMAND_RUN_SCRIPT_LABEL = 'Run as FTP Script';
+  var COMMAND_RUN_SCRIPT_ID = 'osftp_run_script';
 
-  var COMMAND_NEW_SITE_LABEL            = 'New FTP Site...';
-  var COMMAND_NEW_SITE_ID               = 'osftp_new_site';
+  var COMMAND_NEW_SITE_LABEL = 'New FTP Site...';
+  var COMMAND_NEW_SITE_ID = 'osftp_new_site';
 
   var PREF = 'osftp';
   var PREF_SESSION = 'session_'
@@ -49,303 +51,392 @@ define(function (require, exports, module) {
 
   var EXECUTE = '_execute';
 
+  var NODE_DIRECTORY = '/node/';
+
+  var FTP_SCRIPT_FILE_EXTENSION = '.txt';
+
+  var FTP_BINARY_EXTENSIONS = ['class']
+
 
   /**
    * Initialization complete
    */
   AppInit.appReady(function () {
 
-    //add context menu to run a script
+    //register command and add context menu to run a script
     regCommandAndAddToContextMenus(COMMAND_RUN_SCRIPT_LABEL, COMMAND_RUN_SCRIPT_ID, handleRunScript, true);
 
-    //add a context menu to create a site
+    //register command and add a context menu to create a site
     regCommandAndAddToContextMenus(COMMAND_NEW_SITE_LABEL, COMMAND_NEW_SITE_ID, handleNewSite, false);
 
   });
 
 
-function regCommandAndAddToContextMenus(label, id, handler, addMenuDivider, afterId) {
-
-  var contextMenu;
-
-  var COMMAND_RUN_SCRIPT_LABEL = 'Run as FTP Script';
-  var COMMAND_RUN_SCRIPT_ID = 'osftp_run_script';
-  var ID_EXECUTE = id + EXECUTE;
-
-
   /**
-   * Register the command
+   * Register a command and add to the two context menus
+   * @param {String}   label          Label to appear in the menu
+   * @param {String}   id             Base id for this command, registered by appending EXECUTE constant
+   * @param {Function} handler        Function to be called when the command is clicked
+   * @param {Boolean}  addMenuDivider Indicator of whether or not a menu divider should be added
+   * @param {String}   afterId        Previouslly added menu where we want to place the new item after
    */
+  function regCommandAndAddToContextMenus(label, id, handler, addMenuDivider, afterId) {
 
-  //register working set command
-  CommandManager.register(label, ID_EXECUTE, handler);
-
-
-  /**
-   * Add to working set
-   */
-
-  //get menu item for working set
-  contextMenu = Menus.getContextMenu(Menus.ContextMenuIds.WORKING_SET_CONTEXT_MENU);
-
-  //add menu divider if requested
-  if (addMenuDivider)
-    contextMenu.addMenuDivider();
-
-  //add menu item for working set
-  addContextMenuItem(contextMenu, ID_EXECUTE, afterId);
+    //function vars
+    var contextMenu;
+    var ID_EXECUTE = id + EXECUTE;
 
 
-  /**
-   * Add to project set
-   */
+    /**
+     * Register the command
+     */
 
-  //get menu item for project set
-  contextMenu = Menus.getContextMenu(Menus.ContextMenuIds.PROJECT_MENU);
+    //register working set command
+    CommandManager.register(label, ID_EXECUTE, handler);
 
-  //add menu divider if requested
-  if (addMenuDivider)
-    contextMenu.addMenuDivider();
 
-  //add menu item for project set
-  addContextMenuItem(contextMenu, ID_EXECUTE, afterId);
+    /**
+     * Add to working set
+     */
 
-}
+    //get menu item for working set
+    contextMenu = Menus.getContextMenu(Menus.ContextMenuIds.WORKING_SET_CONTEXT_MENU);
 
-function addContextMenuItem(contextMenu, id, afterId) {
+    //add menu divider if requested
+    if (addMenuDivider)
+      contextMenu.addMenuDivider();
 
-  //if we don't have an afterId
-  if (!isSet(afterId)) {
+    //add menu item for working set
+    addContextMenuItem(contextMenu, ID_EXECUTE, afterId);
 
-    //add to menu with defaults
-    contextMenu.addMenuItem(id);
 
-  //else we were given an afterId
-  } else {
+    /**
+     * Add to project set
+     */
 
-    //orient to id we want to add after
-    var AFTER_ID_EXECUTE = afterId + EXECUTE;
+    //get menu item for project set
+    contextMenu = Menus.getContextMenu(Menus.ContextMenuIds.PROJECT_MENU);
 
-    //add to menu after afterId
-    contextMenu.addMenuItem(
-      id,               //new id
-      null,             //no key binding
-      Menus.AFTER,      //position
-      AFTER_ID_EXECUTE  //after this id
-    );
+    //add menu divider if requested
+    if (addMenuDivider)
+      contextMenu.addMenuDivider();
+
+    //add menu item for project set
+    addContextMenuItem(contextMenu, ID_EXECUTE, afterId);
+
   }
 
-}
+  /**
+   * Add an item to a context menu
+   * @param {Object} contextMenu Project or working set context menu object
+   * @param {String} id          Identifier of command to be added
+   * @param {String} afterId     Id where the menu item will be added after
+   */
+  function addContextMenuItem(contextMenu, id, afterId) {
 
-function isSet(variable) {
-  if (variable != 'undefined' && variable != null && variable != '')
-    return true;
-  return false;
-}
+    //if we don't have an afterId
+    if (!isSet(afterId)) {
+
+      //add to menu with defaults
+      contextMenu.addMenuItem(id);
+
+      //else we were given an afterId
+    } else {
+
+      //orient to id we want to add after
+      var AFTER_ID_EXECUTE = afterId + EXECUTE;
+
+      //add to menu after afterId
+      contextMenu.addMenuItem(
+        id, //new id
+        null, //no key binding
+        Menus.AFTER, //position
+        AFTER_ID_EXECUTE //after this id
+      );
+    }
+
+  }
+
+  /**
+   * Determines whether or not a variable exists, is null, or contains no data
+   * @param   {String} variable Any variable type
+   * @returns {Boolean}  Returns true if the variable is defined
+   */
+  function isSet(variable) {
+    if (variable != 'undefined' && variable != null && variable != '')
+      return true;
+    return false;
+  }
 
 
-function handleNewSite() {
+  function handleNewSite() {
 
-  var escapeKey = 27;
+    var escapeKey = 27;
 
-  var buttons = [
-    {
-    className: Dialog.DIALOG_BTN_CLASS_LEFT,
-    id: Dialog.DIALOG_BTN_CANCEL,
-    text: 'CANCEL'
+    var buttons = [
+      {
+        className: Dialog.DIALOG_BTN_CLASS_LEFT,
+        id: Dialog.DIALOG_BTN_CANCEL,
+        text: 'CANCEL'
   },
-    {
-    className: Dialog.DIALOG_BTN_CLASS_PRIMARY,
-    id: Dialog.DIALOG_BTN_OK,
-    text: 'OK'
+      {
+        className: Dialog.DIALOG_BTN_CLASS_PRIMARY,
+        id: Dialog.DIALOG_BTN_OK,
+        text: 'OK'
   }
   ];
 
-  var inputDialog = Dialog.showModalDialog(null, //class
-    'Add New Site', //title
-    'Name:' +
-    '<br>' +
-    '<input id="input-name" type="text">' +
-    '<br>' +
-    'Host:' +
-    '<br>' +
-    '<input id="input-host" type="text">' +
-    '<br>' +
-    'Root:' +
-    '<br>' +
-    '<input id="input-root" type="text">' +
-    '<br>' +
-    '<form>' +
-    'User:' +
-    '<br>' +
-    '<input id="input-user" type="text">' +
-    '<br>' +
-    'Password:' +
-    '<br>' +
-    '<input id="input-pass" type="password">' +
-    '</form>',
-    buttons,
-    false); //disable auto dismiss
+    var inputDialog = Dialog.showModalDialog(null, //class
+      'Add New Site', //title
+      'Name:' +
+      '<br>' +
+      '<input id="input-name" type="text">' +
+      '<br>' +
+      'Host:' +
+      '<br>' +
+      '<input id="input-host" type="text">' +
+      '<br>' +
+      'Root:' +
+      '<br>' +
+      '<input id="input-root" type="text">' +
+      '<br>' +
+      '<form>' +
+      'User:' +
+      '<br>' +
+      '<input id="input-user" type="text">' +
+      '<br>' +
+      'Password:' +
+      '<br>' +
+      '<input id="input-pass" type="password">' +
+      '</form>',
+      buttons,
+      false); //disable auto dismiss
 
-  //listen for escape key
-  $(document).keyup(function (event) {
+    //listen for escape key
+    $(document).keyup(function (event) {
 
-    if (event.which == escapeKey)
+      if (event.which == escapeKey)
 
       //close if escape
+        inputDialog.close();
+
+    });
+
+    //listen for cancel (modal doesnt have standard id= attribute, it's data-button-id
+    $('button[data-button-id="' + Dialog.DIALOG_BTN_CANCEL + '"').click(function () {
+
+      console.log('Dialog closed without save');
+
       inputDialog.close();
 
-  });
+    });
 
-  //listen for cancel (modal doesnt have standard id= attribute, it's data-button-id
-  $('button[data-button-id="' + Dialog.DIALOG_BTN_CANCEL + '"').click(function () {
+    //listen for ok
+    $('button[data-button-id="' + Dialog.DIALOG_BTN_OK + '"').click(function () {
 
-    console.log('Dialog closed without save');
+      var name = $('#input-name').val();
+      var host = $('#input-host').val();
+      var root = $('#input-root').val();
+      var user = $('#input-user').val();
+      var pass = $('#input-pass').val();
 
-    inputDialog.close();
+      console.log('Dialog inputs are: ' +
+        'name - ' + name + ', ' +
+        'host - ' + host + ', ' +
+        'root - ' + root + ', ' +
+        'user - ' + user + ', ' +
+        'pass - ' + pass
+      );
 
-  });
+      //@TODO, validate name is not already used
 
-  //listen for ok
-  $('button[data-button-id="' + Dialog.DIALOG_BTN_OK + '"').click(function () {
+      //@TODO, save preferences
 
-    var name = $('#input-name').val();
-    var host = $('#input-host').val();
-    var root = $('#input-root').val();
-    var user = $('#input-user').val();
-    var pass = $('#input-pass').val();
+      var session = {
+        name: name,
+        host: host,
+        root: root,
+        user: user,
+        pass: pass
+      };
 
-    console.log('Dialog inputs are: ' +
-      'name - ' + name + ', ' +
-      'host - ' + host + ', ' +
-      'root - ' + root + ', ' +
-      'user - ' + user + ', ' +
-      'pass - ' + pass
-    );
+      osFtpPreferences.set(PREF_SESSION + name, session);
 
-    //@TODO, validate name is not already used
+      //@TODO, allow for edit of previous site names
 
-    //@TODO, save preferences
+      var COMMAND_RUN_SITE_LABEL = name;
+      var COMMAND_RUN_SITE_ID = 'osftp_run_' + name;
 
-    var session = {
-      name: name,
-      host: host,
-      root: root,
-      user: user,
-      pass: pass
-    };
+      //add a context menu to create a site
+      regCommandAndAddToContextMenus(COMMAND_RUN_SITE_LABEL, COMMAND_RUN_SITE_ID, handleRunSite, false, COMMAND_NEW_SITE_ID);
 
-    osFtpPreferences.set(PREF_SESSION + name, session);
+      console.log('Dialog closed with save');
 
-    //@TODO, allow for edit of previous site names
+      inputDialog.close();
 
-    var COMMAND_RUN_SITE_LABEL            = name;
-    var COMMAND_RUN_SITE_ID               = 'osftp_run_' + name;
+    });
 
-    //add a context menu to create a site
-    regCommandAndAddToContextMenus(COMMAND_RUN_SITE_LABEL, COMMAND_RUN_SITE_ID, handleRunSite, false, COMMAND_NEW_SITE_ID);
+    //listen for dialog done
+    inputDialog.done(function () {
 
-    console.log('Dialog closed with save');
+      console.log('Dialog modal is dismissed');
 
-    inputDialog.close();
+    });
 
-  });
+  }
 
-  //listen for dialog done
-  inputDialog.done(function () {
-
-    console.log('Dialog modal is dismissed');
-
-  });
-
-}
-
+  /**
+   * Handler for executing an added site
+   */
   function handleRunSite() {
+
+    //get the command name
+    var name = this.getName();
+
+    //get the session object preference associated with this command name
+    var session = osFtpPreferences.get(PREF_SESSION + name);
+
+    //get the full path to the item that was selected
+    var itemFullPath = Project.getSelectedItem().fullPath;
+
+    //determine if the file choosen is a directory or an individual file
+    if (File.getDirectoryPath(itemFullPath) == itemFullPath) {
+
+      //@TODO all for processing and ftp'ing an entire directory
+      //for now, log message if an attempt is made to ftp a directory
+      console.log('Select FTP script file - not a directory');
+
+    //an individual file was choose, build a script string and invoke node to run FTP and this script
+    } else {
+
+      //build our ftp script
+      var ftpScript = buildFtpScriptForFile(itemFullPath, session);
+
+      //select the file name we want to create
+      var scriptFileName = File.getDirectoryPath(itemFullPath) + NODE_DIRECTORY + session.host + FTP_SCRIPT_FILE_EXTENSION
+
+      //invoke node js to build and run our ftp script file
+      runFtpCommandStdin(scriptFileName, ftpScript);
+
+    }
+
+  }
+
+
+  function buildFtpScriptForFile(itemFullPath, session) {
 
     //like 'C:' is two characters
     var WINDOWS_DRIVE_LETTER_OFFSET = 0;
     var WINDOWS_DRIVE_LETTER_LEN = 2;
     var WINDOWS_DRIVE_SEPERATOR_OFFSET = 1;
     var WINDOWS_DRIVE_SEPERATOR = ':';
-    var WINDOWS_DRIVE_DIRECTORY_CHAR= '\\';
+    var WINDOWS_DRIVE_DIRECTORY_CHAR = '\\';
 
-    var name = this.getName();
+    //initialize script
+    var ftpStdin = '';
 
-    var session = osFtpPreferences.get(PREF_SESSION + name);
+    //open the host
+    ftpStdin += 'op ';
+    ftpStdin += session.host;
+    ftpStdin += '\n';
 
+    //we no that auto-login will be disabled so specify 'user'
+    ftpStdin += 'user\n';
 
-    if (File.getDirectoryPath(Project.getSelectedItem().fullPath) == Project.getSelectedItem().fullPath) {
+    //provide user name and password to script file
+    ftpStdin += session.user;
+    ftpStdin += '\n';
+    ftpStdin += session.pass;
+    ftpStdin += '\n';
 
-      console.log('Select FTP script file - not a directory');
+    //switch to requested root directory
+    ftpStdin += 'cd ';
+    ftpStdin += session.root;
+    ftpStdin += '\n';
+
+    //directory path with always have forward slash seperators, so parse each directory
+    var directory = File.getDirectoryPath(itemFullPath).split('/');
+
+    //if the first directory is a windows type drive
+    if (directory[WINDOWS_DRIVE_LETTER_OFFSET].length == WINDOWS_DRIVE_LETTER_LEN) {
+
+      //if the second character after the drive letter is a colon, this should be windows directories
+      if (directory[WINDOWS_DRIVE_LETTER_OFFSET].charAt(WINDOWS_DRIVE_SEPERATOR_OFFSET) == WINDOWS_DRIVE_SEPERATOR)
+
+        //append a backlash to the drive letter and colon
+        directory[WINDOWS_DRIVE_LETTER_OFFSET] += WINDOWS_DRIVE_DIRECTORY_CHAR;
 
     }
 
-    else {
+    //iterate through directories
+    directory.forEach(function (dir) {
 
-      var ftpStdin = '';
+      //while the directory appears valid
+      if (isSet(dir)) {
 
-      ftpStdin += 'op ';
-      ftpStdin += session.host;
-      ftpStdin += '\n';
-
-      ftpStdin += 'user\n';
-
-      ftpStdin += session.user;
-      ftpStdin += '\n';
-      ftpStdin += session.pass;
-      ftpStdin += '\n';
-
-      ftpStdin += 'cd ';
-      ftpStdin += session.root;
-      ftpStdin += '\n';
-
-
-      var directory = File.getDirectoryPath(Project.getSelectedItem().fullPath).split('/');
-
-
-
-      if (directory[WINDOWS_DRIVE_LETTER_OFFSET].length == WINDOWS_DRIVE_LETTER_LEN) {
-
-        if (directory[WINDOWS_DRIVE_LETTER_OFFSET].charAt(WINDOWS_DRIVE_SEPERATOR_OFFSET) == WINDOWS_DRIVE_SEPERATOR)
-          directory[WINDOWS_DRIVE_LETTER_OFFSET] += WINDOWS_DRIVE_DIRECTORY_CHAR;
-
+        //alter local directory to the file we are ftp'ing
+        ftpStdin += 'lcd ';
+        ftpStdin += dir;
+        ftpStdin += '\n';
       }
 
-      directory.forEach(function(dir) {
-
-        if (dir != null && dir != '')     {
-
-          ftpStdin += 'lcd ';
-          ftpStdin += dir;
-          ftpStdin += '\n';
-        }
+    });
 
 
-      });
+    var extension = File.getFileExtension(itemFullPath);
 
-      var extension = File.getFileExtension(Project.getSelectedItem().fullPath);
+    if (extension == 'class')
+      ftpStdin += 'binary\n';
 
-      if (extension == 'class')
-        ftpStdin += 'binary\n';
+    ftpStdin += 'put ';
+    ftpStdin += File.getBaseName(itemFullPath);
+    ftpStdin += '\n';
 
-      ftpStdin += 'put ';
-      ftpStdin += File.getBaseName(Project.getSelectedItem().fullPath);
-      ftpStdin += '\n';
+    ftpStdin += 'quit \n';
 
-      ftpStdin += 'quit \n';
-
-      runFtpCommandStdin(File.getDirectoryPath(Project.getSelectedItem().fullPath) + '/node/' + session.host + '.txt', ftpStdin);
-    }
+    return ftpStdin;
 
   }
 
+  /**
+   * Check known extensions to see whether ftp should be done in binary
+   * @param   {String} extension extension (without '.') to validate against known extensions
+   * @returns {Boolean}  Returns true if this extension should be ftp'ed as binary
+   */
+  function ftpAsBinary(extension) {
 
+    //if the extension is in our predefined list of things to ftp, return true
+    for (var i = 0; i < FTP_BINARY_EXTENSIONS.length; i++)
+      if (FTP_BINARY_EXTENSIONS[i] == extension)
+        return true
+
+    //no need to ftp this as binary
+    return false;
+
+  }
+
+  /**
+   * Function driven when a file is called to be executed as an FTP script
+   */
   function handleRunScript() {
 
-    if (File.getDirectoryPath(Project.getSelectedItem().fullPath) == Project.getSelectedItem().fullPath)
+    //get the full path to the item that was selected
+    var itemFullPath = Project.getSelectedItem().fullPath;
+
+    //determine if the file choosen is a directory or an individual file
+    if (File.getDirectoryPath(itemFullPath) == itemFullPath) {
+
+      //@TODO all for processing and ftp'ing an entire directory
+      //for now, log message if an attempt is made to ftp a directory
       console.log('Select FTP script file - not a directory');
-    else
+
+    //an individual file was choose, build a script string and invoke node to run FTP and this script
+    } else {
+
+      //invoke node js to run our ftp script file
       runFtpCommand(Project.getSelectedItem().fullPath);
+
+    }
   }
 
 
