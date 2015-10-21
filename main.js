@@ -18,7 +18,7 @@
  * @TODO - generalize add context menu, t/f for devider, menu id to append after
  * @TODO - key bindings in dialog for each ftp, (i.e. set Ctrl + Alt + 1 to ftp to ca11?)
  * @TODO - allow for ftp get of data
- * @TODO - allow session delete
+ * @TODO - allow site delete
  */
 define(function (require, exports, module) {
   'use strict';
@@ -48,8 +48,11 @@ define(function (require, exports, module) {
 
   var COMMAND_RUN_SITE_BASE = 'osftp_run_';
 
+  var COMMAND_EDIT_SITE_ID = 'osftp_edit_site';
+
   var PREF = 'osftp';
-  var PREF_SESSION = 'session_'
+  var PREF_SITE = 'site_'
+  var PREF_SITES = 'sites_'
 
   var osFtpPreferences = PreferencesManager.getExtensionPrefs(PREF);
 
@@ -61,7 +64,7 @@ define(function (require, exports, module) {
 
   var enableEditSites = false;
 
-  var sessions = [];
+  var sites = [];
 
   var ESCAPE_KEY = 27;
 
@@ -79,8 +82,37 @@ define(function (require, exports, module) {
     //register command and add a context menu to create a site
     regCommandAndAddToContextMenus(COMMAND_NEW_SITE_LABEL, COMMAND_NEW_SITE_ID, handleNewSite, false);
 
+    //get saved preferences
+    sites = osFtpPreferences.get(PREF_SITES);
+
+    //add back saved sites
+    sites.forEach(function (site) {
+      addSite(site);
+
+    });
+
+    //enable editing if we have at least one site
+    if (sites.length > 0)
+      enableEditSite();
+
   });
 
+
+  function removeFromContextMenus(id) {
+
+    //function vars
+    var contextMenu;
+    var ID_EXECUTE = id + EXECUTE;
+
+    //remove from the working set
+    contextMenu = Menus.getContextMenu(Menus.ContextMenuIds.WORKING_SET_CONTEXT_MENU);
+    contextMenu.removeMenuItem(ID_EXECUTE);
+
+    //remove from the project set
+    contextMenu = Menus.getContextMenu(Menus.ContextMenuIds.PROJECT_MENU);
+    contextMenu.removeMenuItem(ID_EXECUTE);
+
+  }
 
   /**
    * Register a command and add to the two context menus
@@ -188,7 +220,7 @@ define(function (require, exports, module) {
   }
 
   /**
-   * Invokes the new site dialog
+   * Invokes the site dialog
    * @param   {Object}   name_in Object containing an ID and Type
    * @param   {Object}   host_in Object containing an ID and Type
    * @param   {Object}   root_in Object containing an ID and Type
@@ -196,7 +228,15 @@ define(function (require, exports, module) {
    * @param   {Object}   pass_in Object containing an ID and Type
    * @returns {Object}   Diaglog object for created dialog
    */
-  function showNewSiteDialog(name_in, host_in, root_in, user_in, pass_in) {
+  function showSiteDialog(inputs, existing) {
+
+    //log this
+    console.log('showSiteDialog()');
+
+    var titleNewPrefix = 'New';
+    var titleEditPrefix = 'Edit';
+    var titleBase = 'FTP Site';
+    var title = titleNewPrefix + ' ' + titleBase;
 
     //dialog buttons array
     var buttons = [
@@ -212,30 +252,39 @@ define(function (require, exports, module) {
       }
     ];
 
+    //delete button if we are going are showing an existing site
+    var deleteButton = {
+        className: Dialog.DIALOG_BTN_CLASS_NORMAL,
+        id: Dialog.DIALOG_BTN_DONTSAVE,
+        text: 'DELETE'
+    }
+
+    if (existing) {
+
+      title = titleEditPrefix + ' ' + titleBase;
+
+      buttons.push(deleteButton);
+
+    }
+
+
     //create the body html
-    var bodyHtml =
-      '<form>' +
-      'Name:' +
-      '<br>' +
-      '<input id="' + name_in.id + '" type="' + name_in.type + '" value="' + name_in.value + '">' +
-      '<br>' +
-      'Host:' +
-      '<br>' +
-      '<input id="' + host_in.id + '" type="' + host_in.type + '" value="' + host_in.value + '">' +
-      '<br>' +
-      'Root:' +
-      '<br>' +
-      '<input id="' + root_in.id + '" type="' + root_in.type + '" value="' + root_in.value + '">' +
-      '<br>' +
-      '<form>' +
-      'User:' +
-      '<br>' +
-      '<input id="' + user_in.id + '" type="' + user_in.type + '" value="' + user_in.value + '">' +
-      '<br>' +
-      'Password:' +
-      '<br>' +
-      '<input id="' + pass_in.id + '" type="' + pass_in.type + '" value="' + pass_in.value + '">' +
-      '</form>';
+    var bodyHtml = '';
+
+    //init html tag
+    bodyHtml += '<form>';
+
+    //add radio buttons for each site
+    inputs.forEach(function (input) {
+      bodyHtml += input.label;
+      bodyHtml += '<br>';
+      bodyHtml += '<input id="' + input.id + '" type="' + input.type + '" value="' + input.value + '">';
+      bodyHtml += '<br>';
+
+    });
+
+    //term html tag
+    bodyHtml += '</form>';
 
     //show the dialog and return the object
     return Dialog.showModalDialog(
@@ -255,36 +304,48 @@ define(function (require, exports, module) {
     //log that we were called
     console.log('handleNewSite()');
 
-    //assume a new session
-    var isOldSession = false;
+    //assume a new site
+    var oldSession = false;
 
-    //if old session object is passed
+    var nameVal = '';
+    var rootVal = '';
+    var rootVal = '';
+    var userVal = '';
+    var passVal = '';
+
+    //if old site object is passed
     if (isSet(oldSessionIndex)) {
 
-      //indicate that this is an old session
-      isOldSession = true;
-
       //log this
-      console.log('Old session presented');
+      console.log('Old site presented');
+
+      //indicate that this is an old site
+      oldSession = true;
+
+      nameVal = sites[oldSessionIndex].name;
+      rootVal = sites[oldSessionIndex].host;
+      rootVal = sites[oldSessionIndex].root;
+      userVal = sites[oldSessionIndex].user;
+      passVal = sites[oldSessionIndex].pass;
+
     }
 
+    var name_id = 'input-name';
+    var host_id = 'input-host';
+    var root_id = 'input-root';
+    var user_id = 'input-user';
+    var pass_id = 'input-pass';
 
-    var name_in = {id: 'input-name', value: '', type: 'text'};
-    var host_in = {id: 'input-host', value: '', type: 'text'};
-    var root_in = {id: 'input-root', value: '', type: 'text'};
-    var user_in = {id: 'input-user', value: '', type: 'text'};
-    var pass_in = {id: 'input-pass', value: '', type: 'password'};
-
-    if (isOldSession) {
-      name_in.value = sessions[oldSessionIndex].name;
-      host_in.value = sessions[oldSessionIndex].host;
-      root_in.value = sessions[oldSessionIndex].root;
-      user_in.value = sessions[oldSessionIndex].user;
-      pass_in.value = sessions[oldSessionIndex].pass;
-    }
+    var inputFields = [
+      {label: 'Name:', id: name_id, value: nameVal, type: 'text'},
+      {label: 'Host:', id: host_id, value: rootVal, type: 'text'},
+      {label: 'Root:', id: root_id, value: rootVal, type: 'text'},
+      {label: 'User:', id: user_id, value: userVal, type: 'text'},
+      {label: 'Password:', id: pass_id, value: passVal, type: 'password'}
+    ];
 
     //show dialog
-    var inputDialog = showNewSiteDialog(name_in, host_in, root_in, user_in, pass_in);
+    var inputDialog = showSiteDialog(inputFields, oldSession);
 
     //listen for escape key
     $(document).keyup(function (event) {
@@ -306,14 +367,48 @@ define(function (require, exports, module) {
 
     });
 
+    //if old session
+    if (oldSession) {
+
+      //listen for delete (modal doesnt have standard id= attribute, it's data-button-id
+      $('button[data-button-id="' + Dialog.DIALOG_BTN_DONTSAVE + '"').click(function () {
+
+        //setup labels
+        var COMMAND_RUN_SITE_ID = COMMAND_RUN_SITE_BASE + sites[oldSessionIndex].name;
+
+        //remove old site from array
+        sites.splice(oldSessionIndex, 1);
+
+        //remove site from context menu
+        removeFromContextMenus(COMMAND_RUN_SITE_ID);
+
+        //set in preferences
+        osFtpPreferences.set(PREF_SITES, sites);
+
+        //save
+        osFtpPreferences.save(PREF_SITES, sites);
+
+        //disable editing if we have no more sites
+        if (sites.length == 0)
+          disableEditSite();
+
+        //log that the user wants to close
+        console.log('Dialog closed to delete site');
+
+        //close the dialog
+        inputDialog.close();
+
+      });
+    }
+
     //listen for ok
     $('button[data-button-id="' + Dialog.DIALOG_BTN_OK + '"').click(function () {
 
-      var name = $('#' + name_in.id).val();
-      var host = $('#' + host_in.id).val();
-      var root = $('#' + root_in.id).val();
-      var user = $('#' + user_in.id).val();
-      var pass = $('#' + pass_in.id).val();
+      var name = $('#' + name_id).val();
+      var host = $('#' + host_id).val();
+      var root = $('#' + root_id).val();
+      var user = $('#' + user_id).val();
+      var pass = $('#' + pass_id).val();
 
       //log input
       console.log(
@@ -329,8 +424,8 @@ define(function (require, exports, module) {
 
       //@TODO, save preferences
 
-      //build session object
-      var session = {
+      //build site object
+      var site = {
         name: name,
         host: host,
         root: root,
@@ -338,28 +433,28 @@ define(function (require, exports, module) {
         pass: pass
       };
 
-      //add to list of known sessions
-      if (isOldSession)
-        sessions.splice(oldSessionIndex, 1);
+      //if old site, delete its contents
+      if (oldSession)
+        sites.splice(oldSessionIndex, 1);
 
-      sessions.push(session);
+      //save this site
+      sites.push(site);
 
-      osFtpPreferences.set(PREF_SESSION + name, session);
+      //set in preferences
+      osFtpPreferences.set(PREF_SITES, sites);
 
-      //@TODO, allow for edit of previous site names
+      //save
+      osFtpPreferences.save(PREF_SITES, sites);
 
-      if (!isOldSession) {
-        var COMMAND_RUN_SITE_LABEL = name;
-        var COMMAND_RUN_SITE_ID = COMMAND_RUN_SITE_BASE + name;
-
-        //register command and add a context menu to create a site
-        regCommandAndAddToContextMenus(COMMAND_RUN_SITE_LABEL, COMMAND_RUN_SITE_ID, handleRunSite, false, COMMAND_NEW_SITE_ID, false);
+      if (!oldSession) {
+        addSite(site);
       }
 
-      //ensure we enabled editing of sites
-      enableEditSite();
+      //enable editing if we have at least one site
+      if (sites.length > 0)
+        enableEditSite();
 
-      //log that we are saving this session
+      //log that we are saving this site
       console.log('Dialog closed with save');
 
       //close the dialog
@@ -377,24 +472,41 @@ define(function (require, exports, module) {
 
   }
 
+  function addSite(site) {
+
+    //setup labels
+    var COMMAND_RUN_SITE_LABEL = site.name;
+    var COMMAND_RUN_SITE_ID = COMMAND_RUN_SITE_BASE + site.name;
+
+    //register command and add a context menu to create a site
+    regCommandAndAddToContextMenus(COMMAND_RUN_SITE_LABEL, COMMAND_RUN_SITE_ID, handleRunSite, false, COMMAND_NEW_SITE_ID, false);
+
+  }
+
+
   /**
    * Enables the edit command for an added site
    */
   function enableEditSite() {
 
-    //if we don't allow fo editing of our sites
-    if (!enableEditSites) {
+    //setup labels
+    var COMMAND_EDIT_SITE_LABEL = 'Edit FTP Site...';
+    var COMMAND_EDIT_SITE_ID = 'osftp_edit_site';
 
-      //setup labels
-      var COMMAND_EDIT_SITE_LABEL = 'Edit FTP Site...';
-      var COMMAND_EDIT_SITE_ID = 'osftp_edit_site';
+    //register command and add a context menu to create a site
+    regCommandAndAddToContextMenus(COMMAND_EDIT_SITE_LABEL, COMMAND_EDIT_SITE_ID, handleEditSite, false, COMMAND_NEW_SITE_ID, true);
 
-      //register command and add a context menu to create a site
-      regCommandAndAddToContextMenus(COMMAND_EDIT_SITE_LABEL, COMMAND_EDIT_SITE_ID, handleEditSite, false, COMMAND_NEW_SITE_ID, true);
+  }
 
-      //indicate that this has been enabled
-      enableEditSites = true;
-    }
+
+  /**
+   * Disables the edit command forsites
+   */
+  function disableEditSite() {
+
+    //register command and add a context menu to create a site
+    removeFromContextMenus(COMMAND_EDIT_SITE_ID);
+
   }
 
 
@@ -440,7 +552,7 @@ define(function (require, exports, module) {
 
       //if no option was choosen
       if (!isSet(editSiteIndex))
-        console.log('No session was selected');
+        console.log('No site was selected');
 
       //log that we are closing
       console.log('Dialog closed with save');
@@ -489,9 +601,9 @@ define(function (require, exports, module) {
     //init html tag
     bodyHtml += '<form>';
 
-    //add radio buttons for each session
-    sessions.forEach(function (session, i) {
-      bodyHtml += '<input id="' + session.name + '" value="' + i + '" type="radio" name="' + RADIO_SITE_NAME + '"> ' + session.name;
+    //add radio buttons for each site
+    sites.forEach(function (site, i) {
+      bodyHtml += '<input id="' + site.name + '" value="' + i + '" type="radio" name="' + RADIO_SITE_NAME + '"> ' + site.name;
       bodyHtml += '<br>';
     });
 
@@ -519,8 +631,18 @@ define(function (require, exports, module) {
     //get the command name
     var name = this.getName();
 
-    //get the session object preference associated with this command name
-    var session = osFtpPreferences.get(PREF_SESSION + name);
+    //get the site object preference associated with this command name
+    var thisSite;
+    //var site = osFtpPreferences.get(PREF_SITE + name);
+
+    sites.forEach(function(site) {
+
+      if (site.name == name) {
+
+        thisSite = site;
+      }
+
+    });
 
     //get the full path to the item that was selected
     var itemFullPath = Project.getSelectedItem().fullPath;
@@ -536,13 +658,13 @@ define(function (require, exports, module) {
     } else {
 
       //build our ftp script
-      var ftpScript = buildFtpScriptForFile(itemFullPath, session);
+      var ftpScript = buildFtpScriptForFile(itemFullPath, thisSite);
 
       //get node folder in this extension
       var extensionDir = File.getNativeModuleDirectoryPath(module) + '/node/';
 
       //select the file name we want to create
-      var scriptFileName = extensionDir + session.host + FTP_SCRIPT_FILE_EXTENSION;
+      var scriptFileName = extensionDir + thisSite.host + FTP_SCRIPT_FILE_EXTENSION;
 
       //invoke node js to build and run our ftp script file
       runFtpCommandStdin(scriptFileName, ftpScript);
@@ -555,10 +677,10 @@ define(function (require, exports, module) {
   /**
    * Build ftp script string
    * @param   {String} itemFullPath Complete file path and file to build for
-   * @param   {Object}   session      Object containing saved information for the session
+   * @param   {Object}   site      Object containing saved information for the site
    * @returns {String} Return the completed script string
    */
-  function buildFtpScriptForFile(itemFullPath, session) {
+  function buildFtpScriptForFile(itemFullPath, site) {
 
     //like 'C:' is two characters
     var WINDOWS_DRIVE_LETTER_OFFSET = 0;
@@ -572,21 +694,21 @@ define(function (require, exports, module) {
 
     //open the host
     ftpStdin += 'op ';
-    ftpStdin += session.host;
+    ftpStdin += site.host;
     ftpStdin += '\n';
 
     //we no that auto-login will be disabled so specify 'user'
     ftpStdin += 'user\n';
 
     //provide user name and password to script file
-    ftpStdin += session.user;
+    ftpStdin += site.user;
     ftpStdin += '\n';
-    ftpStdin += session.pass;
+    ftpStdin += site.pass;
     ftpStdin += '\n';
 
     //switch to requested root directory
     ftpStdin += 'cd ';
-    ftpStdin += session.root;
+    ftpStdin += site.root;
     ftpStdin += '\n';
 
     //directory path with always have forward slash seperators, so parse each directory
