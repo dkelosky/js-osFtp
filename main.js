@@ -18,6 +18,7 @@
  * @TODO - generalize add context menu, t/f for devider, menu id to append after
  * @TODO - key bindings in dialog for each ftp, (i.e. set Ctrl + Alt + 1 to ftp to ca11?)
  * @TODO - allow for ftp get of data
+ * @TODO - allow session delete
  */
 define(function (require, exports, module) {
   'use strict';
@@ -45,6 +46,8 @@ define(function (require, exports, module) {
   var COMMAND_NEW_SITE_LABEL = 'New FTP Site...';
   var COMMAND_NEW_SITE_ID = 'osftp_new_site';
 
+  var COMMAND_RUN_SITE_BASE = 'osftp_run_';
+
   var PREF = 'osftp';
   var PREF_SESSION = 'session_'
 
@@ -59,6 +62,12 @@ define(function (require, exports, module) {
   var FTP_BINARY_EXTENSIONS = ['class'];
 
   var enableEditSites = false;
+
+  var sessions = [];
+
+  var ESCAPE_KEY = 27;
+
+  var RADIO_SITE_NAME = 'site';
 
 
   /**
@@ -207,32 +216,33 @@ define(function (require, exports, module) {
 
     //create the body html
     var bodyHtml =
+      '<form>' +
       'Name:' +
       '<br>' +
-      '<input id="' + name_in.id + '" type="' + name_in.type + '">' +
+      '<input id="' + name_in.id + '" type="' + name_in.type + '" value="' + name_in.value + '">' +
       '<br>' +
       'Host:' +
       '<br>' +
-      '<input id="' + host_in.id + '" type="' + host_in.type + '">' +
+      '<input id="' + host_in.id + '" type="' + host_in.type + '" value="' + host_in.value + '">' +
       '<br>' +
       'Root:' +
       '<br>' +
-      '<input id="' + root_in.id + '" type="' + root_in.type + '">' +
+      '<input id="' + root_in.id + '" type="' + root_in.type + '" value="' + root_in.value + '">' +
       '<br>' +
       '<form>' +
       'User:' +
       '<br>' +
-      '<input id="' + user_in.id + '" type="' + user_in.type + '">' +
+      '<input id="' + user_in.id + '" type="' + user_in.type + '" value="' + user_in.value + '">' +
       '<br>' +
       'Password:' +
       '<br>' +
-      '<input id="' + pass_in.id + '" type="' + pass_in.type + '">' +
+      '<input id="' + pass_in.id + '" type="' + pass_in.type + '" value="' + pass_in.value + '">' +
       '</form>';
 
     //show the dialog and return the object
     return Dialog.showModalDialog(
       null,           //class
-      'Add New Site', //title
+      'FTP Site', //title
       bodyHtml,       //body html
       buttons,        //button array
       false);         //disable auto dismiss
@@ -242,18 +252,38 @@ define(function (require, exports, module) {
   /**
    * Handle the site run command for an added site
    */
-  function handleNewSite() {
+  function handleNewSite(oldSessionIndex) {
 
     //log that we were called
     console.log('handleNewSite()');
 
-    var ESCAPE_KEY = 27;
+    //assume a new session
+    var isOldSession = false;
 
-    var name_in = {id: 'input-name', type: 'text'};
-    var host_in = {id: 'input-host', type: 'text'};
-    var root_in = {id: 'input-root', type: 'text'};
-    var user_in = {id: 'input-user', type: 'text'};
-    var pass_in = {id: 'input-pass', type: 'password'};
+    //if old session object is passed
+    if (isSet(oldSessionIndex)) {
+
+      //indicate that this is an old session
+      isOldSession = true;
+
+      //log this
+      console.log('Old session presented');
+    }
+
+
+    var name_in = {id: 'input-name', value: '', type: 'text'};
+    var host_in = {id: 'input-host', value: '', type: 'text'};
+    var root_in = {id: 'input-root', value: '', type: 'text'};
+    var user_in = {id: 'input-user', value: '', type: 'text'};
+    var pass_in = {id: 'input-pass', value: '', type: 'password'};
+
+    if (isOldSession) {
+      name_in.value = sessions[oldSessionIndex].name;
+      host_in.value = sessions[oldSessionIndex].host;
+      root_in.value = sessions[oldSessionIndex].root;
+      user_in.value = sessions[oldSessionIndex].user;
+      pass_in.value = sessions[oldSessionIndex].pass;
+    }
 
     //show dialog
     var inputDialog = showNewSiteDialog(name_in, host_in, root_in, user_in, pass_in);
@@ -270,6 +300,7 @@ define(function (require, exports, module) {
     //listen for cancel (modal doesnt have standard id= attribute, it's data-button-id
     $('button[data-button-id="' + Dialog.DIALOG_BTN_CANCEL + '"').click(function () {
 
+      //log that the user wants to close
       console.log('Dialog closed without save');
 
       //close the dialog
@@ -309,15 +340,23 @@ define(function (require, exports, module) {
         pass: pass
       };
 
+      //add to list of known sessions
+      if (isOldSession)
+        sessions.splice(oldSessionIndex, 1);
+
+      sessions.push(session);
+
       osFtpPreferences.set(PREF_SESSION + name, session);
 
       //@TODO, allow for edit of previous site names
 
-      var COMMAND_RUN_SITE_LABEL = name;
-      var COMMAND_RUN_SITE_ID = 'osftp_run_' + name;
+      if (!isOldSession) {
+        var COMMAND_RUN_SITE_LABEL = name;
+        var COMMAND_RUN_SITE_ID = COMMAND_RUN_SITE_BASE + name;
 
-      //register command and add a context menu to create a site
-      regCommandAndAddToContextMenus(COMMAND_RUN_SITE_LABEL, COMMAND_RUN_SITE_ID, handleRunSite, false, COMMAND_NEW_SITE_ID, false);
+        //register command and add a context menu to create a site
+        regCommandAndAddToContextMenus(COMMAND_RUN_SITE_LABEL, COMMAND_RUN_SITE_ID, handleRunSite, false, COMMAND_NEW_SITE_ID, false);
+      }
 
       //ensure we enabled editing of sites
       enableEditSite();
@@ -333,12 +372,16 @@ define(function (require, exports, module) {
     //listen for dialog done
     inputDialog.done(function () {
 
+      //log that the modal is gone
       console.log('Dialog modal is dismissed');
 
     });
 
   }
 
+  /**
+   * Enables the edit command for an added site
+   */
   function enableEditSite() {
 
     //if we don't allow fo editing of our sites
@@ -365,8 +408,107 @@ define(function (require, exports, module) {
     //log that we were called
     console.log('handleEditSite()');
 
+    //show dialog
+    var editDialog = showEditSiteDialog();
+
+    var editSiteIndex;
+
+    //listen for escape key
+    $(document).keyup(function (event) {
+
+      //close if escape key is pressed
+      if (event.which == ESCAPE_KEY)
+        editDialog.close();
+
+    });
+
+    //listen for cancel (modal doesnt have standard id= attribute, it's data-button-id
+    $('button[data-button-id="' + Dialog.DIALOG_BTN_CANCEL + '"').click(function () {
+
+      //log that the user wants to close
+      console.log('Dialog closed without save');
+
+      //close the dialog
+      editDialog.close();
+
+    });
+
+
+    //listen for ok
+    $('button[data-button-id="' + Dialog.DIALOG_BTN_OK + '"').click(function () {
+
+      //get the site that was checked
+      editSiteIndex = $('input[name=' + RADIO_SITE_NAME + ']:checked').val();
+
+      //if no option was choosen
+      if (!isSet(editSiteIndex))
+        console.log('No session was selected');
+
+      //log that we are closing
+      console.log('Dialog closed with save');
+
+      //close the dialog
+      editDialog.close();
+
+    });
+
+
+    //listen for dialog done
+    editDialog.done(function () {
+
+      //log that the modal is gone
+      console.log('Dialog modal is dismissed');
+
+      //if edit site index was set
+      if (isSet(editSiteIndex))
+        CommandManager.execute(COMMAND_NEW_SITE_ID + EXECUTE, editSiteIndex);
+
+    });
+
   }
 
+
+  function showEditSiteDialog() {
+
+    //dialog buttons array
+    var buttons = [
+      {
+        className: Dialog.DIALOG_BTN_CLASS_LEFT,
+        id: Dialog.DIALOG_BTN_CANCEL,
+        text: 'CANCEL'
+      },
+      {
+        className: Dialog.DIALOG_BTN_CLASS_PRIMARY,
+        id: Dialog.DIALOG_BTN_OK,
+        text: 'OK'
+      }
+    ];
+
+
+    //create the body html
+    var bodyHtml = '';
+
+    //init html tag
+    bodyHtml += '<form>';
+
+    //add radio buttons for each session
+    sessions.forEach(function (session, i) {
+      bodyHtml += '<input id="' + session.name + '" value="' + i + '" type="radio" name="' + RADIO_SITE_NAME + '"> ' + session.name;
+      bodyHtml += '<br>';
+    });
+
+    //term html tag
+    bodyHtml += '</form>';
+
+    //show the dialog and return the object
+    return Dialog.showModalDialog(
+      null,           //class
+      'Edit FTP Site', //title
+      bodyHtml,       //body html
+      buttons,        //button array
+      false);         //disable auto dismiss
+
+    }
 
   /**
    * Handler for executing an added site
