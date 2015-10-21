@@ -61,6 +61,7 @@
     );
   }
 
+  //this is required, not sure what it does
   exports.init = init;
 
 
@@ -85,19 +86,13 @@
    */
   function doFtpStdin(file, data) {
 
-    //log input script file
+    //orient to node file system
+    var fs = require('fs');
 
-    var scriptFile = 'createdFtpScript.txt'
-    var fs = require('fs');                       //file system
-    //var ps = require('process');                       //file system
-
-   // console.log('dir is ' + process.cwd());
-
-    var newFile = fs.openSync(file, 'w')
+    //sychronously open, write to, and close a temp script file
+    var newFile = fs.openSync(file, 'w');
     fs.writeSync(newFile, data);
     fs.closeSync(newFile);
-
-
 
     //run ftp with options to suppress auto login and to supply a script file
     var bar = new runProcess('ftp', ['-ns:' + file], function(response) {

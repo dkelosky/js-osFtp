@@ -17,6 +17,7 @@
  * @TODO - hide context menu for ineligible ftp(maybe?) perhaps allow for the ability to ftp a directory???
  * @TODO - generalize add context menu, t/f for devider, menu id to append after
  * @TODO - key bindings in dialog for each ftp, (i.e. set Ctrl + Alt + 1 to ftp to ca11?)
+ * @TODO - allow for ftp get of data
  */
 define(function (require, exports, module) {
   'use strict';
@@ -55,7 +56,9 @@ define(function (require, exports, module) {
 
   var FTP_SCRIPT_FILE_EXTENSION = '.txt';
 
-  var FTP_BINARY_EXTENSIONS = ['class']
+  var FTP_BINARY_EXTENSIONS = ['class'];
+
+  var enableEditSites = false;
 
 
   /**
@@ -79,8 +82,9 @@ define(function (require, exports, module) {
    * @param {Function} handler        Function to be called when the command is clicked
    * @param {Boolean}  addMenuDivider Indicator of whether or not a menu divider should be added
    * @param {String}   afterId        Previouslly added menu where we want to place the new item after
+   * @param {Boolean}  before         Indicator of whether or not a menu divider should be added before or after
    */
-  function regCommandAndAddToContextMenus(label, id, handler, addMenuDivider, afterId) {
+  function regCommandAndAddToContextMenus(label, id, handler, addMenuDivider, afterId, before) {
 
     //function vars
     var contextMenu;
@@ -107,7 +111,7 @@ define(function (require, exports, module) {
       contextMenu.addMenuDivider();
 
     //add menu item for working set
-    addContextMenuItem(contextMenu, ID_EXECUTE, afterId);
+    addContextMenuItem(contextMenu, ID_EXECUTE, afterId, before);
 
 
     /**
@@ -122,17 +126,25 @@ define(function (require, exports, module) {
       contextMenu.addMenuDivider();
 
     //add menu item for project set
-    addContextMenuItem(contextMenu, ID_EXECUTE, afterId);
+    addContextMenuItem(contextMenu, ID_EXECUTE, afterId, before);
 
   }
 
   /**
    * Add an item to a context menu
-   * @param {Object} contextMenu Project or working set context menu object
-   * @param {String} id          Identifier of command to be added
-   * @param {String} afterId     Id where the menu item will be added after
+   * @param {Object}  contextMenu Project or working set context menu object
+   * @param {String}  id          Identifier of command to be added
+   * @param {String}  afterId     Id where the menu item will be added after
+   * @param {Boolean} before      Indicator of whether or not a menu divider should be added before or after
    */
-  function addContextMenuItem(contextMenu, id, afterId) {
+  function addContextMenuItem(contextMenu, id, afterId, before) {
+
+    //assume position is after
+    var position = Menus.AFTER;
+
+    //if before alter position
+    if (before)
+      position = Menus.BEFORE;
 
     //if we don't have an afterId
     if (!isSet(afterId)) {
@@ -148,10 +160,10 @@ define(function (require, exports, module) {
 
       //add to menu after afterId
       contextMenu.addMenuItem(
-        id, //new id
-        null, //no key binding
-        Menus.AFTER, //position
-        AFTER_ID_EXECUTE //after this id
+        id,               //new id
+        null,             //no key binding
+        position,         //position
+        AFTER_ID_EXECUTE  //after this id
       );
     }
 
@@ -168,56 +180,89 @@ define(function (require, exports, module) {
     return false;
   }
 
+  /**
+   * Invokes the new site dialog
+   * @param   {Object}   name_in Object containing an ID and Type
+   * @param   {Object}   host_in Object containing an ID and Type
+   * @param   {Object}   root_in Object containing an ID and Type
+   * @param   {Object}   user_in Object containing an ID and Type
+   * @param   {Object}   pass_in Object containing an ID and Type
+   * @returns {Object}   Diaglog object for created dialog
+   */
+  function showNewSiteDialog(name_in, host_in, root_in, user_in, pass_in) {
 
-  function handleNewSite() {
-
-    var escapeKey = 27;
-
+    //dialog buttons array
     var buttons = [
       {
         className: Dialog.DIALOG_BTN_CLASS_LEFT,
         id: Dialog.DIALOG_BTN_CANCEL,
         text: 'CANCEL'
-  },
+      },
       {
         className: Dialog.DIALOG_BTN_CLASS_PRIMARY,
         id: Dialog.DIALOG_BTN_OK,
         text: 'OK'
-  }
-  ];
+      }
+    ];
 
-    var inputDialog = Dialog.showModalDialog(null, //class
-      'Add New Site', //title
+    //create the body html
+    var bodyHtml =
       'Name:' +
       '<br>' +
-      '<input id="input-name" type="text">' +
+      '<input id="' + name_in.id + '" type="' + name_in.type + '">' +
       '<br>' +
       'Host:' +
       '<br>' +
-      '<input id="input-host" type="text">' +
+      '<input id="' + host_in.id + '" type="' + host_in.type + '">' +
       '<br>' +
       'Root:' +
       '<br>' +
-      '<input id="input-root" type="text">' +
+      '<input id="' + root_in.id + '" type="' + root_in.type + '">' +
       '<br>' +
       '<form>' +
       'User:' +
       '<br>' +
-      '<input id="input-user" type="text">' +
+      '<input id="' + user_in.id + '" type="' + user_in.type + '">' +
       '<br>' +
       'Password:' +
       '<br>' +
-      '<input id="input-pass" type="password">' +
-      '</form>',
-      buttons,
-      false); //disable auto dismiss
+      '<input id="' + pass_in.id + '" type="' + pass_in.type + '">' +
+      '</form>';
+
+    //show the dialog and return the object
+    return Dialog.showModalDialog(
+      null,           //class
+      'Add New Site', //title
+      bodyHtml,       //body html
+      buttons,        //button array
+      false);         //disable auto dismiss
+
+    }
+
+  /**
+   * Handle the site run command for an added site
+   */
+  function handleNewSite() {
+
+    //log that we were called
+    console.log('handleNewSite()');
+
+    var ESCAPE_KEY = 27;
+
+    var name_in = {id: 'input-name', type: 'text'};
+    var host_in = {id: 'input-host', type: 'text'};
+    var root_in = {id: 'input-root', type: 'text'};
+    var user_in = {id: 'input-user', type: 'text'};
+    var pass_in = {id: 'input-pass', type: 'password'};
+
+    //show dialog
+    var inputDialog = showNewSiteDialog(name_in, host_in, root_in, user_in, pass_in);
 
     //listen for escape key
     $(document).keyup(function (event) {
 
-      if (event.which == escapeKey)
-
-      //close if escape
+      //close if escape key is pressed
+      if (event.which == ESCAPE_KEY)
         inputDialog.close();
 
     });
@@ -227,6 +272,7 @@ define(function (require, exports, module) {
 
       console.log('Dialog closed without save');
 
+      //close the dialog
       inputDialog.close();
 
     });
@@ -234,13 +280,15 @@ define(function (require, exports, module) {
     //listen for ok
     $('button[data-button-id="' + Dialog.DIALOG_BTN_OK + '"').click(function () {
 
-      var name = $('#input-name').val();
-      var host = $('#input-host').val();
-      var root = $('#input-root').val();
-      var user = $('#input-user').val();
-      var pass = $('#input-pass').val();
+      var name = $('#' + name_in.id).val();
+      var host = $('#' + host_in.id).val();
+      var root = $('#' + root_in.id).val();
+      var user = $('#' + user_in.id).val();
+      var pass = $('#' + pass_in.id).val();
 
-      console.log('Dialog inputs are: ' +
+      //log input
+      console.log(
+        'Dialog inputs are:  ' +
         'name - ' + name + ', ' +
         'host - ' + host + ', ' +
         'root - ' + root + ', ' +
@@ -252,6 +300,7 @@ define(function (require, exports, module) {
 
       //@TODO, save preferences
 
+      //build session object
       var session = {
         name: name,
         host: host,
@@ -267,11 +316,16 @@ define(function (require, exports, module) {
       var COMMAND_RUN_SITE_LABEL = name;
       var COMMAND_RUN_SITE_ID = 'osftp_run_' + name;
 
-      //add a context menu to create a site
-      regCommandAndAddToContextMenus(COMMAND_RUN_SITE_LABEL, COMMAND_RUN_SITE_ID, handleRunSite, false, COMMAND_NEW_SITE_ID);
+      //register command and add a context menu to create a site
+      regCommandAndAddToContextMenus(COMMAND_RUN_SITE_LABEL, COMMAND_RUN_SITE_ID, handleRunSite, false, COMMAND_NEW_SITE_ID, false);
 
+      //ensure we enabled editing of sites
+      enableEditSite();
+
+      //log that we are saving this session
       console.log('Dialog closed with save');
 
+      //close the dialog
       inputDialog.close();
 
     });
@@ -285,10 +339,42 @@ define(function (require, exports, module) {
 
   }
 
+  function enableEditSite() {
+
+    //if we don't allow fo editing of our sites
+    if (!enableEditSites) {
+
+      //setup labels
+      var COMMAND_EDIT_SITE_LABEL = 'Edit FTP Site...';
+      var COMMAND_EDIT_SITE_ID = 'osftp_edit_site';
+
+      //register command and add a context menu to create a site
+      regCommandAndAddToContextMenus(COMMAND_EDIT_SITE_LABEL, COMMAND_EDIT_SITE_ID, handleEditSite, false, COMMAND_NEW_SITE_ID, true);
+
+      //indicate that this has been enabled
+      enableEditSites = true;
+    }
+  }
+
+
+  /**
+   * Handler for editting an added site
+   */
+  function handleEditSite() {
+
+    //log that we were called
+    console.log('handleEditSite()');
+
+  }
+
+
   /**
    * Handler for executing an added site
    */
   function handleRunSite() {
+
+    //log that we were called
+    console.log('handleRunSite()');
 
     //get the command name
     var name = this.getName();
@@ -323,6 +409,12 @@ define(function (require, exports, module) {
   }
 
 
+  /**
+   * Build ftp script string
+   * @param   {String} itemFullPath Complete file path and file to build for
+   * @param   {Object}   session      Object containing saved information for the session
+   * @returns {String} Return the completed script string
+   */
   function buildFtpScriptForFile(itemFullPath, session) {
 
     //like 'C:' is two characters
@@ -382,18 +474,19 @@ define(function (require, exports, module) {
 
     });
 
-
-    var extension = File.getFileExtension(itemFullPath);
-
-    if (extension == 'class')
+    //if we need to ftp this file as binary, set indicator
+    if (ftpAsBinary(File.getFileExtension(itemFullPath)))
       ftpStdin += 'binary\n';
 
+    //currently we only allow for put
     ftpStdin += 'put ';
     ftpStdin += File.getBaseName(itemFullPath);
     ftpStdin += '\n';
 
+    //quit the script
     ftpStdin += 'quit \n';
 
+    //return completed script string
     return ftpStdin;
 
   }
