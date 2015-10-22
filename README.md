@@ -6,10 +6,6 @@ Use F12 for debugging.
 
 Right click a file (not a directory) in the Working file set or Project set and 'New Ftp Site...'
 
-Markdown | Less | Pretty
---- | --- | ---
-*Still* | `renders` | **nicely**
-1 | 2 | 3
 | Input    | Description                                                                                               |
 | -------- | --------------------------------------------------------------------------------------------------------- |
 | Name     | name for the site                                                                                         |
