@@ -593,7 +593,7 @@ define(function (require, exports, module) {
       osFtpCommon.getSelectedFiles();
 
       //build our ftp script
-      var ftpScript = 'bye\n' //osFtpScripts.buildUploadForFileScript(itemFullPath, site);
+      var ftpScript = 'bye\n' //@ldl5007 osFtpScripts.buildUploadForFileScript(itemFullPath, site);
 
       //get folder of this extension
       var extensionDir = File.getNativeModuleDirectoryPath(module) + '/';
