@@ -9,7 +9,7 @@ Right click a file (not a directory) in the Working file set or Project set and 
 | Input    | Description                                                                                               |
 | -------- | --------------------------------------------------------------------------------------------------------- |
 | Name     | name for the site                                                                                         |
-| Host     | host name, to specify a port use a space between hostname and port without quotes (e.g. hostname port)    |
+| Host     | host name, to specify a port use a space between hostname and port without quotes (e.g. `hostname port`)  |
 | Root     | Remote directory to ftp to                                                                                |
 | User     | User name                                                                                                 |
 | Password | Password                                                                                                  |
