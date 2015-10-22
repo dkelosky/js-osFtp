@@ -28,15 +28,7 @@ define(function (require, exports, module) {
   /**
    * Global variables
    */
-  var ESCAPE_KEY = 27;
-
-  var PREF = 'osftp';
-  var PREF_SITE = 'site_'
-  var PREF_SITES = 'sites_'
-
-  var osFtpPreferences = PreferencesManager.getExtensionPrefs(PREF);
-
-  var FTP_SCRIPT_FILE_EXTENSION = '.txt';
+  var osFtpPreferences = PreferencesManager.getExtensionPrefs(osFtpGlobals.PREF);
 
 
   /**
@@ -109,7 +101,7 @@ define(function (require, exports, module) {
     $(document).keyup(function (event) {
 
       //close if escape key is pressed
-      if (event.which == ESCAPE_KEY)
+      if (event.which ==osFtpGlobals.ESCAPE_KEY)
         editDialog.close();
 
     });
@@ -218,7 +210,7 @@ define(function (require, exports, module) {
     $(document).keyup(function (event) {
 
       //close if escape key is pressed
-      if (event.which == ESCAPE_KEY)
+      if (event.which == osFtpGlobals.ESCAPE_KEY)
         inputDialog.close();
 
     });
@@ -249,11 +241,8 @@ define(function (require, exports, module) {
         //remove site from context menu
         osFtpMenu.removeFromContextMenus(osFtpGlobals.COMMAND_RUN_SITE_ID);
 
-        //set in preferences
-        osFtpPreferences.set(PREF_SITES, osFtpGlobals.sites);
-
-        //save
-        osFtpPreferences.save(PREF_SITES, osFtpGlobals.sites);
+        //set and save this preference
+        setAndSavePref(osFtpGlobals.PREF, osFtpGlobals.PREF_SITES, osFtpGlobals.sites);
 
         //disable editing if we have no more sites
         if (osFtpGlobals.sites.length == 0)
@@ -305,11 +294,9 @@ define(function (require, exports, module) {
       //save this site
       osFtpGlobals.sites.push(site);
 
-      //set in preferences
-      osFtpPreferences.set(PREF_SITES, osFtpGlobals.sites);
+      //set and save this preference
+      setAndSavePref(osFtpGlobals.PREF, osFtpGlobals.PREF_SITES, osFtpGlobals.sites);
 
-      //save
-      osFtpPreferences.save(PREF_SITES, osFtpGlobals.sites);
 
       if (!oldSession) {
         addSite(site);
@@ -335,6 +322,22 @@ define(function (require, exports, module) {
 
     });
 
+  }
+
+
+  /**
+   * Set a preference value with its key and save
+   * @param {String} prefFile Preference file
+   * @param {String} key      Preference key value
+   * @param {Object} value    Any variable type associated with the key
+   */
+  function setAndSavePref(prefFile, key, value) {
+
+      //set in preferences
+      osFtpPreferences.set(key, value);
+
+      //save
+      osFtpPreferences.save(prefFile);
   }
 
 
@@ -409,7 +412,7 @@ define(function (require, exports, module) {
       var extensionDir = File.getNativeModuleDirectoryPath(module) + '/';
 
       //select the file name we want to create
-      var scriptFileName = extensionDir + thisSite.host + FTP_SCRIPT_FILE_EXTENSION;
+      var scriptFileName = extensionDir + thisSite.host + osFtpGlobals.FTP_SCRIPT_FILE_EXTENSION;
 
       //invoke node js to build and run our ftp script file
       osFtpDomain.runFtpCommandStdin(scriptFileName, ftpScript);
@@ -425,7 +428,7 @@ define(function (require, exports, module) {
   function init() {
 
     //get saved preferences
-    osFtpGlobals.sites = osFtpPreferences.get(PREF_SITES);
+    osFtpGlobals.sites = osFtpPreferences.get(osFtpGlobals.PREF_SITES) || [];
 
     //add back saved sites
     osFtpGlobals.sites.forEach(function (site) {

@@ -53,14 +53,15 @@ maxerr: 50, node: true */
       'doFtp', // command name
       doFtp, // command handler function
       false, // this command is synchronous in Node
-      'overal description goes here', [{
-        name: 'scriptFile', // parameters
-        type: 'string',
-        description: 'Fully qualified FTP script file to execute'
+      'overal description goes here',
+      [{
+      name: 'scriptFile', // parameters
+      type: 'string',
+      description: 'Fully qualified FTP script file to execute'
       }], [{
-        name: 'output1', // return values
-        type: 'number',
-        description: 'output 1 desc goes here'
+      name: 'output1', // return values
+      type: 'number',
+      description: 'output 1 desc goes here'
       }]
     );
 
@@ -68,30 +69,27 @@ maxerr: 50, node: true */
      * The last three parameters of each domainManager are documentation for api usage
      */
     domainManager.registerCommand(
-      'ftp', // domain name
-      'doFtpStdin', // command name
-      doFtpStdin, // command handler function
-      false, // this command is synchronous in Node
-      'overal description goes here', [{
-        name: 'scriptFile', // parameters
-        type: 'string',
-        description: 'Fully qualified FTP script file to execute'
+      'ftp',
+      'doFtpStdin',
+      doFtpStdin,
+      false,
+      'overal description goes here',
+      [{
+      name: 'scriptFile',
+      type: 'string',
+      description: 'Fully qualified FTP script file to execute'
       },
-                                       {
-
-                              name: 'scriptFile', // parameters
-        type: 'string',
-        description: 'Fully qualified FTP script file to execute'
-                                       }], [{
-        name: 'output1', // return values
-        type: 'number',
-        description: 'output 1 desc goes here'
+      {
+      name: 'scriptFile',
+      type: 'string',
+      description: 'Fully qualified FTP script file to execute'
+      }], [{
+      name: 'output1',
+      type: 'number',
+      description: 'output 1 desc goes here'
       }]
-    );
-  }
-
-
-
+      );
+    }
 
   /**
    * Command handler
