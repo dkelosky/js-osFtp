@@ -6,6 +6,11 @@ Use F12 for debugging.
 
 Right click a file (not a directory) in the Working file set or Project set and 'New Ftp Site...'
 
+Markdown | Less | Pretty
+--- | --- | ---
+*Still* | `renders` | **nicely**
+1 | 2 | 3
+
 | -------- | --------------------------------------------------------------------------------------------------------- |
 | Name     | name for the site                                                                                         |
 | Host     | host name, to specify a port use a space between hostname and port without quotes (e.g. hostname port)    |
