@@ -5,7 +5,7 @@ define(function (require, exports, module) {
   /**
    * Bracket modules
    */
-  var File = brackets.getModule('file/FileUtils');
+  var FileUtils = brackets.getModule('file/FileUtils');
 
 
   /**
@@ -18,12 +18,56 @@ define(function (require, exports, module) {
    * Exported functions
    */
   exports.buildUploadForFileScript = buildUploadForFileScript;
+  exports.generateUploadScript     = generateUploadScript;
 
 
   /**
    * Global variables
    */
   var FTP_BINARY_EXTENSIONS = ['class'];
+
+
+  function generateUploadScript(listFile, site){
+    console.log("getneratUploadScript");
+
+    var newScript = '';
+
+    console.log(listFile);
+
+    var dirTree = [];
+
+    for (var i = 0; i < listFile.length; i ++){
+      var File = listFile[i];
+      console.log(JSON.stringify(File));
+
+      var tempDir = File.relativeDir;
+      console.log(tempDir);
+
+      tempDir = FileUtils.convertWindowsPathToUnixPath(tempDir);
+      tempDir = tempDir.replace('/',' ');
+      console.log("tempDir: " + tempDir);
+
+      var folderList = tempDir.split(' ');
+      console.log(folderList);
+
+      for (var i = 0; i < folderList.length; i ++){
+        var treeLevel = dirTree[i] || [];
+
+        if (treeLevel.indexOf(folderList[i]) == -1){
+          treeLevel.push(folderList[i]);
+        }
+
+      }
+
+      console.log(dirTree);
+
+
+
+    }
+
+
+    return newScript;
+  }
 
 
   /**
@@ -64,7 +108,7 @@ define(function (require, exports, module) {
     ftpStdin += '\n';
 
     //directory path with always have forward slash seperators, so parse each directory
-    var directory = File.getDirectoryPath(itemFullPath).split('/');
+    var directory = FileUtils.getDirectoryPath(itemFullPath).split('/');
 
     //if the first directory is a windows type drive
     if (directory[WINDOWS_DRIVE_LETTER_OFFSET].length == WINDOWS_DRIVE_LETTER_LEN) {
@@ -92,7 +136,7 @@ define(function (require, exports, module) {
     });
 
     //if we need to ftp this file as binary, set indicator
-    if (ftpAsBinary(File.getFileExtension(itemFullPath)))
+    if (ftpAsBinary(FileUtils.getFileExtension(itemFullPath)))
       ftpStdin += 'binary\n';
 
     //currently we only allow for put
