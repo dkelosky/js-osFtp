@@ -5,15 +5,15 @@ define(function (require, exports, module) {
   /**
    * Bracket modules
    */
-  var ExtensionUtils = brackets.getModule('utils/ExtensionUtils');
-  var NodeDomain = brackets.getModule('utils/NodeDomain');
+  var ExtensionUtils  = brackets.getModule('utils/ExtensionUtils');
+  var NodeDomain      = brackets.getModule('utils/NodeDomain');
 
 
   /**
    * Extension modules
    */
   var osFtpDomain = new NodeDomain('ftp', ExtensionUtils.getModulePath(module, '../node/FtpDomain'));
-  var osFtpDialog   = require('src/dialog');
+  var osFtpDialog = require('src/dialog');
 
 
   /**

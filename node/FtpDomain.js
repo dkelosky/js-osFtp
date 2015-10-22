@@ -118,9 +118,15 @@ maxerr: 50, node: true */
     var fs = require('fs');
 
     //sychronously open, write to, and close a temp script file
+    console.log('Opening file - ' + file);
     var newFile = fs.openSync(file, 'w');
+
+    console.log('Writing file data...');
     fs.writeSync(newFile, data);
+
+    console.log('Closing file...');
     fs.closeSync(newFile);
+    console.log('File closed');
 
     //run ftp with options to suppress auto login and to supply a script file
     var bar = new runProcess('ftp', ['-ns:' + file], function(response, isError) {

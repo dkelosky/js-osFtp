@@ -11,7 +11,7 @@ define(function (require, exports, module) {
   /**
    * Extension modules
    */
-  var Strings = require('strings');
+  var osFtpStrings = require('strings');
 
 
   /**
@@ -34,12 +34,12 @@ define(function (require, exports, module) {
       {
         className: Dialog.DIALOG_BTN_CLASS_LEFT,
         id: Dialog.DIALOG_BTN_CANCEL,
-        text: Strings.DIALOG_CANCEL
+        text: osFtpStrings.DIALOG_CANCEL
       },
       {
         className: Dialog.DIALOG_BTN_CLASS_PRIMARY,
         id: Dialog.DIALOG_BTN_OK,
-        text: Strings.DIALOG_OK
+        text: osFtpStrings.DIALOG_OK
       }
     ];
 
@@ -62,7 +62,7 @@ define(function (require, exports, module) {
     //show the dialog and return the object
     return Dialog.showModalDialog(
       null,                               //class
-      Strings.DIALOG_TITLE_SELECT_SITE,   //title
+      osFtpStrings.DIALOG_TITLE_SELECT_SITE,   //title
       bodyHtml,                           //body html
       buttons,                            //button array
       false);                             //disable auto dismiss
@@ -81,19 +81,19 @@ define(function (require, exports, module) {
     //log this
     console.log('showSiteDialog()');
 
-    var title = Strings.DIALOG_TITLE_ADD_SITE;
+    var title = osFtpStrings.DIALOG_TITLE_ADD_SITE;
 
     //dialog buttons array
     var buttons = [
       {
         className: Dialog.DIALOG_BTN_CLASS_LEFT,
         id: Dialog.DIALOG_BTN_CANCEL,
-        text: Strings.DIALOG_CANCEL
+        text: osFtpStrings.DIALOG_CANCEL
       },
       {
         className: Dialog.DIALOG_BTN_CLASS_PRIMARY,
         id: Dialog.DIALOG_BTN_OK,
-        text: Strings.DIALOG_OK
+        text: osFtpStrings.DIALOG_OK
       }
     ];
 
@@ -104,11 +104,11 @@ define(function (require, exports, module) {
       var deleteButton = {
         className: Dialog.DIALOG_BTN_CLASS_NORMAL,
         id: Dialog.DIALOG_BTN_DONTSAVE,
-        text: Strings.DIALOG_DELETE
+        text: osFtpStrings.DIALOG_DELETE
       }
 
       //adjust title
-      title = Strings.DIALOG_TITLE_EDIT_SITE;
+      title = osFtpStrings.DIALOG_TITLE_EDIT_SITE;
 
       //add a delete button
       buttons.push(deleteButton);

@@ -11,7 +11,7 @@ define(function (require, exports, module) {
   /**
    * Extension modules
    */
-  var osFtpCommon   = require('src/common');
+  var osFtpCommon = require('src/common');
 
 
   /**
