@@ -19,12 +19,12 @@ a script file in the extension directory and executes the script.
 
 Create an FTP script file like (you must specify the keyword 'user' since autologin is supressed):
 
-  op some_host
-  user 
-  some_user 
-  some_password
-  prompt
-  ...
-  quit
+    op some_host
+    user 
+    some_user 
+    some_password
+    prompt
+    ...
+    quit
   
 Right click a file (not a directory) in the Working file set or Project set and 'Run as FTP Script'
