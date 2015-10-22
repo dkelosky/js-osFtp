@@ -10,7 +10,7 @@ Markdown | Less | Pretty
 --- | --- | ---
 *Still* | `renders` | **nicely**
 1 | 2 | 3
-
+| Input    | Description                                                                                               |
 | -------- | --------------------------------------------------------------------------------------------------------- |
 | Name     | name for the site                                                                                         |
 | Host     | host name, to specify a port use a space between hostname and port without quotes (e.g. hostname port)    |
