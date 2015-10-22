@@ -27,7 +27,13 @@ define(function (require, exports, module) {
 
   /**
    * Return list of files
-   * @returns (FilesList) Return file list object
+   * @returns {Array[File]} return array of selected file with the following info:
+   *      File.rootDir      : Root directory of the current open folder
+   *      File.name         : file name
+   *      File.fullDir      : Full directory of the file
+   *      File.fullPath     : Full path of the file
+   *      File.relativeDir  : Directory relative to root directory
+   *      File.relativePath : File path relative to root directory
    */
 
   function getSelectedFiles(){
