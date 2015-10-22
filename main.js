@@ -42,23 +42,16 @@ define(function (require, exports, module) {
 
   var Dialog = brackets.getModule('widgets/Dialogs');
 
-  var COMMAND_RUN_SCRIPT_LABEL = 'Run as FTP Script';
-  var COMMAND_RUN_SCRIPT_ID = 'osftp_run_script';
-
-  var COMMAND_NEW_SITE_LABEL = 'New FTP Site...';
-  var COMMAND_NEW_SITE_ID = 'osftp_new_site';
-
-  var COMMAND_RUN_SITE_BASE = 'osftp_run_';
-
-  var COMMAND_EDIT_SITE_ID = 'osftp_edit_site';
+  var COMMAND_RUN_SCRIPT_ID = 'dkelosky.osftp.osftp_run_script';
+  var COMMAND_NEW_SITE_ID = 'dkelosky.osftp.osftp_new_site';
+  var COMMAND_RUN_SITE_BASE_ID = 'dkelosky.osftp.osftp_run_';
+  var COMMAND_EDIT_SITE_ID = 'dkelosky.osftp.osftp_edit_site';
 
   var PREF = 'osftp';
   var PREF_SITE = 'site_'
   var PREF_SITES = 'sites_'
 
   var osFtpPreferences = PreferencesManager.getExtensionPrefs(PREF);
-
-  var EXECUTE = '_execute';
 
   var FTP_SCRIPT_FILE_EXTENSION = '.txt';
 
@@ -79,10 +72,10 @@ define(function (require, exports, module) {
   AppInit.appReady(function () {
 
     //register command and add context menu to run a script
-    regCommandAndAddToContextMenus(COMMAND_RUN_SCRIPT_LABEL, COMMAND_RUN_SCRIPT_ID, handleRunScript, true);
+    regCommandAndAddToContextMenus(Strings.COMMAND_RUN_SCRIPT_LABEL, COMMAND_RUN_SCRIPT_ID, handleRunScript, true);
 
     //register command and add a context menu to create a site
-    regCommandAndAddToContextMenus(COMMAND_NEW_SITE_LABEL, COMMAND_NEW_SITE_ID, handleNewSite, false);
+    regCommandAndAddToContextMenus(Strings.COMMAND_NEW_SITE_LABEL, COMMAND_NEW_SITE_ID, handleNewOrEditSite, false);
 
     //get saved preferences
     sites = osFtpPreferences.get(PREF_SITES);
@@ -108,22 +101,21 @@ define(function (require, exports, module) {
 
     //function vars
     var contextMenu;
-    var ID_EXECUTE = id + EXECUTE;
 
     //remove from the working set
     contextMenu = Menus.getContextMenu(Menus.ContextMenuIds.WORKING_SET_CONTEXT_MENU);
-    contextMenu.removeMenuItem(ID_EXECUTE);
+    contextMenu.removeMenuItem(id);
 
     //remove from the project set
     contextMenu = Menus.getContextMenu(Menus.ContextMenuIds.PROJECT_MENU);
-    contextMenu.removeMenuItem(ID_EXECUTE);
+    contextMenu.removeMenuItem(id);
 
   }
 
   /**
    * Register a command and add to the two context menus
    * @param {String}   label          Label to appear in the menu
-   * @param {String}   id             Base id for this command, registered by appending EXECUTE constant
+   * @param {String}   id             Base id for this command
    * @param {Function} handler        Function to be called when the command is clicked
    * @param {Boolean}  addMenuDivider Indicator of whether or not a menu divider should be added
    * @param {String}   afterId        Previouslly added menu where we want to place the new item after
@@ -133,7 +125,6 @@ define(function (require, exports, module) {
 
     //function vars
     var contextMenu;
-    var ID_EXECUTE = id + EXECUTE;
 
 
     /**
@@ -141,7 +132,7 @@ define(function (require, exports, module) {
      */
 
     //register working set command
-    CommandManager.register(label, ID_EXECUTE, handler);
+    CommandManager.register(label, id, handler);
 
 
     /**
@@ -156,7 +147,7 @@ define(function (require, exports, module) {
       contextMenu.addMenuDivider();
 
     //add menu item for working set
-    addContextMenuItem(contextMenu, ID_EXECUTE, afterId, before);
+    addContextMenuItem(contextMenu, id, afterId, before);
 
 
     /**
@@ -171,7 +162,7 @@ define(function (require, exports, module) {
       contextMenu.addMenuDivider();
 
     //add menu item for project set
-    addContextMenuItem(contextMenu, ID_EXECUTE, afterId, before);
+    addContextMenuItem(contextMenu, id, afterId, before);
 
   }
 
@@ -200,15 +191,12 @@ define(function (require, exports, module) {
       //else we were given an afterId
     } else {
 
-      //orient to id we want to add after
-      var AFTER_ID_EXECUTE = afterId + EXECUTE;
-
       //add to menu after afterId
       contextMenu.addMenuItem(
         id,               //new id
         null,             //no key binding
         position,         //position
-        AFTER_ID_EXECUTE  //after this id
+        afterId  //after this id
       );
     }
 
@@ -225,31 +213,26 @@ define(function (require, exports, module) {
     return false;
   }
 
+
   /**
-   * Invokes the site dialog
-   * @param   {Object}   name_in Object containing an ID and Type
-   * @param   {Object}   host_in Object containing an ID and Type
-   * @param   {Object}   root_in Object containing an ID and Type
-   * @param   {Object}   user_in Object containing an ID and Type
-   * @param   {Object}   pass_in Object containing an ID and Type
-   * @returns {Object}   Diaglog object for created dialog
+   * Shows the site edit dialog
+   * @param   {Object} inputs   Array of input fields in html used to build the dialog
+   * @param   {Boolean} existing Indicates whether or not this is an existing site
+   * @returns {[[Type]]} [[Description]]
    */
   function showSiteDialog(inputs, existing) {
 
     //log this
     console.log('showSiteDialog()');
 
-    var titleNewPrefix = 'New';
-    var titleEditPrefix = 'Edit';
-    var titleBase = 'FTP Site';
-    var title = titleNewPrefix + ' ' + titleBase;
+    var title = Strings.DIALOG_TITLE_ADD_SITE;
 
     //dialog buttons array
     var buttons = [
       {
         className: Dialog.DIALOG_BTN_CLASS_LEFT,
         id: Dialog.DIALOG_BTN_CANCEL,
-        text: 'CANCEL'
+        text: Strings.DIALOG_CANCEL
       },
       {
         className: Dialog.DIALOG_BTN_CLASS_PRIMARY,
@@ -258,21 +241,23 @@ define(function (require, exports, module) {
       }
     ];
 
-    //delete button if we are going are showing an existing site
-    var deleteButton = {
-        className: Dialog.DIALOG_BTN_CLASS_NORMAL,
-        id: Dialog.DIALOG_BTN_DONTSAVE,
-        text: 'DELETE'
-    }
-
+    //if existing site
     if (existing) {
 
-      title = titleEditPrefix + ' ' + titleBase;
+      //delete button if we are going are showing an existing site
+      var deleteButton = {
+        className: Dialog.DIALOG_BTN_CLASS_NORMAL,
+        id: Dialog.DIALOG_BTN_DONTSAVE,
+        text: Strings.DIALOG_DELETE
+      }
 
+      //adjust title
+      title = Strings.DIALOG_TITLE_EDIT_SITE;
+
+      //add a delete button
       buttons.push(deleteButton);
 
     }
-
 
     //create the body html
     var bodyHtml = '';
@@ -302,13 +287,16 @@ define(function (require, exports, module) {
 
     }
 
+
+
   /**
-   * Handle the site run command for an added site
+   * Handler function for when a new site is added or an existing site is updated
+   * @param {Number} oldSiteIndex Index into sites array
    */
-  function handleNewSite(oldSessionIndex) {
+  function handleNewOrEditSite(oldSiteIndex) {
 
     //log that we were called
-    console.log('handleNewSite()');
+    console.log('handleNewOrEditSite()');
 
     //assume a new site
     var oldSession = false;
@@ -320,7 +308,7 @@ define(function (require, exports, module) {
     var passVal = '';
 
     //if old site object is passed
-    if (isSet(oldSessionIndex)) {
+    if (isSet(oldSiteIndex)) {
 
       //log this
       console.log('Old site presented');
@@ -328,20 +316,22 @@ define(function (require, exports, module) {
       //indicate that this is an old site
       oldSession = true;
 
-      nameVal = sites[oldSessionIndex].name;
-      hostVal = sites[oldSessionIndex].host;
-      rootVal = sites[oldSessionIndex].root;
-      userVal = sites[oldSessionIndex].user;
-      passVal = sites[oldSessionIndex].pass;
+      nameVal = sites[oldSiteIndex].name;
+      hostVal = sites[oldSiteIndex].host;
+      rootVal = sites[oldSiteIndex].root;
+      userVal = sites[oldSiteIndex].user;
+      passVal = sites[oldSiteIndex].pass;
 
     }
 
+    //build input html ids
     var name_id = 'input-name';
     var host_id = 'input-host';
     var root_id = 'input-root';
     var user_id = 'input-user';
     var pass_id = 'input-pass';
 
+    //build html input object
     var inputFields = [
       {label: 'Name:', id: name_id, value: nameVal, type: 'text'},
       {label: 'Host:', id: host_id, value: hostVal, type: 'text'},
@@ -380,10 +370,10 @@ define(function (require, exports, module) {
       $('button[data-button-id="' + Dialog.DIALOG_BTN_DONTSAVE + '"').click(function () {
 
         //setup labels
-        var COMMAND_RUN_SITE_ID = COMMAND_RUN_SITE_BASE + sites[oldSessionIndex].name;
+        var COMMAND_RUN_SITE_ID = COMMAND_RUN_SITE_BASE_ID + sites[oldSiteIndex].name;
 
         //remove old site from array
-        sites.splice(oldSessionIndex, 1);
+        sites.splice(oldSiteIndex, 1);
 
         //remove site from context menu
         removeFromContextMenus(COMMAND_RUN_SITE_ID);
@@ -428,8 +418,6 @@ define(function (require, exports, module) {
 
       //@TODO, validate name is not already used
 
-      //@TODO, save preferences
-
       //build site object
       var site = {
         name: name,
@@ -441,7 +429,7 @@ define(function (require, exports, module) {
 
       //if old site, delete its contents
       if (oldSession)
-        sites.splice(oldSessionIndex, 1);
+        sites.splice(oldSiteIndex, 1);
 
       //save this site
       sites.push(site);
@@ -478,11 +466,16 @@ define(function (require, exports, module) {
 
   }
 
+
+  /**
+   * Add a site by registering the site as a command and adding it to the context menus
+   * @param {Object} site Site object containing information about this site
+   */
   function addSite(site) {
 
     //setup labels
     var COMMAND_RUN_SITE_LABEL = site.name;
-    var COMMAND_RUN_SITE_ID = COMMAND_RUN_SITE_BASE + site.name;
+    var COMMAND_RUN_SITE_ID = COMMAND_RUN_SITE_BASE_ID + site.name;
 
     //register command and add a context menu to create a site
     regCommandAndAddToContextMenus(COMMAND_RUN_SITE_LABEL, COMMAND_RUN_SITE_ID, handleRunSite, false, COMMAND_NEW_SITE_ID, false);
@@ -495,12 +488,8 @@ define(function (require, exports, module) {
    */
   function enableEditSite() {
 
-    //setup labels
-    var COMMAND_EDIT_SITE_LABEL = 'Edit FTP Site...';
-    var COMMAND_EDIT_SITE_ID = 'osftp_edit_site';
-
     //register command and add a context menu to create a site
-    regCommandAndAddToContextMenus(COMMAND_EDIT_SITE_LABEL, COMMAND_EDIT_SITE_ID, handleEditSite, false, COMMAND_NEW_SITE_ID, true);
+    regCommandAndAddToContextMenus(Strings.COMMAND_EDIT_SITE_LABEL, COMMAND_EDIT_SITE_ID, handleEditSite, false, COMMAND_NEW_SITE_ID, true);
 
   }
 
@@ -577,7 +566,7 @@ define(function (require, exports, module) {
 
       //if edit site index was set
       if (isSet(editSiteIndex))
-        CommandManager.execute(COMMAND_NEW_SITE_ID + EXECUTE, editSiteIndex);
+        CommandManager.execute(COMMAND_NEW_SITE_ID, editSiteIndex);
 
     });
 
@@ -591,12 +580,12 @@ define(function (require, exports, module) {
       {
         className: Dialog.DIALOG_BTN_CLASS_LEFT,
         id: Dialog.DIALOG_BTN_CANCEL,
-        text: 'CANCEL'
+        text: Strings.DIALOG_CANCEL
       },
       {
         className: Dialog.DIALOG_BTN_CLASS_PRIMARY,
         id: Dialog.DIALOG_BTN_OK,
-        text: 'OK'
+        text: Strings.DIALOG_OK
       }
     ];
 
@@ -618,11 +607,11 @@ define(function (require, exports, module) {
 
     //show the dialog and return the object
     return Dialog.showModalDialog(
-      null,           //class
-      'Edit FTP Site', //title
-      bodyHtml,       //body html
-      buttons,        //button array
-      false);         //disable auto dismiss
+      null,                               //class
+      Strings.DIALOG_TITLE_SELECT_SITE,   //title
+      bodyHtml,                           //body html
+      buttons,                            //button array
+      false);                             //disable auto dismiss
 
     }
 
@@ -680,11 +669,12 @@ define(function (require, exports, module) {
   }
 
 
+
   /**
-   * Build ftp script string
-   * @param   {String} itemFullPath Complete file path and file to build for
-   * @param   {Object}   site      Object containing saved information for the site
-   * @returns {String} Return the completed script string
+   * Build an FTP script based on the file choosen and the site selected
+   * @param   {String} itemFullPath Full path to the item that we want to FTP
+   * @param   {Object} site         Site object containing information about the site to use
+   * @returns {String} Completed FTP script
    */
   function buildFtpScriptForFile(itemFullPath, site) {
 
@@ -806,7 +796,7 @@ define(function (require, exports, module) {
 
   /**
    * Shows the failure dialog
-   * @returns {Object} Dialog object after open
+   * @returns {Object} data Data to populate into the error dialog
    */
   function showFailDialog(data) {
 
