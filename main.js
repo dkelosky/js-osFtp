@@ -24,19 +24,14 @@ define(function (require, exports, module) {
 
   var PreferencesManager = brackets.getModule('preferences/PreferencesManager');
 
-  var NodeDomain = brackets.getModule('utils/NodeDomain');
-
-  var ExtensionUtils = brackets.getModule('utils/ExtensionUtils');
-
 
   /**
    * Extension modules
    */
   var Strings = require('strings');
 
-  var osFtpDomain = new NodeDomain('ftp', ExtensionUtils.getModulePath(module, 'node/FtpDomain'));
-
   var osFtpDialog   = require('src/dialog');
+  var osFtpDomain   = require('src/domain');
   var osFtpCommon   = require('src/common');
   var osFtpMenu     = require('src/menu');
   var osFtpScripts  = require('src/scripts');
@@ -430,7 +425,7 @@ define(function (require, exports, module) {
       var scriptFileName = extensionDir + thisSite.host + FTP_SCRIPT_FILE_EXTENSION;
 
       //invoke node js to build and run our ftp script file
-      runFtpCommandStdin(scriptFileName, ftpScript);
+      osFtpDomain.runFtpCommandStdin(scriptFileName, ftpScript);
 
     }
 
@@ -456,59 +451,10 @@ define(function (require, exports, module) {
     } else {
 
       //invoke node js to run our ftp script file
-      runFtpCommand(Project.getSelectedItem().fullPath);
+      osFtpDomain.runFtpCommand(Project.getSelectedItem().fullPath);
 
     }
   }
 
-
-  /**
-   * Function wrapper to invoke our domain function
-   * @param {string} scriptFile File to use as an ftp script file
-   */
-  function runFtpCommand(scriptFile) {
-
-    //invoke domain function
-    osFtpDomain.exec('doFtp', scriptFile)
-
-    //listen for done
-    .done(
-      function () {
-        console.log('Completed: doFtp(\n' + scriptFile + ');');
-      }
-    )
-
-    //listen for faile
-    .fail(
-      function () {
-        console.error('Error in: doFtp(\n' + scriptFile + ');');
-      }
-    )
-  }
-
-  /**
-   * Function wrapper to invoke our domain function
-   * @param {string} scriptFile File to use as an ftp script file
-   */
-  function runFtpCommandStdin(file, data) {
-
-    //invoke domain function
-    osFtpDomain.exec('doFtpStdin', file, data)
-
-    //listen for done
-    .done(
-      function () {
-        console.log('Completed: doFtpStdin(\n' + file + ', \n' + data + ');');
-      }
-    )
-
-    //listen for faile
-    .fail(
-      function () {
-        console.error('Error in: doFtpStdin(\n' + file + ', \n' + data + ');');
-        osFtpDialog.showFailDialog('Failure information goes here...');
-      }
-    )
-  }
 
 });
