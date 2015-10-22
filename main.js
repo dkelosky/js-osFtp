@@ -1,24 +1,10 @@
 /**
  * @TODO - Package and publish
- * @TODO - NLS, define strings in extenal file
- * @TODO - proper file structure (e.g. .html goes in /templates)
- * @TODO - common strcuture
- * @TODO - comment / doc
- * @TODO - error reporting
- * @TODO - settings
- * @TODO - add debugging
- * @TODO - add dialog for errors
- * @TODO - allow for automatically building of FTP command syntax and prompt user for usename and password
- * @TODO - error check handling, don't allow to execut a director as an ftp script for example
- * @TODO - add config file for default / editable transfer types (e.g. ascii, binary, ...)
- * @TODO - separate into multiple pieces
- * @TODO - clean dialog UI
- * @TODO - what goes in app init, can some things be done earlier?
- * @TODO - hide context menu for ineligible ftp(maybe?) perhaps allow for the ability to ftp a directory???
- * @TODO - generalize add context menu, t/f for devider, menu id to append after
- * @TODO - key bindings in dialog for each ftp, (i.e. set Ctrl + Alt + 1 to ftp to ca11?)
+ * @TODO - add error reporting
+ * @TODO - add more extension checking and set transfer type accordingly (e.g. ascii, binary, ...)
+ * @TODO - allow for ftp of directory
+ * @TODO - allow for key bindings
  * @TODO - allow for ftp get of data
- * @TODO - allow site delete
  */
 define(function (require, exports, module) {
   'use strict';
