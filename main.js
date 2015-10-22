@@ -27,11 +27,6 @@ define(function (require, exports, module) {
 
 
   /**
-   * Global variables
-   */
-
-
-  /**
    * Initialization complete
    */
   AppInit.appReady(function () {
