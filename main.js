@@ -13,8 +13,8 @@ define(function (require, exports, module) {
   /**
    * Bracket modules
    */
-  var AppInit             = brackets.getModule('utils/AppInit');
-  var CommandManager      = brackets.getModule('command/CommandManager');
+  var AppInit        = brackets.getModule('utils/AppInit');
+  var CommandManager = brackets.getModule('command/CommandManager');
 
 
   /**
