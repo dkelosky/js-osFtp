@@ -28,6 +28,8 @@ define(function (require, exports, module) {
   var ExtensionUtils = brackets.getModule('utils/ExtensionUtils');
   var osFtpDomain = new NodeDomain('ftp', ExtensionUtils.getModulePath(module, 'node/FtpDomain'));
 
+  var Strings = require('strings');
+
   var CommandManager = brackets.getModule('command/CommandManager');
   var Menus = brackets.getModule('command/Menus');
 
@@ -252,7 +254,7 @@ define(function (require, exports, module) {
       {
         className: Dialog.DIALOG_BTN_CLASS_PRIMARY,
         id: Dialog.DIALOG_BTN_OK,
-        text: 'OK'
+        text: Strings.DIALOG_OK
       }
     ];
 
