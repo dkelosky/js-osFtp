@@ -101,7 +101,7 @@ maxerr: 50, node: true */
     console.log('Input file specified was: ' + ftpScriptFile);
 
     //run ftp with options to suppress auto login and to supply a script file
-    var bar = new runProcess('ftp', ['-ns:' + ftpScriptFile], function(response) {
+    var bar = new runProcess('ftp', ['-ins:' + ftpScriptFile], function(response) {
       console.log('Command response was: \n' + response)
     });
   }
@@ -127,7 +127,7 @@ maxerr: 50, node: true */
     console.log('File closed');
 
     //run ftp with options to suppress auto login and to supply a script file
-    var bar = new runProcess('ftp', ['-ns:' + file], function(response, isError) {
+    var bar = new runProcess('ftp', ['-ins:' + file], function(response, isError) {
 
       if (isError) {
         console.log('Error response was: \n' + response)
@@ -137,6 +137,7 @@ maxerr: 50, node: true */
       else {
         console.log('Command response was: \n' + response)
       }
+
     });
   }
 

@@ -29,20 +29,24 @@ define(function (require, exports, module) {
    */
   function runFtpCommand(scriptFile) {
 
+    //log input
+    console.log('doFtp(\n' + scriptFile + ');');
+
     //invoke domain function
     osFtpDomain.exec('doFtp', scriptFile)
 
     //listen for done
     .done(
       function () {
-        console.log('Completed: doFtp(\n' + scriptFile + ');');
+        console.log('Completed via .done');
       }
     )
 
     //listen for faile
     .fail(
       function () {
-        console.error('Error in: doFtp(\n' + scriptFile + ');');
+        console.error('Completed via .fail');
+        osFtpDialog.showFailDialog('Failure information goes here...');
       }
     )
   }
@@ -54,20 +58,23 @@ define(function (require, exports, module) {
    */
   function runFtpCommandStdin(file, data) {
 
+    //log input
+    console.log('doFtpStdin(\n' + file + ', \n' + data + ');');
+
     //invoke domain function
     osFtpDomain.exec('doFtpStdin', file, data)
 
     //listen for done
     .done(
       function () {
-        console.log('Completed: doFtpStdin(\n' + file + ', \n' + data + ');');
+        console.log('Completed via .done');
       }
     )
 
     //listen for faile
     .fail(
       function () {
-        console.error('Error in: doFtpStdin(\n' + file + ', \n' + data + ');');
+        console.error('Completed via .fail');
         osFtpDialog.showFailDialog('Failure information goes here...');
       }
     )
