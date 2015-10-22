@@ -16,7 +16,6 @@ define(function (require, exports, module) {
   var Dialog = brackets.getModule('widgets/Dialogs');
 
   var CommandManager = brackets.getModule('command/CommandManager');
-  var Menus = brackets.getModule('command/Menus');
 
   var AppInit = brackets.getModule('utils/AppInit');
   var File = brackets.getModule('file/FileUtils');
@@ -37,7 +36,9 @@ define(function (require, exports, module) {
 
   var osFtpDomain = new NodeDomain('ftp', ExtensionUtils.getModulePath(module, 'node/FtpDomain'));
 
-  var osFtpDialog = require('src/dialog');
+  var osFtpDialog   = require('src/dialog');
+  var osFtpCommon   = require('src/common');
+  var osFtpMenu     = require('src/menu');
 
 
   /**
@@ -71,10 +72,12 @@ define(function (require, exports, module) {
   AppInit.appReady(function () {
 
     //register command and add context menu to run a script
-    regCommandAndAddToContextMenus(Strings.COMMAND_RUN_SCRIPT_LABEL, COMMAND_RUN_SCRIPT_ID, handleRunScript, true);
+    CommandManager.register(Strings.COMMAND_RUN_SCRIPT_LABEL, COMMAND_RUN_SCRIPT_ID, handleRunScript);
+    osFtpMenu.addToContextMenus(COMMAND_RUN_SCRIPT_ID, true);
 
     //register command and add a context menu to create a site
-    regCommandAndAddToContextMenus(Strings.COMMAND_NEW_SITE_LABEL, COMMAND_NEW_SITE_ID, handleNewOrEditSite, false);
+    CommandManager.register(Strings.COMMAND_NEW_SITE_LABEL, COMMAND_NEW_SITE_ID, handleNewOrEditSite);
+    osFtpMenu.addToContextMenus(COMMAND_NEW_SITE_ID, false);
 
     //get saved preferences
     sites = osFtpPreferences.get(PREF_SITES);
@@ -90,129 +93,6 @@ define(function (require, exports, module) {
       enableEditSite();
 
   });
-
-
-  /**
-   * Remove items from the context menu
-   * @param {String} id Id to remove from the context menu
-   */
-  function removeFromContextMenus(id) {
-
-    //function vars
-    var contextMenu;
-
-    //remove from the working set
-    contextMenu = Menus.getContextMenu(Menus.ContextMenuIds.WORKING_SET_CONTEXT_MENU);
-    contextMenu.removeMenuItem(id);
-
-    //remove from the project set
-    contextMenu = Menus.getContextMenu(Menus.ContextMenuIds.PROJECT_MENU);
-    contextMenu.removeMenuItem(id);
-
-  }
-
-  /**
-   * Register a command and add to the two context menus
-   * @param {String}   label          Label to appear in the menu
-   * @param {String}   id             Base id for this command
-   * @param {Function} handler        Function to be called when the command is clicked
-   * @param {Boolean}  addMenuDivider Indicator of whether or not a menu divider should be added
-   * @param {String}   afterId        Previouslly added menu where we want to place the new item after
-   * @param {Boolean}  before         Indicator of whether or not a menu divider should be added before or after
-   */
-  function regCommandAndAddToContextMenus(label, id, handler, addMenuDivider, afterId, before) {
-
-    //function vars
-    var contextMenu;
-
-
-    /**
-     * Register the command
-     */
-
-    //register working set command
-    CommandManager.register(label, id, handler);
-
-
-    /**
-     * Add to working set
-     */
-
-    //get menu item for working set
-    contextMenu = Menus.getContextMenu(Menus.ContextMenuIds.WORKING_SET_CONTEXT_MENU);
-
-    //add menu divider if requested
-    if (addMenuDivider)
-      contextMenu.addMenuDivider();
-
-    //add menu item for working set
-    addContextMenuItem(contextMenu, id, afterId, before);
-
-
-    /**
-     * Add to project set
-     */
-
-    //get menu item for project set
-    contextMenu = Menus.getContextMenu(Menus.ContextMenuIds.PROJECT_MENU);
-
-    //add menu divider if requested
-    if (addMenuDivider)
-      contextMenu.addMenuDivider();
-
-    //add menu item for project set
-    addContextMenuItem(contextMenu, id, afterId, before);
-
-  }
-
-  /**
-   * Add an item to a context menu
-   * @param {Object}  contextMenu Project or working set context menu object
-   * @param {String}  id          Identifier of command to be added
-   * @param {String}  afterId     Id where the menu item will be added after
-   * @param {Boolean} before      Indicator of whether or not a menu divider should be added before or after
-   */
-  function addContextMenuItem(contextMenu, id, afterId, before) {
-
-    //assume position is after
-    var position = Menus.AFTER;
-
-    //if before alter position
-    if (before)
-      position = Menus.BEFORE;
-
-    //if we don't have an afterId
-    if (!isSet(afterId)) {
-
-      //add to menu with defaults
-      contextMenu.addMenuItem(id);
-
-      //else we were given an afterId
-    } else {
-
-      //add to menu after afterId
-      contextMenu.addMenuItem(
-        id,               //new id
-        null,             //no key binding
-        position,         //position
-        afterId  //after this id
-      );
-    }
-
-  }
-
-  /**
-   * Determines whether or not a variable exists, is null, or contains no data
-   * @param   {String} variable Any variable type
-   * @returns {Boolean}  Returns true if the variable is defined
-   */
-  function isSet(variable) {
-    if (variable != 'undefined' && variable != null && variable != '')
-      return true;
-    return false;
-  }
-
-
 
 
   /**
@@ -234,7 +114,7 @@ define(function (require, exports, module) {
     var passVal = '';
 
     //if old site object is passed
-    if (isSet(oldSiteIndex)) {
+    if (osFtpCommon.isSet(oldSiteIndex)) {
 
       //log this
       console.log('Old site presented');
@@ -302,7 +182,7 @@ define(function (require, exports, module) {
         sites.splice(oldSiteIndex, 1);
 
         //remove site from context menu
-        removeFromContextMenus(COMMAND_RUN_SITE_ID);
+        osFtpMenu.removeFromContextMenus(COMMAND_RUN_SITE_ID);
 
         //set in preferences
         osFtpPreferences.set(PREF_SITES, sites);
@@ -404,7 +284,8 @@ define(function (require, exports, module) {
     var COMMAND_RUN_SITE_ID = COMMAND_RUN_SITE_BASE_ID + site.name;
 
     //register command and add a context menu to create a site
-    regCommandAndAddToContextMenus(COMMAND_RUN_SITE_LABEL, COMMAND_RUN_SITE_ID, handleRunSite, false, COMMAND_NEW_SITE_ID, false);
+    CommandManager.register(COMMAND_RUN_SITE_LABEL, COMMAND_RUN_SITE_ID, handleRunSite);
+    osFtpMenu.addToContextMenus(COMMAND_RUN_SITE_ID, false, COMMAND_NEW_SITE_ID, false);
 
   }
 
@@ -415,7 +296,8 @@ define(function (require, exports, module) {
   function enableEditSite() {
 
     //register command and add a context menu to create a site
-    regCommandAndAddToContextMenus(Strings.COMMAND_EDIT_SITE_LABEL, COMMAND_EDIT_SITE_ID, handleEditSite, false, COMMAND_NEW_SITE_ID, true);
+    CommandManager.register(Strings.COMMAND_EDIT_SITE_LABEL, COMMAND_EDIT_SITE_ID, handleEditSite);
+    osFtpMenu.addToContextMenus(COMMAND_EDIT_SITE_ID, false, COMMAND_NEW_SITE_ID, true);
 
   }
 
@@ -426,7 +308,7 @@ define(function (require, exports, module) {
   function disableEditSite() {
 
     //register command and add a context menu to create a site
-    removeFromContextMenus(COMMAND_EDIT_SITE_ID);
+    osFtpMenu.removeFromContextMenus(COMMAND_EDIT_SITE_ID);
 
   }
 
@@ -475,7 +357,7 @@ define(function (require, exports, module) {
       editSiteIndex = $('input[name=' + RADIO_SITE_NAME + ']:checked').val();
 
       //if no option was choosen
-      if (!isSet(editSiteIndex))
+      if (!osFtpCommon.isSet(editSiteIndex))
         console.log('No site was selected');
 
       //log that we are closing
@@ -494,7 +376,7 @@ define(function (require, exports, module) {
       console.log('Dialog modal is dismissed');
 
       //if edit site index was set
-      if (isSet(editSiteIndex))
+      if (osFtpCommon.isSet(editSiteIndex))
         CommandManager.execute(COMMAND_NEW_SITE_ID, editSiteIndex);
 
     });
@@ -612,7 +494,7 @@ define(function (require, exports, module) {
     directory.forEach(function (dir) {
 
       //while the directory appears valid
-      if (isSet(dir)) {
+      if (osFtpCommon.isSet(dir)) {
 
         //alter local directory to the file we are ftp'ing
         ftpStdin += 'lcd ';

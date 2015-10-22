@@ -1,0 +1,16 @@
+op 
+user
+
+
+cd 
+lcd C:\
+lcd Users
+lcd KELDA16
+lcd AppData
+lcd Roaming
+lcd Brackets
+lcd extensions
+lcd user
+lcd osFtp
+put main.js
+quit 
