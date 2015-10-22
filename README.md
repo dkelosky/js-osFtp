@@ -1,8 +1,10 @@
 # js-osFtp
-Brackets extension using OS ftp service.  Native OS FTP services are more robust and work well when other extensions fall short, 
-for example, not existing Bracket's FTP extension can FTP propertly to and from z/OS.
 
-Use F12 for debugging.
+This Brackets extension uses native OS services for FTP.  Native OS FTP services are more robust and work well when other extensions fall short, 
+for example, at the time this was created, no existing Bracket's FTP extension could propertly FTP to and from z/OS.
+
+--- 
+## FTP Files to a Remote Destiniation
 
 Right click a file (not a directory) in the Working file set or Project set and 'New Ftp Site...'
 
@@ -17,7 +19,9 @@ Right click a file (not a directory) in the Working file set or Project set and 
 Right click a file (not a directory) in the Working file set or Project set and select the site you added.  This builds
 a script file in the extension directory and executes the script.
 
-- OR -
+---
+
+## Run Your Own FTP Script
 
 Create an FTP script file like (you must specify the keyword 'user' since autologin is supressed):
 
