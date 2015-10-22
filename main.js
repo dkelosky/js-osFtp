@@ -23,12 +23,11 @@
 define(function (require, exports, module) {
   'use strict';
 
-  //these map to folders in http://brackets.io/docs (e.g. see utils/NodeDomain)
-  var NodeDomain = brackets.getModule('utils/NodeDomain');
-  var ExtensionUtils = brackets.getModule('utils/ExtensionUtils');
-  var osFtpDomain = new NodeDomain('ftp', ExtensionUtils.getModulePath(module, 'node/FtpDomain'));
 
-  var Strings = require('strings');
+  /**
+   * Bracket modules
+   */
+  var Dialog = brackets.getModule('widgets/Dialogs');
 
   var CommandManager = brackets.getModule('command/CommandManager');
   var Menus = brackets.getModule('command/Menus');
@@ -40,8 +39,24 @@ define(function (require, exports, module) {
 
   var PreferencesManager = brackets.getModule('preferences/PreferencesManager');
 
-  var Dialog = brackets.getModule('widgets/Dialogs');
+  var NodeDomain = brackets.getModule('utils/NodeDomain');
 
+  var ExtensionUtils = brackets.getModule('utils/ExtensionUtils');
+
+
+  /**
+   * Extension modules
+   */
+  var Strings = require('strings');
+
+  var osFtpDomain = new NodeDomain('ftp', ExtensionUtils.getModulePath(module, 'node/FtpDomain'));
+
+  var osFtpDialog = require('src/dialog');
+
+
+  /**
+   * Global variables
+   */
   var COMMAND_RUN_SCRIPT_ID = 'dkelosky.osftp.osftp_run_script';
   var COMMAND_NEW_SITE_ID = 'dkelosky.osftp.osftp_new_site';
   var COMMAND_RUN_SITE_BASE_ID = 'dkelosky.osftp.osftp_run_';
@@ -62,8 +77,6 @@ define(function (require, exports, module) {
   var sites = [];
 
   var ESCAPE_KEY = 27;
-
-  var RADIO_SITE_NAME = 'site';
 
 
   /**
@@ -214,79 +227,6 @@ define(function (require, exports, module) {
   }
 
 
-  /**
-   * Shows the site edit dialog
-   * @param   {Object} inputs   Array of input fields in html used to build the dialog
-   * @param   {Boolean} existing Indicates whether or not this is an existing site
-   * @returns {[[Type]]} [[Description]]
-   */
-  function showSiteDialog(inputs, existing) {
-
-    //log this
-    console.log('showSiteDialog()');
-
-    var title = Strings.DIALOG_TITLE_ADD_SITE;
-
-    //dialog buttons array
-    var buttons = [
-      {
-        className: Dialog.DIALOG_BTN_CLASS_LEFT,
-        id: Dialog.DIALOG_BTN_CANCEL,
-        text: Strings.DIALOG_CANCEL
-      },
-      {
-        className: Dialog.DIALOG_BTN_CLASS_PRIMARY,
-        id: Dialog.DIALOG_BTN_OK,
-        text: Strings.DIALOG_OK
-      }
-    ];
-
-    //if existing site
-    if (existing) {
-
-      //delete button if we are going are showing an existing site
-      var deleteButton = {
-        className: Dialog.DIALOG_BTN_CLASS_NORMAL,
-        id: Dialog.DIALOG_BTN_DONTSAVE,
-        text: Strings.DIALOG_DELETE
-      }
-
-      //adjust title
-      title = Strings.DIALOG_TITLE_EDIT_SITE;
-
-      //add a delete button
-      buttons.push(deleteButton);
-
-    }
-
-    //create the body html
-    var bodyHtml = '';
-
-    //init html tag
-    bodyHtml += '<form>';
-
-    //add radio buttons for each site
-    inputs.forEach(function (input) {
-      bodyHtml += input.label;
-      bodyHtml += '<br>';
-      bodyHtml += '<input id="' + input.id + '" type="' + input.type + '" value="' + input.value + '">';
-      bodyHtml += '<br>';
-
-    });
-
-    //term html tag
-    bodyHtml += '</form>';
-
-    //show the dialog and return the object
-    return Dialog.showModalDialog(
-      null,           //class
-      title,          //title
-      bodyHtml,       //body html
-      buttons,        //button array
-      false);         //disable auto dismiss
-
-    }
-
 
 
   /**
@@ -341,7 +281,7 @@ define(function (require, exports, module) {
     ];
 
     //show dialog
-    var inputDialog = showSiteDialog(inputFields, oldSession);
+    var inputDialog = osFtpDialog.showSiteDialog(inputFields, oldSession);
 
     //listen for escape key
     $(document).keyup(function (event) {
@@ -510,11 +450,14 @@ define(function (require, exports, module) {
    */
   function handleEditSite() {
 
+    //radio button site name
+    var RADIO_SITE_NAME = 'site';
+
     //log that we were called
     console.log('handleEditSite()');
 
     //show dialog
-    var editDialog = showEditSiteDialog();
+    var editDialog = osFtpDialog.showSiteSelectDialog(sites, RADIO_SITE_NAME);
 
     var editSiteIndex;
 
@@ -572,48 +515,6 @@ define(function (require, exports, module) {
 
   }
 
-
-  function showEditSiteDialog() {
-
-    //dialog buttons array
-    var buttons = [
-      {
-        className: Dialog.DIALOG_BTN_CLASS_LEFT,
-        id: Dialog.DIALOG_BTN_CANCEL,
-        text: Strings.DIALOG_CANCEL
-      },
-      {
-        className: Dialog.DIALOG_BTN_CLASS_PRIMARY,
-        id: Dialog.DIALOG_BTN_OK,
-        text: Strings.DIALOG_OK
-      }
-    ];
-
-
-    //create the body html
-    var bodyHtml = '';
-
-    //init html tag
-    bodyHtml += '<form>';
-
-    //add radio buttons for each site
-    sites.forEach(function (site, i) {
-      bodyHtml += '<input id="' + site.name + '" value="' + i + '" type="radio" name="' + RADIO_SITE_NAME + '"> ' + site.name;
-      bodyHtml += '<br>';
-    });
-
-    //term html tag
-    bodyHtml += '</form>';
-
-    //show the dialog and return the object
-    return Dialog.showModalDialog(
-      null,                               //class
-      Strings.DIALOG_TITLE_SELECT_SITE,   //title
-      bodyHtml,                           //body html
-      buttons,                            //button array
-      false);                             //disable auto dismiss
-
-    }
 
   /**
    * Handler for executing an added site
@@ -795,38 +696,6 @@ define(function (require, exports, module) {
 
 
   /**
-   * Shows the failure dialog
-   * @returns {Object} data Data to populate into the error dialog
-   */
-  function showFailDialog(data) {
-
-    //log this
-    console.log('showFailDialog()');
-
-
-    //create the body html
-    var bodyHtml = '';
-
-    //init html tag
-    bodyHtml += '<p>';
-
-    //init html tag
-    bodyHtml += data;
-
-    //term html tag
-    bodyHtml += '</p>';
-
-    //show the dialog and return the object
-    return Dialog.showModalDialog(
-      null,           //class
-      'FTP Failure',  //title
-      bodyHtml,       //body html
-      null,           //button array
-      true);          //disable auto dismiss
-
-    }
-
-  /**
    * Function wrapper to invoke our domain function
    * @param {string} scriptFile File to use as an ftp script file
    */
@@ -870,7 +739,7 @@ define(function (require, exports, module) {
     .fail(
       function () {
         console.error('Error in: doFtpStdin(\n' + file + ', \n' + data + ');');
-        showFailDialog('Failure information goes here...');
+        osFtpDialog.showFailDialog('Failure information goes here...');
       }
     )
   }
