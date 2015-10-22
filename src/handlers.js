@@ -239,7 +239,7 @@ define(function (require, exports, module) {
         osFtpGlobals.sites.splice(oldSiteIndex, 1);
 
         //remove site from context menu
-        osFtpMenu.removeFromContextMenus(osFtpGlobals.COMMAND_RUN_SITE_ID);
+        osFtpMenu.removeFromContextMenus(COMMAND_RUN_SITE_ID);
 
         //set and save this preference
         setAndSavePref(osFtpGlobals.PREF, osFtpGlobals.PREF_SITES, osFtpGlobals.sites);
