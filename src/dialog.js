@@ -17,6 +17,7 @@ define(function (require, exports, module) {
   /**
    * Exported functions
    */
+  exports.showGetDialog         = showGetDialog;
   exports.showSiteSelectDialog  = showSiteSelectDialog;
   exports.showSiteDialog        = showSiteDialog;
   exports.showFailDialog        = showFailDialog;
@@ -25,7 +26,7 @@ define(function (require, exports, module) {
   /**
    * Show the site select dialog
    * @param   {Object} sites Site object array
-   * @returns {[[Type]]} Brackets dialog object
+   * @returns {Object} Brackets dialog object
    */
   function showSiteSelectDialog(sites, radioSiteName) {
 
@@ -61,11 +62,11 @@ define(function (require, exports, module) {
 
     //show the dialog and return the object
     return Dialog.showModalDialog(
-      null,                               //class
-      osFtpStrings.DIALOG_TITLE_SELECT_SITE,   //title
-      bodyHtml,                           //body html
-      buttons,                            //button array
-      false);                             //disable auto dismiss
+      null,                                   //class
+      osFtpStrings.DIALOG_TITLE_SELECT_SITE,  //title
+      bodyHtml,                               //body html
+      buttons,                                //button array
+      false);                                 //disable auto dismiss
 
   }
 
@@ -74,7 +75,7 @@ define(function (require, exports, module) {
    * Shows the site edit dialog
    * @param   {Object} inputs   Array of input fields in html used to build the dialog
    * @param   {Boolean} existing Indicates whether or not this is an existing site
-   * @returns {[[Type]]} [[Description]]
+   * @returns {Object} Brackets dialog object
    */
   function showSiteDialog(inputs, existing) {
 
@@ -146,7 +147,7 @@ define(function (require, exports, module) {
 
   /**
    * Shows the failure dialog
-   * @returns {Object} data Data to populate into the error dialog
+   * @returns {Object} Brackets dialog object
    */
   function showFailDialog(data) {
 
@@ -168,10 +169,42 @@ define(function (require, exports, module) {
     //show the dialog and return the object
     return Dialog.showModalDialog(
       null,           //class
-      'FTP Failure',  //title
+      osFtpStrings.DIALOG_TITLE_FAIL,  //title
       bodyHtml,       //body html
       null,           //button array
       true);          //disable auto dismiss
+
+  }
+
+
+  /**
+   * Shows the get dialog
+   * @returns {Object} Brackets dialog object
+   */
+  function showGetDialog(site) {
+
+    //log this
+    console.log('showGetDialog()');
+
+    //create the body html
+    var bodyHtml = '';
+
+    //init html tag
+    bodyHtml += '<p>';
+
+    //init html tag
+    bodyHtml += '@TODO - finish implementation to get data from site - ' + site.name;
+
+    //term html tag
+    bodyHtml += '</p>';
+
+    //show the dialog and return the object
+    return Dialog.showModalDialog(
+      null,                                     //class
+      osFtpStrings.DIALOG_TITLE_GET_FROM_SITE,  //title
+      bodyHtml,                                 //body html
+      null,                                     //button array
+      true);                                    //disable auto dismiss
 
   }
 

@@ -35,6 +35,7 @@ define(function (require, exports, module) {
    * Exported functions
    */
   exports.handleEditSite      = handleEditSite;
+  exports.handleGetFromSite   = handleGetFromSite;
   exports.handleNewOrEditSite = handleNewOrEditSite;
   exports.handleRunScript     = handleRunScript;
   exports.handleRunSite       = handleRunSite;
@@ -53,7 +54,19 @@ define(function (require, exports, module) {
 
     //register command and add a context menu to create a site
     CommandManager.register(COMMAND_RUN_SITE_LABEL, COMMAND_RUN_SITE_ID, osFtpHandlers.handleRunSite);
-    osFtpMenu.addToContextMenus(COMMAND_RUN_SITE_ID, false, osFtpGlobals.COMMAND_NEW_SITE_ID, false);
+    osFtpMenu.addToContextMenus(COMMAND_RUN_SITE_ID, false, osFtpGlobals.COMMAND_GET_FROM_SITE_ID, false);
+
+  }
+
+
+  /**
+   * Enables the get command for an added site
+   */
+  function enableGetFromSite() {
+
+    //register command and add a context menu to create a site
+    CommandManager.register(osFtpStrings.COMMAND_GET_FROM_SITE_LABEL, osFtpGlobals.COMMAND_GET_FROM_SITE_ID, handleGetFromSite);
+    osFtpMenu.addToContextMenus(osFtpGlobals.COMMAND_GET_FROM_SITE_ID, false, osFtpGlobals.COMMAND_NEW_SITE_ID, false);
 
   }
 
@@ -65,17 +78,28 @@ define(function (require, exports, module) {
 
     //register command and add a context menu to create a site
     CommandManager.register(osFtpStrings.COMMAND_EDIT_SITE_LABEL, osFtpGlobals.COMMAND_EDIT_SITE_ID, handleEditSite);
-    osFtpMenu.addToContextMenus(osFtpGlobals.COMMAND_EDIT_SITE_ID, false, osFtpGlobals.COMMAND_NEW_SITE_ID, true);
+    osFtpMenu.addToContextMenus(osFtpGlobals.COMMAND_EDIT_SITE_ID, false, osFtpGlobals.COMMAND_NEW_SITE_ID, false);
 
   }
 
 
   /**
-   * Disables the edit command forsites
+   * Disables the get command for sites
+   */
+  function disableGetFromSite() {
+
+    //remove from the menu
+    osFtpMenu.removeFromContextMenus(osFtpGlobals.COMMAND_GET_FROM_SITE_ID);
+
+  }
+
+
+  /**
+   * Disables the edit command for sites
    */
   function disableEditSite() {
 
-    //register command and add a context menu to create a site
+    //remove from the menu
     osFtpMenu.removeFromContextMenus(osFtpGlobals.COMMAND_EDIT_SITE_ID);
 
   }
@@ -86,23 +110,23 @@ define(function (require, exports, module) {
    */
   function handleEditSite() {
 
-    //radio button site name
-    var RADIO_SITE_NAME = 'site';
-
     //log that we were called
     console.log('handleEditSite()');
 
-    //show dialog
-    var editDialog = osFtpDialog.showSiteSelectDialog(osFtpGlobals.sites, RADIO_SITE_NAME);
+    //radio button site name
+    var RADIO_SITE_NAME = 'site';
 
-    var editSiteIndex;
+    //show dialog
+    var selectDialog = osFtpDialog.showSiteSelectDialog(osFtpGlobals.sites, RADIO_SITE_NAME);
+
+    var selectedSiteIndex;
 
     //listen for escape key
     $(document).keyup(function (event) {
 
       //close if escape key is pressed
-      if (event.which ==osFtpGlobals.ESCAPE_KEY)
-        editDialog.close();
+      if (event.which == osFtpGlobals.ESCAPE_KEY)
+        selectDialog.close();
 
     });
 
@@ -113,7 +137,7 @@ define(function (require, exports, module) {
       console.log('Dialog closed without save');
 
       //close the dialog
-      editDialog.close();
+      selectDialog.close();
 
     });
 
@@ -122,32 +146,104 @@ define(function (require, exports, module) {
     $('button[data-button-id="' + Dialog.DIALOG_BTN_OK + '"').click(function () {
 
       //get the site that was checked
-      editSiteIndex = $('input[name=' + RADIO_SITE_NAME + ']:checked').val();
+      selectedSiteIndex = $('input[name=' + RADIO_SITE_NAME + ']:checked').val();
 
       //if no option was choosen
-      if (!osFtpCommon.isSet(editSiteIndex))
+      if (!osFtpCommon.isSet(selectedSiteIndex))
         console.log('No site was selected');
 
       //log that we are closing
       console.log('Dialog closed with save');
 
       //close the dialog
-      editDialog.close();
+      selectDialog.close();
 
     });
 
 
     //listen for dialog done
-    editDialog.done(function () {
+    selectDialog.done(function () {
 
       //log that the modal is gone
       console.log('Dialog modal is dismissed');
 
       //if edit site index was set
-      if (osFtpCommon.isSet(editSiteIndex))
-        CommandManager.execute(osFtpGlobals.COMMAND_NEW_SITE_ID, editSiteIndex);
+      if (osFtpCommon.isSet(selectedSiteIndex))
+        CommandManager.execute(osFtpGlobals.COMMAND_NEW_SITE_ID, selectedSiteIndex);
 
     });
+
+  }
+
+  /**
+   * Handler for getting from an added site
+   */
+  function handleGetFromSite() {
+
+    //log that we were called
+    console.log('handleGetFromSite()');
+
+
+    //radio button site name
+    var RADIO_SITE_NAME = 'site';
+
+    //show dialog
+    var selectDialog = osFtpDialog.showSiteSelectDialog(osFtpGlobals.sites, RADIO_SITE_NAME);
+
+    var selectedSiteIndex;
+
+    //listen for escape key
+    $(document).keyup(function (event) {
+
+      //close if escape key is pressed
+      if (event.which == osFtpGlobals.ESCAPE_KEY)
+        selectDialog.close();
+
+    });
+
+    //listen for cancel (modal doesnt have standard id= attribute, it's data-button-id
+    $('button[data-button-id="' + Dialog.DIALOG_BTN_CANCEL + '"').click(function () {
+
+      //log that the user wants to close
+      console.log('Dialog closed without save');
+
+      //close the dialog
+      selectDialog.close();
+
+    });
+
+
+    //listen for ok
+    $('button[data-button-id="' + Dialog.DIALOG_BTN_OK + '"').click(function () {
+
+      //get the site that was checked
+      selectedSiteIndex = $('input[name=' + RADIO_SITE_NAME + ']:checked').val();
+
+      //if no option was choosen
+      if (!osFtpCommon.isSet(selectedSiteIndex))
+        console.log('No site was selected');
+
+      //log that we are closing
+      console.log('Dialog closed with save');
+
+      //close the dialog
+      selectDialog.close();
+
+    });
+
+
+    //listen for dialog done
+    selectDialog.done(function () {
+
+      //log that the modal is gone
+      console.log('Dialog modal is dismissed');
+
+      //if edit site index was set
+      if (osFtpCommon.isSet(selectedSiteIndex))
+        osFtpDialog.showGetDialog(osFtpGlobals.sites[selectedSiteIndex]);
+
+    });
+
 
   }
 
@@ -244,9 +340,15 @@ define(function (require, exports, module) {
         //set and save this preference
         setAndSavePref(osFtpGlobals.PREF, osFtpGlobals.PREF_SITES, osFtpGlobals.sites);
 
-        //disable editing if we have no more sites
-        if (osFtpGlobals.sites.length == 0)
+        //disable extra options if we have no more sites
+        if (osFtpGlobals.sites.length == 0) {
+
+          //remove edit option
           disableEditSite();
+
+          //remove get option
+          disableGetFromSite();
+        }
 
         //log that the user wants to close
         console.log('Dialog closed to delete site');
@@ -298,13 +400,20 @@ define(function (require, exports, module) {
       setAndSavePref(osFtpGlobals.PREF, osFtpGlobals.PREF_SITES, osFtpGlobals.sites);
 
 
-      if (!oldSession) {
-        addSite(site);
+      //enable extra options if we have at least one site
+      if (osFtpGlobals.sites.length > 0) {
+
+        //add getting from a site
+        enableGetFromSite();
+
+        //add editing of site
+        enableEditSite();
+
       }
 
-      //enable editing if we have at least one site
-      if (osFtpGlobals.sites.length > 0)
-        enableEditSite();
+      //add new site if this didnt exist before
+      if (!oldSession)
+        addSite(site);
 
       //log that we are saving this site
       console.log('Dialog closed with save');
@@ -430,15 +539,23 @@ define(function (require, exports, module) {
     //get saved preferences
     osFtpGlobals.sites = osFtpPreferences.get(osFtpGlobals.PREF_SITES) || [];
 
+    //enable extra options if we have at least one site
+    if (osFtpGlobals.sites.length > 0) {
+
+      //add getting from a site
+      enableGetFromSite();
+
+      //add editing of site
+      enableEditSite();
+
+    }
+
     //add back saved sites
     osFtpGlobals.sites.forEach(function (site) {
       addSite(site);
 
     });
 
-    //enable editing if we have at least one site
-    if (osFtpGlobals.sites.length > 0)
-      enableEditSite();
   }
 
 
