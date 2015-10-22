@@ -15,12 +15,59 @@ define(function (require, exports, module) {
 
 
   /**
+   * Global variables
+   */
+  var buttons = [
+    {
+      className: Dialog.DIALOG_BTN_CLASS_LEFT,
+      id: Dialog.DIALOG_BTN_CANCEL,
+      text: osFtpStrings.DIALOG_CANCEL
+    },
+    {
+      className: Dialog.DIALOG_BTN_CLASS_PRIMARY,
+      id: Dialog.DIALOG_BTN_OK,
+      text: osFtpStrings.DIALOG_OK
+    }
+  ];
+
+
+  /**
    * Exported functions
    */
-  exports.showGetDialog         = showGetDialog;
-  exports.showSiteSelectDialog  = showSiteSelectDialog;
-  exports.showSiteDialog        = showSiteDialog;
-  exports.showFailDialog        = showFailDialog;
+  exports.showConfirmDirectoryUpload  = showConfirmDirectoryUpload;
+  exports.showGetDialog               = showGetDialog;
+  exports.showSiteSelectDialog        = showSiteSelectDialog;
+  exports.showSiteDialog              = showSiteDialog;
+  exports.showFailDialog              = showFailDialog;
+
+
+
+  function showConfirmDirectoryUpload(site) {
+
+    //log this
+    console.log('showConfirmDirectoryUpload()');
+
+    //create the body html
+    var bodyHtml = '';
+
+    //init html tag
+    bodyHtml += '<p>';
+
+    //set body content
+    bodyHtml += osFtpStrings.DIALOG_CONFIRM_BODY + site.name;
+
+    //term html tag
+    bodyHtml += '</p>';
+
+    //show the dialog and return the object
+    return Dialog.showModalDialog(
+      null,                                     //class
+      osFtpStrings.DIALOG_TITLE_CONFIRM_UPLOAD, //title
+      bodyHtml,                                 //body html
+      buttons,                                  //button array
+      false);                                   //disable auto dismiss
+
+  }
 
 
   /**
@@ -29,21 +76,6 @@ define(function (require, exports, module) {
    * @returns {Object} Brackets dialog object
    */
   function showSiteSelectDialog(sites, radioSiteName) {
-
-    //dialog buttons array
-    var buttons = [
-      {
-        className: Dialog.DIALOG_BTN_CLASS_LEFT,
-        id: Dialog.DIALOG_BTN_CANCEL,
-        text: osFtpStrings.DIALOG_CANCEL
-      },
-      {
-        className: Dialog.DIALOG_BTN_CLASS_PRIMARY,
-        id: Dialog.DIALOG_BTN_OK,
-        text: osFtpStrings.DIALOG_OK
-      }
-    ];
-
 
     //create the body html
     var bodyHtml = '';
@@ -85,18 +117,7 @@ define(function (require, exports, module) {
     var title = osFtpStrings.DIALOG_TITLE_ADD_SITE;
 
     //dialog buttons array
-    var buttons = [
-      {
-        className: Dialog.DIALOG_BTN_CLASS_LEFT,
-        id: Dialog.DIALOG_BTN_CANCEL,
-        text: osFtpStrings.DIALOG_CANCEL
-      },
-      {
-        className: Dialog.DIALOG_BTN_CLASS_PRIMARY,
-        id: Dialog.DIALOG_BTN_OK,
-        text: osFtpStrings.DIALOG_OK
-      }
-    ];
+    var localButtons = buttons;
 
     //if existing site
     if (existing) {
@@ -112,7 +133,7 @@ define(function (require, exports, module) {
       title = osFtpStrings.DIALOG_TITLE_EDIT_SITE;
 
       //add a delete button
-      buttons.push(deleteButton);
+      localButtons.push(deleteButton);
 
     }
 
@@ -139,7 +160,7 @@ define(function (require, exports, module) {
       null,           //class
       title,          //title
       bodyHtml,       //body html
-      buttons,        //button array
+      localButtons,   //button array
       false);         //disable auto dismiss
 
   }

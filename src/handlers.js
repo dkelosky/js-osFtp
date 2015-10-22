@@ -399,7 +399,6 @@ define(function (require, exports, module) {
       //set and save this preference
       setAndSavePref(osFtpGlobals.PREF, osFtpGlobals.PREF_SITES, osFtpGlobals.sites);
 
-
       //enable extra options if we have at least one site
       if (osFtpGlobals.sites.length > 0) {
 
@@ -507,9 +506,8 @@ define(function (require, exports, module) {
     //determine if the file choosen is a directory or an individual file
     if (File.getDirectoryPath(itemFullPath) == itemFullPath) {
 
-      //@TODO all for processing and ftp'ing an entire directory
-      //for now, log message if an attempt is made to ftp a directory
-      console.log('Select FTP script file - not a directory');
+      //upload this directory
+      uploadDirectory(thisSite, osFtpCommon.getSelectedFiles());
 
     //an individual file was choose, build a script string and invoke node to run FTP and this script
     } else {
@@ -517,11 +515,11 @@ define(function (require, exports, module) {
       //build our ftp script
       var ftpScript = osFtpScripts.buildUploadForFileScript(itemFullPath, thisSite);
 
-      //get node folder in this extension
+      //get folder of this extension
       var extensionDir = File.getNativeModuleDirectoryPath(module) + '/';
 
       //select the file name we want to create
-      var scriptFileName = extensionDir + thisSite.host + osFtpGlobals.FTP_SCRIPT_FILE_EXTENSION;
+      var scriptFileName = extensionDir + thisSite.name + osFtpGlobals.FTP_SCRIPT_FILE_EXTENSION;
 
       //invoke node js to build and run our ftp script file
       osFtpDomain.runFtpCommandStdin(scriptFileName, ftpScript);
@@ -553,6 +551,73 @@ define(function (require, exports, module) {
     //add back saved sites
     osFtpGlobals.sites.forEach(function (site) {
       addSite(site);
+
+    });
+
+  }
+
+  /**
+   * [[Description]]
+   * @param {Object} site Object representing the site to upload to
+   */
+  function uploadDirectory(site, fileList) {
+
+    //show dialog
+    var confirmDialog = osFtpDialog.showConfirmDirectoryUpload(site);
+
+    //listen for escape key
+    $(document).keyup(function (event) {
+
+      //close if escape key is pressed
+      if (event.which == osFtpGlobals.ESCAPE_KEY)
+        confirmDialog.close();
+
+    });
+
+    //listen for cancel (modal doesnt have standard id= attribute, it's data-button-id
+    $('button[data-button-id="' + Dialog.DIALOG_BTN_CANCEL + '"').click(function () {
+
+      //log that the user wants to close
+      console.log('Dialog closed without save');
+
+      //close the dialog
+      confirmDialog.close();
+
+    });
+
+
+    //listen for ok
+    $('button[data-button-id="' + Dialog.DIALOG_BTN_OK + '"').click(function () {
+
+      //get file list
+      osFtpCommon.getSelectedFiles();
+
+      //build our ftp script
+      var ftpScript = 'bye\n' //osFtpScripts.buildUploadForFileScript(itemFullPath, site);
+
+      //get folder of this extension
+      var extensionDir = File.getNativeModuleDirectoryPath(module) + '/';
+
+      //select the file name we want to create
+      var scriptFileName = extensionDir + site.name + osFtpGlobals.FTP_SCRIPT_FILE_EXTENSION;
+
+      //invoke node js to build and run our ftp script file
+      osFtpDomain.runFtpCommandStdin(scriptFileName, ftpScript);
+
+      //log that we are saving this site
+      console.log('Dialog closed with save');
+
+      //close the dialog
+      confirmDialog.close();
+
+    });
+
+
+    //listen for dialog done
+    confirmDialog.done(function () {
+
+      //log that the modal is gone
+      console.log('Dialog modal is dismissed');
 
     });
 
