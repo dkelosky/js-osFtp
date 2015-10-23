@@ -589,11 +589,9 @@ define(function (require, exports, module) {
     //listen for ok
     $('button[data-button-id="' + Dialog.DIALOG_BTN_OK + '"').click(function () {
 
-      //get file list
-      osFtpCommon.getSelectedFiles();
-
       //build our ftp script
-      var ftpScript = 'bye\n' //@ldl5007 osFtpScripts.buildUploadForFileScript(itemFullPath, site);
+      var ftpScript = osFtpScripts.generateUploadScript(fileList, site);
+//      var ftpScript = 'bye\n' //@ldl5007 osFtpScripts.buildUploadForFileScript(itemFullPath, site);
 
       //get folder of this extension
       var extensionDir = File.getNativeModuleDirectoryPath(module) + '/';

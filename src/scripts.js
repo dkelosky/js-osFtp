@@ -13,7 +13,6 @@ define(function (require, exports, module) {
    */
   var osFtpCommon = require('src/common');
 
-
   /**
    * Exported functions
    */
@@ -26,148 +25,143 @@ define(function (require, exports, module) {
    */
   var FTP_BINARY_EXTENSIONS = ['class'];
 
+  var FTP_ASCII_EXTENTIONS  = ['HTML',
+                               'ESP',
+                               'CSS',
+                               'JS'];
+
+  /**
+   * Build an FTP script based on the list files that was choosen and the site selected
+   * @param   {Object []} listFile  Array of selected file to be FTP
+   * @param   {Object}    site      Site object containing information about the site to use
+   * @returns {String}              Completed FTP script
+   */
 
   function generateUploadScript(listFile, site){
     console.log("getneratUploadScript");
 
-    var newScript = '';
-
-    console.log(listFile);
-
-    var dirTree = [];
+    var returnScriptString = '';
+    var localRootDir = '';
+    var newScript = [];
+    var mkdirList = [];
+    var putBinList = [];
+    var putAsciiList = [];
 
     for (var i = 0; i < listFile.length; i ++){
-      var File = listFile[i];
-      console.log(JSON.stringify(File));
+      if (localRootDir == ''){
+        localRootDir = FileUtils.stripTrailingSlash(listFile[i].rootDir);
+      }
 
-      var tempDir = File.relativeDir;
-      console.log(tempDir);
+      mkdirList = generateMkDirList(mkdirList, listFile[i].relativeDir);
 
-      tempDir = FileUtils.convertWindowsPathToUnixPath(tempDir);
-      tempDir = tempDir.replace('/',' ');
-      console.log("tempDir: " + tempDir);
+      if (isAsciiFileMode(listFile[i].relativePath)){
+        putAsciiList.push(listFile[i].relativePath);
+      }
+      else{
+        putBinList.push(listFile[i].relativePath);
+      }
+    }
 
-      var folderList = tempDir.split(' ');
-      console.log(folderList);
+    //---------------------------------------------------------------------
+    // Start generating the FTP script
+    //---------------------------------------------------------------------
 
-      for (var i = 0; i < folderList.length; i ++){
-        var treeLevel = dirTree[i] || [];
+    // Generate logon command:
+    newScript.push('OPEN ' + site.host);
+    newScript.push('USER');
+    newScript.push(site.user);
+    newScript.push(site.pass);
+    newScript.push(' ');
 
-        if (treeLevel.indexOf(folderList[i]) == -1){
-          treeLevel.push(folderList[i]);
+    newScript.push('CD  ' + site.root);
+    newScript.push('LCD ' + localRootDir);
+    newScript.push(' ');
+
+
+    // Generate mkdir commands
+    for (var i = 0; i < mkdirList.length; i++){
+      newScript.push('MKDIR ' + mkdirList[i]);
+    }
+    newScript.push(' ');
+
+    // Generate put ASCII commands
+    newScript.push('ASCII');
+    for (var i = 0; i < putAsciiList.length; i++){
+      newScript.push('PUT ' + FileUtils.convertToNativePath(putAsciiList[i]) +
+                     ' '    + FileUtils.convertWindowsPathToUnixPath(putAsciiList[i]));
+    }
+    newScript.push(' ');
+
+    // Generate put Binary commands
+    newScript.push('BIN');
+    for (var i = 0; i < putBinList.length; i++){
+      newScript.push('PUT ' + FileUtils.convertToNativePath(putBinList[i]) +
+                     ' '    + FileUtils.convertWindowsPathToUnixPath(putBinList[i]));
+    }
+    newScript.push(' ');
+
+    // End of script
+    newScript.push('QUIT \n');
+
+    for (var i = 0; i < newScript.length; i++){
+      returnScriptString = returnScriptString + newScript[i] + '\n';
+    }
+
+    console.log(returnScriptString);
+
+    return returnScriptString;
+  }
+
+  /**
+   * Generate a list of directory that may need to be created before PUT commands
+   * @param   {String []} currentList current list of the directory
+   * @param   {String}    dirPath     directory path to be consider
+   * @returns {String []} Return Updated version of currentList
+   */
+
+  function generateMkDirList(currentList, dirPath){
+    var tempPath = FileUtils.convertWindowsPathToUnixPath(dirPath);
+    var listNode = tempPath.split('/');
+
+    console.log(listNode);
+
+    var tempDir = ''
+    for (var i = 0; i < listNode.length; i++){
+      if (listNode[i] != ''){
+        if (tempDir == ''){
+          tempDir = listNode[i];
+        }
+        else{
+          tempDir = tempDir + '/' + listNode[i];
         }
 
+        console.log (tempDir);
+        if (currentList.indexOf(tempDir) == -1){
+          currentList.push(tempDir);
+        }
       }
-
-      console.log(dirTree);
-
-
-
     }
 
-
-    return newScript;
+    return currentList;
   }
 
 
   /**
-   * Build an FTP script based on the file choosen and the site selected
-   * @param   {String} itemFullPath Full path to the item that we want to FTP
-   * @param   {Object} site         Site object containing information about the site to use
-   * @returns {String} Completed FTP script
+   * Check known extensions to see whether ftp should be done in ascii mode
+   * @param   {String} inputFile file name including extension
+   * @returns {Boolean}  Returns true if this extension should be ftp'ed as ascii
    */
-  function buildUploadForFileScript(itemFullPath, site) {
 
-    //like 'C:' is two characters
-    var WINDOWS_DRIVE_LETTER_OFFSET = 0;
-    var WINDOWS_DRIVE_LETTER_LEN = 2;
-    var WINDOWS_DRIVE_SEPERATOR_OFFSET = 1;
-    var WINDOWS_DRIVE_SEPERATOR = ':';
-    var WINDOWS_DRIVE_DIRECTORY_CHAR = '\\';
+  function isAsciiFileMode(inputFile){
+    var returnStatus = false;
 
-    //initialize script
-    var ftpStdin = '';
+    var fileExt = FileUtils.getFileExtension(inputFile);
 
-    //open the host
-    ftpStdin += 'op ';
-    ftpStdin += site.host;
-    ftpStdin += '\n';
-
-    //we no that auto-login will be disabled so specify 'user'
-    ftpStdin += 'user\n';
-
-    //provide user name and password to script file
-    ftpStdin += site.user;
-    ftpStdin += '\n';
-    ftpStdin += site.pass;
-    ftpStdin += '\n';
-
-    //switch to requested root directory
-    ftpStdin += 'cd ';
-    ftpStdin += site.root;
-    ftpStdin += '\n';
-
-    //directory path with always have forward slash seperators, so parse each directory
-    var directory = FileUtils.getDirectoryPath(itemFullPath).split('/');
-
-    //if the first directory is a windows type drive
-    if (directory[WINDOWS_DRIVE_LETTER_OFFSET].length == WINDOWS_DRIVE_LETTER_LEN) {
-
-      //if the second character after the drive letter is a colon, this should be windows directories
-      if (directory[WINDOWS_DRIVE_LETTER_OFFSET].charAt(WINDOWS_DRIVE_SEPERATOR_OFFSET) == WINDOWS_DRIVE_SEPERATOR)
-
-        //append a backlash to the drive letter and colon
-        directory[WINDOWS_DRIVE_LETTER_OFFSET] += WINDOWS_DRIVE_DIRECTORY_CHAR;
-
+    if  (FTP_ASCII_EXTENTIONS.indexOf(fileExt.toUpperCase()) != -1){
+      returnStatus = true;
     }
 
-    //iterate through directories
-    directory.forEach(function (dir) {
-
-      //while the directory appears valid
-      if (osFtpCommon.isSet(dir)) {
-
-        //alter local directory to the file we are ftp'ing
-        ftpStdin += 'lcd ';
-        ftpStdin += dir;
-        ftpStdin += '\n';
-      }
-
-    });
-
-    //if we need to ftp this file as binary, set indicator
-    if (ftpAsBinary(FileUtils.getFileExtension(itemFullPath)))
-      ftpStdin += 'binary\n';
-
-    //currently we only allow for put
-    ftpStdin += 'put ';
-    ftpStdin += File.getBaseName(itemFullPath);
-    ftpStdin += '\n';
-
-    //quit the script
-    ftpStdin += 'quit \n';
-
-    //return completed script string
-    return ftpStdin;
-
-  }
-
-
-  /**
-   * Check known extensions to see whether ftp should be done in binary
-   * @param   {String} extension extension (without '.') to validate against known extensions
-   * @returns {Boolean}  Returns true if this extension should be ftp'ed as binary
-   */
-  function ftpAsBinary(extension) {
-
-    //if the extension is in our predefined list of things to ftp, return true
-    for (var i = 0; i < FTP_BINARY_EXTENSIONS.length; i++)
-      if (FTP_BINARY_EXTENSIONS[i] == extension)
-        return true
-
-    //no need to ftp this as binary
-    return false;
-
+    return returnStatus;
   }
 
 });

@@ -57,8 +57,6 @@ define(function (require, exports, module) {
           fileList.push(File);
         }
       });
-
-      fileList.push(filesInDir);
     }
     // If item is file then just add the file to the list.
     else{
