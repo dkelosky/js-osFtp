@@ -510,23 +510,12 @@ define(function (require, exports, module) {
 
     //an individual file was choose, build a script string and invoke node to run FTP and this script
     } else {
-
       //build our ftp script
       var ftpScript = osFtpScripts.generateUploadScript(selectedFiles, thisSite);
-
-      //get folder of this extension
-      var extensionDir = File.getNativeModuleDirectoryPath(module) + '/';
-
-      //select the file name we want to create
-      var scriptFileName = extensionDir + thisSite.name + osFtpGlobals.FTP_SCRIPT_FILE_EXTENSION;
-
-      //invoke node js to build and run our ftp script file
-      osFtpDomain.runFtpCommandStdin(scriptFileName, ftpScript);
-
+      invokeFtpScript(ftpScript);
     }
 
   }
-
 
   /**
    * Initialize saved handlers and globals
@@ -590,16 +579,7 @@ define(function (require, exports, module) {
 
       //build our ftp script
       var ftpScript = osFtpScripts.generateUploadScript(fileList, site);
-//      var ftpScript = 'bye\n' //@ldl5007 osFtpScripts.buildUploadForFileScript(itemFullPath, site);
-
-      //get folder of this extension
-      var extensionDir = File.getNativeModuleDirectoryPath(module) + '/';
-
-      //select the file name we want to create
-      var scriptFileName = extensionDir + site.name + osFtpGlobals.FTP_SCRIPT_FILE_EXTENSION;
-
-      //invoke node js to build and run our ftp script file
-      osFtpDomain.runFtpCommandStdin(scriptFileName, ftpScript);
+      invokeFtpScript(ftpScript);
 
       //log that we are saving this site
       console.log('Dialog closed with save');
@@ -620,5 +600,22 @@ define(function (require, exports, module) {
 
   }
 
+  /**
+   * [[Description]]
+   * @param {Object} site Object representing the site to upload to
+   */
+
+  function invokeFtpScript(ftpScript){
+      //get folder of this extension
+      var extensionDir = File.getNativeModuleDirectoryPath(module) + '/';
+
+      //select the file name we want to create
+      var scriptFileName = extensionDir + 'FTP_Script' + osFtpGlobals.FTP_SCRIPT_FILE_EXTENSION;
+
+      //invoke node js to build and run our ftp script file
+      osFtpDomain.runFtpCommandStdin(scriptFileName, ftpScript);
+
+      console.log('Am I done');
+  }
 
 });
