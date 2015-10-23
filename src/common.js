@@ -1,7 +1,8 @@
 define(function (require, exports, module) {
     'use strict';
 
-  var Project = brackets.getModule('project/ProjectManager');
+  var Project   = brackets.getModule('project/ProjectManager');
+  var FileUtils = brackets.getModule('file/FileUtils');
 
   /**
    * Exported functions
@@ -71,8 +72,8 @@ define(function (require, exports, module) {
         name:         fileList[i].name,
         fullDir:      fileList[i].parentPath,
         fullPath:     fileList[i].fullPath,
-        relativeDir:  String(fileList[i].parentPath).replace(rootDir,""),
-        relativePath: String(fileList[i].fullPath).replace(rootDir, "")
+        relativeDir:  FileUtils.getRelativeFilename(rootDir, fileList[i].parentPath),
+        relativePath: FileUtils.getRelativeFilename(rootDir, fileList[i].fullPath)
       };
 
       returnList.push(object);

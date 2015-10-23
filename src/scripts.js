@@ -16,7 +16,6 @@ define(function (require, exports, module) {
   /**
    * Exported functions
    */
-  exports.buildUploadForFileScript = buildUploadForFileScript;
   exports.generateUploadScript     = generateUploadScript;
 
 
@@ -101,7 +100,7 @@ define(function (require, exports, module) {
     newScript.push(' ');
 
     // End of script
-    newScript.push('QUIT \n');
+    newScript.push('QUIT');
 
     for (var i = 0; i < newScript.length; i++){
       returnScriptString = returnScriptString + newScript[i] + '\n';
