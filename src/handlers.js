@@ -500,20 +500,19 @@ define(function (require, exports, module) {
 
     });
 
-    //get the full path to the item that was selected
-    var itemFullPath = Project.getSelectedItem().fullPath;
-
+    // get the list of the selected file
+    var selectedFiles = osFtpCommon.getSelectedFiles();
     //determine if the file choosen is a directory or an individual file
-    if (File.getDirectoryPath(itemFullPath) == itemFullPath) {
+    if (Project.getSelectedItem().isDirectory) {
 
       //upload this directory
-      uploadDirectory(thisSite, osFtpCommon.getSelectedFiles());
+      uploadDirectory(thisSite, selectedFiles);
 
     //an individual file was choose, build a script string and invoke node to run FTP and this script
     } else {
 
       //build our ftp script
-      var ftpScript = osFtpScripts.buildUploadForFileScript(itemFullPath, thisSite);
+      var ftpScript = osFtpScripts.generateUploadScript(selectedFiles, thisSite);
 
       //get folder of this extension
       var extensionDir = File.getNativeModuleDirectoryPath(module) + '/';
