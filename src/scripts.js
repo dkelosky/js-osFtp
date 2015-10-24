@@ -44,11 +44,22 @@ define(function (require, exports, module) {
    * Build an FTP script based on the list files that was choosen and the site selected
    * @param   {Object []} listFile  Array of selected file to be FTP
    * @param   {Object}    site      Site object containing information about the site to use
-   * @returns {String}              Completed FTP script
+   * @returns {String}              Completed FTP script if input is valid
+	 *                                Empty string when input in invalid.
    */
 
   function generateUploadScript(listFile, site){
     console.log("getneratUploadScript");
+
+		// validating inputs
+		if (listFile == undefined){
+			console.error('listFile is undefinded');
+			return ''
+		}
+		if (site == undefined){
+			console.error('site is undefinded');
+			return ''
+		}
 
     var returnScriptString = '';
     var localRootDir = '';
