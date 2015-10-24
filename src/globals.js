@@ -1,5 +1,5 @@
 define(function (require, exports, module) {
-    'use strict';
+   'use strict';
 
 
   /**
@@ -10,6 +10,8 @@ define(function (require, exports, module) {
   var COMMAND_NEW_SITE_ID       = 'theauthor.osftp.osftp_new_site';
   var COMMAND_RUN_SCRIPT_ID     = 'theauthor.osftp.osftp_run_script';
   var COMMAND_RUN_SITE_BASE_ID  = 'theauthor.osftp.osftp_run_';
+
+	var COMMAND_UPLOAD_LABEL_PREFIX = 'Upload To ';
 
   var ESCAPE_KEY                = 27;
 
@@ -29,6 +31,8 @@ define(function (require, exports, module) {
   exports.COMMAND_NEW_SITE_ID       = COMMAND_NEW_SITE_ID;
   exports.COMMAND_RUN_SCRIPT_ID     = COMMAND_RUN_SCRIPT_ID;
   exports.COMMAND_RUN_SITE_BASE_ID  = COMMAND_RUN_SITE_BASE_ID;
+
+	exports.COMMAND_UPLOAD_LABEL_PREFIX = COMMAND_UPLOAD_LABEL_PREFIX;
 
   exports.ESCAPE_KEY                = ESCAPE_KEY;
 

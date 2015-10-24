@@ -81,18 +81,15 @@ define(function (require, exports, module) {
     newScript.push('USER');
     newScript.push(site.user);
     newScript.push(site.pass);
-//    newScript.push(' ');
 
     newScript.push('CD  ' + site.root);
     newScript.push('LCD ' + localRootDir);
-//    newScript.push(' ');
 
 
     // Generate mkdir commands
     for (var i = 0; i < mkdirList.length; i++){
       newScript.push('MKDIR ' + mkdirList[i]);
     }
-//    newScript.push(' ');
 
     // Generate put ASCII commands
     newScript.push('ASCII');
@@ -100,7 +97,6 @@ define(function (require, exports, module) {
       newScript.push('PUT ' + '"' + FileUtils.convertToNativePath(putAsciiList[i]) + '"' +
                      ' '    + FileUtils.convertWindowsPathToUnixPath(putAsciiList[i]).split(' ').join('_'));
     }
-//    newScript.push(' ');
 
     // Generate put Binary commands
     newScript.push('BIN');
@@ -108,7 +104,6 @@ define(function (require, exports, module) {
       newScript.push('PUT ' + '"' + FileUtils.convertToNativePath(putBinList[i]) + '"' +
                      ' '    + FileUtils.convertWindowsPathToUnixPath(putBinList[i]).split(' ').join('_'));
     }
-//    newScript.push(' ');
 
     // End of script
     newScript.push('QUIT');
