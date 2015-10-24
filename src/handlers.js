@@ -49,7 +49,7 @@ define(function (require, exports, module) {
   function addSite(site) {
 
     //setup labels
-    var COMMAND_RUN_SITE_LABEL = osFtpGlobals.COMMAND_UPLOAD_LABEL_PREFIX + site.name;
+    var COMMAND_RUN_SITE_LABEL = site.name;
     var COMMAND_RUN_SITE_ID    = osFtpGlobals.COMMAND_RUN_SITE_BASE_ID + site.name;
 
     //register command and add a context menu to create a site
@@ -487,6 +487,7 @@ define(function (require, exports, module) {
 
     //get the command name
     var name = this.getName();
+		console.log(name);
 
     //site object associated with this command name
     var thisSite;
@@ -606,15 +607,16 @@ define(function (require, exports, module) {
    */
 
   function invokeFtpScript(ftpScript){
+		if (osFtpCommon.isSet(ftpScript)){
       //get folder of this extension
-      var extensionDir = File.getNativeModuleDirectoryPath(module) + '/';
+      var extensionDir = File.getNativeModuleDirectoryPath(module) + '/scripts/';
 
       //select the file name we want to create
       var scriptFileName = extensionDir + 'FTP_Script' + osFtpGlobals.FTP_SCRIPT_FILE_EXTENSION;
 
       //invoke node js to build and run our ftp script file
       osFtpDomain.runFtpCommandStdin(scriptFileName, ftpScript);
-
+		}
   }
 
 });
