@@ -615,7 +615,6 @@ define(function (require, exports, module) {
       //invoke node js to build and run our ftp script file
       osFtpDomain.runFtpCommandStdin(scriptFileName, ftpScript);
 
-      console.log('Am I done');
   }
 
 });
