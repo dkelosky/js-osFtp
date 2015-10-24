@@ -1,3 +1,14 @@
+/**
+ * @TODO - this fails for FTPing folders located in 'C:\Users\Dan\AppData\Roaming\Brackets\extensions\user\js-osFtp'
+ *          - local directory is set to C:\System32 ?
+ *
+ * @TODO - remove blank lines
+ *
+ * @TODO - option to map to root directory (if ftp-ing subdirectory, alter root to same subdirectory)
+ *
+ * @TODO - option for unix /linx to replace spaces with a character, right now using underscrore
+*/
+
 define(function (require, exports, module) {
     'use strict';
 
@@ -70,34 +81,34 @@ define(function (require, exports, module) {
     newScript.push('USER');
     newScript.push(site.user);
     newScript.push(site.pass);
-    newScript.push(' ');
+//    newScript.push(' ');
 
     newScript.push('CD  ' + site.root);
     newScript.push('LCD ' + localRootDir);
-    newScript.push(' ');
+//    newScript.push(' ');
 
 
     // Generate mkdir commands
     for (var i = 0; i < mkdirList.length; i++){
       newScript.push('MKDIR ' + mkdirList[i]);
     }
-    newScript.push(' ');
+//    newScript.push(' ');
 
     // Generate put ASCII commands
     newScript.push('ASCII');
     for (var i = 0; i < putAsciiList.length; i++){
-      newScript.push('PUT ' + FileUtils.convertToNativePath(putAsciiList[i]) +
-                     ' '    + FileUtils.convertWindowsPathToUnixPath(putAsciiList[i]));
+      newScript.push('PUT ' + '"' + FileUtils.convertToNativePath(putAsciiList[i]) + '"' +
+                     ' '    + FileUtils.convertWindowsPathToUnixPath(putAsciiList[i]).split(' ').join('_'));
     }
-    newScript.push(' ');
+//    newScript.push(' ');
 
     // Generate put Binary commands
     newScript.push('BIN');
     for (var i = 0; i < putBinList.length; i++){
-      newScript.push('PUT ' + FileUtils.convertToNativePath(putBinList[i]) +
-                     ' '    + FileUtils.convertWindowsPathToUnixPath(putBinList[i]));
+      newScript.push('PUT ' + '"' + FileUtils.convertToNativePath(putBinList[i]) + '"' +
+                     ' '    + FileUtils.convertWindowsPathToUnixPath(putBinList[i]).split(' ').join('_'));
     }
-    newScript.push(' ');
+//    newScript.push(' ');
 
     // End of script
     newScript.push('QUIT');
