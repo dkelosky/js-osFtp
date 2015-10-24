@@ -609,7 +609,7 @@ define(function (require, exports, module) {
   function invokeFtpScript(ftpScript){
 		if (osFtpCommon.isSet(ftpScript)){
       //get folder of this extension
-      var extensionDir = File.getNativeModuleDirectoryPath(module) + '/scripts/';
+      var extensionDir = File.getNativeModuleDirectoryPath(module) + '/';
 
       //select the file name we want to create
       var scriptFileName = extensionDir + 'FTP_Script' + osFtpGlobals.FTP_SCRIPT_FILE_EXTENSION;
