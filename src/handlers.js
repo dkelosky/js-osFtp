@@ -15,15 +15,15 @@ define(function (require, exports, module) {
   /**
    * Extension modules
    */
-  var osFtpCommon   = require('src/common');
-  var osFtpDialog   = require('src/dialog');
-  var osFtpDomain   = require('src/domain');
-  var osFtpGlobals  = require('src/globals');
-  var osFtpHandlers = require('src/handlers');
-  var osFtpMenu     = require('src/menu');
-  var osFtpScripts  = require('src/scripts');
-  var osFtpStrings  = require('strings');
-	var osFtpSitesManager = require('src/sitesManager');
+  var osFtpCommon       = require('src/common');
+  var osFtpDialog       = require('src/dialog');
+  var osFtpDomain       = require('src/domain');
+  var osFtpGlobals      = require('src/globals');
+  var osFtpHandlers     = require('src/handlers');
+  var osFtpMenu         = require('src/menu');
+  var osFtpScripts      = require('src/scripts');
+  var osFtpStrings      = require('strings');
+  var osFtpSitesManager = require('src/sitesManager');
 
 
   /**
@@ -293,11 +293,11 @@ define(function (require, exports, module) {
 
     //build html input object
     var inputFields = [
-      {label: 'Name:', id: name_id, value: nameVal, type: 'text'},
-      {label: 'Host:', id: host_id, value: hostVal, type: 'text'},
-      {label: 'Root:', id: root_id, value: rootVal, type: 'text'},
-      {label: 'User:', id: user_id, value: userVal, type: 'text'},
-      {label: 'Password:', id: pass_id, value: passVal, type: 'password'}
+      {label: osFtpStrings.DIALOG_INPUT_NAME, id: name_id, value: nameVal, type: 'text'},
+      {label: osFtpStrings.DIALOG_INPUT_HOST, id: host_id, value: hostVal, type: 'text'},
+      {label: osFtpStrings.DIALOG_INPUT_ROOT, id: root_id, value: rootVal, type: 'text'},
+      {label: osFtpStrings.DIALOG_INPUT_USER, id: user_id, value: userVal, type: 'text'},
+      {label: osFtpStrings.DIALOG_INPUT_PASSWORD, id: pass_id, value: passVal, type: 'password'}
     ];
 
     //show dialog
