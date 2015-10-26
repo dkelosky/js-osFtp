@@ -8,10 +8,9 @@ for example, at the time this was created, no existing Bracket's FTP extension c
 
 Right click a file (not a directory) in the Working file set or Project set and 'New Ftp Site...'
 
-Reference-style: 
 ![alt text][newFtpSite]
 
-[newFtpSite]: https://github.com/dkelosky/js-osFtp/tree/master/images/createNewSite.png "New Ftp Site"
+[newFtpSite]: https://github.com/dkelosky/js-osFtp/tree/master/images/newFtpSite.png "New Ftp Site"
 
 
 | Input     | Description                                                                                               |
