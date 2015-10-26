@@ -2,8 +2,6 @@
  * @TODO - Package and publish
  * @TODO - add error checking for invalid input (i.e. invalid characters, duplicate site names, ...)
  * @TODO - add error reporting, perhaps add panel for logging data to see errors
- * @TODO - add more extension checking and set transfer type accordingly (e.g. ascii, binary, ...)
- * @TODO - allow for ftp of directory
  * @TODO - allow for key bindings
  * @TODO - allow for ftp get of data
  */

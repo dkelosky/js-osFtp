@@ -1,13 +1,7 @@
 /**
  * @TODO - this fails for FTPing folders located in 'C:\Users\Dan\AppData\Roaming\Brackets\extensions\user\js-osFtp'
  *          - local directory is set to C:\System32 ?
- *
- * @TODO - remove blank lines
- *
- * @TODO - option to map to root directory (if ftp-ing subdirectory, alter root to same subdirectory)
- *
- * @TODO - option for unix /linx to replace spaces with a character, right now using underscrore
-*/
+ */
 
 define(function (require, exports, module) {
     'use strict';
@@ -164,17 +158,17 @@ define(function (require, exports, module) {
 
   /**
    * Check known extensions to see whether ftp should be done in ascii mode
-   * @param   {String} inputFile file name including extension
-   * @returns {Boolean}  Returns true if this extension should be ftp'ed as ascii
+   * @param   {String}  InputFile file name including extension
+   * @returns {Boolean} Returns true if this extension should be ftp'ed as ascii
    */
 
   function isAsciiFileMode(inputFile){
-    var returnStatus = false;
+    var returnStatus = true;
 
     var fileExt = FileUtils.getFileExtension(inputFile);
 
-    if  (FTP_ASCII_EXTENTIONS.indexOf(fileExt.toUpperCase()) != -1){
-      returnStatus = true;
+    if  (FTP_BINARY_EXTENSIONS.indexOf(fileExt.toUpperCase()) != -1){
+      returnStatus = false;
     }
 
     return returnStatus;
