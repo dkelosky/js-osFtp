@@ -10,7 +10,11 @@ Right click a file (not a directory) in the Working file set or Project set and 
 
 ![alt text][newFtpSite]
 
+Fill in the dialog:
+
 ![alt text][addFtpSite]
+
+The dialog input field scriptions are:
 
 | Input     | Description                                                                                               |
 | --------- | --------------------------------------------------------------------------------------------------------- |
@@ -21,7 +25,9 @@ Right click a file (not a directory) in the Working file set or Project set and 
 | Password  | Password                                                                                                  |
 
 Right click a file (not a directory) in the Working file set or Project set and select the site you added.  This builds
-a script file in the extension directory and executes the script.
+a script file in the extension directory and executes the script.  You will receive a confirmation prompt if attemping to upload an entire directory.
+
+![alt text][runSite]
 
 ---
 
@@ -46,3 +52,4 @@ Right click a file (not a directory) in the Working file set or Project set and 
 
 [newFtpSite]: https://github.com/dkelosky/js-osFtp/blob/master/images/newFtpSite.PNG "New Ftp Site..."
 [addFtpSite]: https://github.com/dkelosky/js-osFtp/blob/master/images/addFtpSite.PNG "Add Ftp Site"
+[runSite]: https://github.com/dkelosky/js-osFtp/blob/master/images/runSite.PNG "Run Site"
