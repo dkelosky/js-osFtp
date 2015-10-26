@@ -23,6 +23,7 @@ define(function (require, exports, module) {
   var osFtpMenu     = require('src/menu');
   var osFtpScripts  = require('src/scripts');
   var osFtpStrings  = require('strings');
+	var osFtpSitesManager = require('src/sitesManager');
 
 
   /**
@@ -388,6 +389,10 @@ define(function (require, exports, module) {
         user: user,
         pass: pass
       };
+
+			// LDL5007 testing
+			var newSite = new osFtpSitesManager.Site(name, host, root, user, pass);
+			osFtpSitesManager.registerSite(newSite);
 
       //if old site, delete its contents
       if (oldSession)
