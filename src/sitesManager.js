@@ -50,8 +50,8 @@ define(function (require, exports, module) {
 		if (newSite.isValid()){
 			var tempSite = getSiteByName(newSite.name);
 			if (osFtpCommon.isSet(tempSite)){
-				var index = fileList.indexof(tempSite);
-				fileList[index] = newSite;
+				var index = sitesList.indexOf(tempSite);
+				sitesList[index] = newSite;
 			}
 			else{
 				sitesList.push(newSite);
@@ -69,8 +69,8 @@ define(function (require, exports, module) {
 
 		var Site = getSiteByName(siteName);
 		if (Site.isValid()){
-			var index = fileList.indexOf(Site);
-			fileList.splice(index, 1);
+			var index = sitesList.indexOf(Site);
+			sitesList.splice(index, 1);
 
 			returnStatus = true;
 		}
@@ -83,8 +83,8 @@ define(function (require, exports, module) {
 		var returnSite = '';
 
 		for (var i = 0; i < sitesList.length; i++){
-			if (siteList[i].name == name){
-				returnSite = siteList[i];
+			if (sitesList[i].name == name){
+				returnSite = sitesList[i];
 				break;
 			}
 		}
