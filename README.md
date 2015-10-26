@@ -23,14 +23,17 @@ a script file in the extension directory and executes the script.
 
 ## Run Your Own FTP Script
 
-Create an FTP script file like (you must specify the keyword 'user' since autologin is supressed):
+Create an FTP script file like the following example supplying your own user name and password for myUserName and myPassword respectively and altering the local directory (lcd) and remote directory (cd) to the desired local and remote locations.
 
-    op some_host
+Note: The ftp executable is invoked with the -ins options so autologin is supressed (you must specify the keyword 'user') and interactive mode is defaulted to be OFF:
+
+    open 192.168.0.106
     user 
-    some_user 
-    some_password
-    prompt
-    ...
+    myUsername
+    myPassword
+    lcd C:\Users\myUser\dev
+    cd dev
+    mput *
     quit
   
 Right click a file (not a directory) in the Working file set or Project set and 'Run as FTP Script'
