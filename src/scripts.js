@@ -117,7 +117,7 @@ define(function (require, exports, module) {
       returnScriptString = returnScriptString + newScript[i] + '\n';
     }
 
-    console.log(returnScriptString);
+    //console.log(returnScriptString);
 
     return returnScriptString;
   }

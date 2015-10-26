@@ -30,7 +30,7 @@ define(function (require, exports, module) {
   function runFtpCommand(scriptFile) {
 
     //log input
-    console.log('doFtp(\n' + scriptFile + ');');
+    console.log('doFtp(...);');
 
     //invoke domain function
     osFtpDomain.exec('doFtp', scriptFile)
@@ -59,7 +59,7 @@ define(function (require, exports, module) {
   function runFtpCommandStdin(file, data) {
 
     //log input
-    console.log('doFtpStdin(\n' + file + ', \n' + data + ');');
+    console.log('doFtpStdin(\n' + file + ', ...);');
 
     //invoke domain function
     osFtpDomain.exec('doFtpStdin', file, data)
