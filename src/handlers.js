@@ -605,22 +605,21 @@ define(function (require, exports, module) {
 
   }
 
+
   /**
    * [[Description]]
    * @param {Object} site Object representing the site to upload to
    */
+  function invokeFtpScript(ftpScript) {
 
-  function invokeFtpScript(ftpScript){
-		if (osFtpCommon.isSet(ftpScript)){
-      //get folder of this extension
-      var extensionDir = File.getNativeModuleDirectoryPath(module) + '/';
+      if (osFtpCommon.isSet(ftpScript)) {
 
-      //select the file name we want to create
-      var scriptFileName = extensionDir + 'FTP_Script' + osFtpGlobals.FTP_SCRIPT_FILE_EXTENSION;
+        //select the file name we want to create
+        var scriptFileName = osFtpGlobals.FTP_SCRIPT_FILE_NAME + osFtpGlobals.FTP_SCRIPT_FILE_EXTENSION;
 
-      //invoke node js to build and run our ftp script file
-      osFtpDomain.runFtpCommandStdin(scriptFileName, ftpScript);
-		}
+        //invoke node js to build and run our ftp script file
+        osFtpDomain.runFtpCommandStdin(scriptFileName, ftpScript);
+      }
   }
 
 });

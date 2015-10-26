@@ -27,7 +27,7 @@ maxerr: 50, node: true */
 
 (function () {
   'use strict';
-  
+
   //this is required, not sure what it does
   exports.init = init;
 
@@ -95,13 +95,13 @@ maxerr: 50, node: true */
    * Command handler
    * @param {string} ftpScriptFile Fully qualified FTP script file to execute
    */
-  function doFtp(ftpScriptFile) {
+  function doFtp(cwd, ftpScriptFile) {
 
     //log input script file
     console.log('Input file specified was: ' + ftpScriptFile);
 
     //run ftp with options to suppress auto login and to supply a script file
-    var bar = new runProcess('ftp', ['-ins:' + ftpScriptFile], function(response) {
+    var bar = new runProcess(cwd, 'ftp', ['-ins:' + ftpScriptFile], function(response) {
       console.log('Command response was: \n' + response)
     });
   }
@@ -110,14 +110,14 @@ maxerr: 50, node: true */
    * Command handler
    * @param {string} ftpScriptFile Fully qualified FTP script file to execute
    */
-  function doFtpStdin(file, data) {
+  function doFtpStdin(cwd, file, data) {
 
     //orient to node file system
     var fs = require('fs');
 
     //sychronously open, write to, and close a temp script file
-    console.log('Opening file - ' + file);
-    var newFile = fs.openSync(file, 'w');
+    console.log('Opening file - ' + cwd + file);
+    var newFile = fs.openSync(cwd + file, 'w');
 
     console.log('Writing file data...');
     fs.writeSync(newFile, data);
@@ -127,7 +127,7 @@ maxerr: 50, node: true */
     console.log('File closed');
 
     //run ftp with options to suppress auto login and to supply a script file
-    var bar = new runProcess('ftp', ['-ins:' + file], function(response, isError) {
+    var bar = new runProcess(cwd, 'ftp', ['-ins:' + cwd + file], function(response, isError) {
 
       if (isError) {
         console.log('Error response was: \n' + response)
@@ -144,16 +144,40 @@ maxerr: 50, node: true */
 
   /**
    * Wrapper for spawning a child process
+   * @param {String} cwd      Current working directory command
    * @param {String} cmd      Executable command
    * @param {String} args     Arguments for cmd executable
    * @param {Function} callBack Callback for function complete
    */
-  function runProcess(cmd, args, callBack) {
+  function runProcess(cwd, cmd, args, callBack) {
 
+    //log our spawn
+    console.log('runProcess(' + cwd + ', ...);');
+
+    //initialize varialbes
     var spawn = require('child_process').spawn;
-    var fs = require('stream');                   //stream
+    var fs = require('fs');
+    var os = require('os');
 
+    var isWindows = (os.platform() == 'win32');
+
+    var newCwd = cwd;
+
+    //alter CWD if windows
+    if (isWindows) {
+
+      //switch directory indicator
+      newCwd = cwd.replace(/\//g, '\\');
+
+      //log new directory
+      console.log('New CWD is - ' + newCwd);
+
+    }
+
+    //build spawn options
     var options = {
+
+      cwd: newCwd,
 
       /**
        * 'pipe'             - pipe parent to child for stdio
@@ -165,7 +189,7 @@ maxerr: 50, node: true */
        */
       stdio: [
         'pipe', //'pipe' is an option          --- child.stdin is shorthand for stdio[0]
-        'pipe', //fs.openSync('out.txt', 'w'), --- child.stdout is shorthand for stdio[1]
+        'pipe', //fs.openSync('out.txt', 'w'), //--- child.stdout is shorthand for stdio[1]
         'pipe'  //fs.openSync('err.txt', 'w')  --- child.stderr is shorthand for stdio[3]
         ]
     };

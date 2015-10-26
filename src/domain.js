@@ -6,6 +6,7 @@ define(function (require, exports, module) {
    * Bracket modules
    */
   var ExtensionUtils  = brackets.getModule('utils/ExtensionUtils');
+  var File            = brackets.getModule('file/FileUtils');
   var NodeDomain      = brackets.getModule('utils/NodeDomain');
 
 
@@ -33,7 +34,7 @@ define(function (require, exports, module) {
     console.log('doFtp(...);');
 
     //invoke domain function
-    osFtpDomain.exec('doFtp', scriptFile)
+    osFtpDomain.exec('doFtp', getNodeDirectory(), scriptFile)
 
     //listen for done
     .done(
@@ -62,7 +63,7 @@ define(function (require, exports, module) {
     console.log('doFtpStdin(\n' + file + ', ...);');
 
     //invoke domain function
-    osFtpDomain.exec('doFtpStdin', file, data)
+    osFtpDomain.exec('doFtpStdin', getNodeDirectory(), file, data)
 
     //listen for done
     .done(
@@ -79,5 +80,20 @@ define(function (require, exports, module) {
       }
     )
   }
+
+  /**
+   * Function to get the working directory for the NodeJs code
+   * @returns {String} The directory where the NodeJs source code resides
+   */
+  function getNodeDirectory() {
+
+    var extensionDirectory = File.getNativeModuleDirectoryPath(module);
+    var extensionDirectories = extensionDirectory.split('\/');
+    extensionDirectories.pop();
+    extensionDirectories.push('node/');
+    return extensionDirectories.join('\/');
+
+  }
+
 
 });
