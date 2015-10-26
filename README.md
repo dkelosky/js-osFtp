@@ -10,7 +10,7 @@ Right click a file (not a directory) in the Working file set or Project set and 
 
 ![alt text][newFtpSite]
 
-[newFtpSite]: https://github.com/dkelosky/js-osFtp/tree/master/images/newFtpSite.png "New Ftp Site"
+[newFtpSite]: https://github.com/dkelosky/js-osFtp/blob/master/images/newFtpSite.PNG "New Ftp Site"
 
 
 | Input     | Description                                                                                               |
