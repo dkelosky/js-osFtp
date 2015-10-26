@@ -376,7 +376,7 @@ define(function (require, exports, module) {
         'host - ' + host + ', ' +
         'root - ' + root + ', ' +
         'user - ' + user + ', ' +
-        'pass - ' + pass
+        'pass - ' + '********'//pass
       );
 
       //@TODO, validate name is not already used
