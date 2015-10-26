@@ -10,8 +10,7 @@ Right click a file (not a directory) in the Working file set or Project set and 
 
 ![alt text][newFtpSite]
 
-[newFtpSite]: https://github.com/dkelosky/js-osFtp/blob/master/images/newFtpSite.PNG "New Ftp Site"
-
+![alt text][addFtpSite]
 
 | Input     | Description                                                                                               |
 | --------- | --------------------------------------------------------------------------------------------------------- |
@@ -42,3 +41,8 @@ Note: The ftp executable is invoked with the -ins options so autologin is supres
     quit
   
 Right click a file (not a directory) in the Working file set or Project set and 'Run as FTP Script'
+
+
+
+[newFtpSite]: https://github.com/dkelosky/js-osFtp/blob/master/images/newFtpSite.PNG "New Ftp Site..."
+[addFtpSite]: https://github.com/dkelosky/js-osFtp/blob/master/images/addFtpSite.PNG "Add Ftp Site"
