@@ -117,7 +117,15 @@ define(function (require, exports, module) {
     var title = osFtpStrings.DIALOG_TITLE_ADD_SITE;
 
     //dialog buttons array
-    var localButtons = buttons;
+    var localButtons = [];
+
+    //add global buttons to our initial array of buttons
+    buttons.forEach(function (button) {
+
+      //add this button to the array
+      localButtons.push(button);
+
+    });
 
     //if existing site
     if (existing) {

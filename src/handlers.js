@@ -492,7 +492,6 @@ define(function (require, exports, module) {
 
     //get the command name
     var name = this.getName();
-		console.log(name);
 
     //site object associated with this command name
     var thisSite;
