@@ -6,7 +6,15 @@ for example, at the time this was created, no existing Bracket's FTP extension c
 --- 
 ## FTP Files to a Remote Destiniation
 
-Right click a file (not a directory) in the Working file set or Project set and 'New Ftp Site...'
+Right click a file in the Working file set or Project set and 'New Ftp Site...'
+
+![alt text][newFtpSite]
+
+Fill in the dialog:
+
+![alt text][addFtpSite]
+
+The dialog input field scriptions are:
 
 | Input     | Description                                                                                               |
 | --------- | --------------------------------------------------------------------------------------------------------- |
@@ -16,8 +24,12 @@ Right click a file (not a directory) in the Working file set or Project set and 
 | User      | User name                                                                                                 |
 | Password  | Password                                                                                                  |
 
-Right click a file (not a directory) in the Working file set or Project set and select the site you added.  This builds
-a script file in the extension directory and executes the script.
+Right click a file in the Working file set or Project set and select the site you added.  This builds
+a script file in the extension directory and executes the script:
+
+![alt text][runSite]
+
+You will receive a confirmation prompt if attemping to upload an entire directory.
 
 ---
 
@@ -37,3 +49,8 @@ Note: The ftp executable is invoked with the -ins options so autologin is supres
     quit
   
 Right click a file (not a directory) in the Working file set or Project set and 'Run as FTP Script'
+
+
+[newFtpSite]: https://github.com/dkelosky/js-osFtp/blob/master/images/newFtpSite.PNG "New Ftp Site..."
+[addFtpSite]: https://github.com/dkelosky/js-osFtp/blob/master/images/addFtpSite.PNG "Add Ftp Site"
+[runSite]: https://github.com/dkelosky/js-osFtp/blob/master/images/runSite.PNG "Run Site"
