@@ -1,0 +1,10 @@
+.osftp-status-busy {
+        color: yellow;
+}
+
+.osftp-status-done {
+        color: green;
+}
+.osftp-status-error {
+        color: red;
+}

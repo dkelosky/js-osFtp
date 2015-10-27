@@ -24,6 +24,11 @@ define(function (require, exports, module) {
 
   var sites                       = [];
 
+  var STATUS_INDICATOR_HTML_ID    = 'theauthor-osftp-status-indicator';
+  var STATUS_INDICATOR_ID         = 'theauthor.osftp.status_indicator';
+
+  var STATUS_VISIBLE_TIME         = 3 * 1000;
+
 
   /**
    * Exported variables
@@ -46,5 +51,10 @@ define(function (require, exports, module) {
   exports.PREF_SITES                  = PREF_SITES;
 
   exports.sites                       = sites;
+
+  exports.STATUS_INDICATOR_HTML_ID    = STATUS_INDICATOR_HTML_ID;
+  exports.STATUS_INDICATOR_ID         = STATUS_INDICATOR_ID;
+
+  exports.STATUS_VISIBLE_TIME         = STATUS_VISIBLE_TIME;
 
 });

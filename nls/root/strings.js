@@ -27,6 +27,10 @@
 /*global define */
 
 define({
+    'COMMAND_RUN_SCRIPT_LABEL'    : 'Run as FTP Script',
+    'COMMAND_GET_FROM_SITE_LABEL' : 'Get from FTP Site...',
+    'COMMAND_EDIT_SITE_LABEL'     : 'Edit FTP Site...',
+    'COMMAND_NEW_SITE_LABEL'      : 'New FTP Site...',
     'DIALOG_TITLE_ADD_SITE'       : 'Add FTP Site',
     'DIALOG_TITLE_EDIT_SITE'      : 'Edit FTP Site',
     'DIALOG_TITLE_CONFIRM_UPLOAD' : 'Confirm Directory Upload',
@@ -42,8 +46,6 @@ define({
     'DIALOG_CANCEL'               : 'CANCEL',
     'DIALOG_DELETE'               : 'DELETE',
     'DIALOG_CONFIRM_BODY'         : 'Confirm directory upload to site - ',
-    'COMMAND_GET_FROM_SITE_LABEL' : 'Get from FTP Site...',
-    'COMMAND_RUN_SCRIPT_LABEL'    : 'Run as FTP Script',
-    'COMMAND_EDIT_SITE_LABEL'     : 'Edit FTP Site...',
-    'COMMAND_NEW_SITE_LABEL'      : 'New FTP Site...'
+    'STATUS_FTP_INDICATOR'        : 'OS FTP',
+    'STATUS_FTP_TOOLTIP'          : 'OS FTP Status'
 });
