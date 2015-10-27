@@ -370,15 +370,11 @@ define(function (require, exports, module) {
         pass: pass
       };
 
-<<<<<<< HEAD
-			// LDL5007 testing
-			var newSite = new osFtpSite.Site(name, host, root, user, pass);
-			osFtpSitesManager.registerSite(newSite);
-=======
+
       // LDL5007 testing
-      var newSite = new osFtpSitesManager.Site(name, host, root, user, pass);
+      var newSite = new osFtpSite.Site(name, host, root, user, pass);
       osFtpSitesManager.registerSite(newSite);
->>>>>>> origin/master
+
 
       //if old site, delete its contents
       if (oldSession)
