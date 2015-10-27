@@ -4,6 +4,8 @@
  * @TODO - add error reporting, perhaps add panel for logging data to see errors
  * @TODO - allow for key bindings
  * @TODO - allow for ftp get of data
+ * @TODO - script folder
+ * @TODO - settings for ftp type
  */
 define(function (require, exports, module) {
   'use strict';
@@ -12,8 +14,10 @@ define(function (require, exports, module) {
   /**
    * Bracket modules
    */
-  var AppInit        = brackets.getModule('utils/AppInit');
-  var CommandManager = brackets.getModule('command/CommandManager');
+  var AppInit         = brackets.getModule('utils/AppInit');
+  var CommandManager  = brackets.getModule('command/CommandManager');
+  var ExtensionUtils  = brackets.getModule('utils/ExtensionUtils');
+  var StatusBar       = brackets.getModule('widgets/StatusBar');
 
 
   /**
@@ -41,7 +45,34 @@ define(function (require, exports, module) {
     //handlers
     osFtpHandlers.init();
 
+    //add the status indicator
+    addStatusIndicator();
+
   });
+
+
+  /**
+   * Adds the status indicator to the bottom bar
+   */
+  function addStatusIndicator() {
+
+    //build status indicator
+    var statusIndicatorHtml = $('<div id="' +
+      osFtpGlobals.STATUS_INDICATOR_HTML_ID +
+      '">' +
+      osFtpStrings.STATUS_FTP_INDICATOR +
+      '</div>');
+
+    //add to bar
+    StatusBar.addIndicator(
+      osFtpGlobals.STATUS_INDICATOR_ID, //unique id
+      statusIndicatorHtml,              //html
+      true,                             //show the indicator
+      '',                               //class style
+      osFtpStrings.STATUS_FTP_TOOLTIP   //tooltip text
+    );
+
+  }
 
 
 });

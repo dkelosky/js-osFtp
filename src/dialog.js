@@ -42,6 +42,11 @@ define(function (require, exports, module) {
 
 
 
+  /**
+   * Dialog to present a confirmation dialog before uploading an entire directory
+   * @param   {Object} site [[Description]]
+   * @returns {Object} Dialog object
+   */
   function showConfirmDirectoryUpload(site) {
 
     //log this

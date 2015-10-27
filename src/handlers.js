@@ -31,6 +31,7 @@ define(function (require, exports, module) {
    * Global variables
    */
   var osFtpPreferences = PreferencesManager.getExtensionPrefs(osFtpGlobals.PREF);
+  var globalDialogCurrent;
 
 
   /**
@@ -42,6 +43,27 @@ define(function (require, exports, module) {
   exports.handleRunScript     = handleRunScript;
   exports.handleRunSite       = handleRunSite;
   exports.init                = init;
+
+
+  /**
+   * Listener for escape key
+   */
+  $(document).keyup(function (event) {
+
+    //close if escape key is pressed
+    if (event.which == osFtpGlobals.ESCAPE_KEY && osFtpCommon.isSet(globalDialogCurrent)) {
+
+      //log that the user wants to close
+      console.log('Dialog escaped without save');
+
+      //close the dialog
+      globalDialogCurrent.close();
+
+      //set the global for the listener
+      globalDialogCurrent = null;
+    }
+
+  });
 
 
   /**
@@ -124,25 +146,10 @@ define(function (require, exports, module) {
     var selectedSiteIndex;
 
     //listen for escape key
-    $(document).keyup(function (event) {
+    handleEscape(selectDialog);
 
-      //close if escape key is pressed
-      if (event.which == osFtpGlobals.ESCAPE_KEY)
-        selectDialog.close();
-
-    });
-
-    //listen for cancel (modal doesnt have standard id= attribute, it's data-button-id
-    $('button[data-button-id="' + Dialog.DIALOG_BTN_CANCEL + '"').click(function () {
-
-      //log that the user wants to close
-      console.log('Dialog closed without save');
-
-      //close the dialog
-      selectDialog.close();
-
-    });
-
+    //handle cancel button
+    handleCancel(selectDialog);
 
     //listen for ok
     $('button[data-button-id="' + Dialog.DIALOG_BTN_OK + '"').click(function () {
@@ -177,6 +184,7 @@ define(function (require, exports, module) {
 
   }
 
+
   /**
    * Handler for getting from an added site
    */
@@ -195,25 +203,10 @@ define(function (require, exports, module) {
     var selectedSiteIndex;
 
     //listen for escape key
-    $(document).keyup(function (event) {
+    handleEscape(selectDialog);
 
-      //close if escape key is pressed
-      if (event.which == osFtpGlobals.ESCAPE_KEY)
-        selectDialog.close();
-
-    });
-
-    //listen for cancel (modal doesnt have standard id= attribute, it's data-button-id
-    $('button[data-button-id="' + Dialog.DIALOG_BTN_CANCEL + '"').click(function () {
-
-      //log that the user wants to close
-      console.log('Dialog closed without save');
-
-      //close the dialog
-      selectDialog.close();
-
-    });
-
+    //handle cancel button
+    handleCancel(selectDialog);
 
     //listen for ok
     $('button[data-button-id="' + Dialog.DIALOG_BTN_OK + '"').click(function () {
@@ -305,24 +298,10 @@ define(function (require, exports, module) {
     var inputDialog = osFtpDialog.showSiteDialog(inputFields, oldSession);
 
     //listen for escape key
-    $(document).keyup(function (event) {
+    handleEscape(inputDialog);
 
-      //close if escape key is pressed
-      if (event.which == osFtpGlobals.ESCAPE_KEY)
-        inputDialog.close();
-
-    });
-
-    //listen for cancel (modal doesnt have standard id= attribute, it's data-button-id
-    $('button[data-button-id="' + Dialog.DIALOG_BTN_CANCEL + '"').click(function () {
-
-      //log that the user wants to close
-      console.log('Dialog closed without save');
-
-      //close the dialog
-      inputDialog.close();
-
-    });
+    //handle cancel button
+    handleCancel(inputDialog);
 
     //if old session
     if (oldSession) {
@@ -391,9 +370,15 @@ define(function (require, exports, module) {
         pass: pass
       };
 
+<<<<<<< HEAD
 			// LDL5007 testing
 			var newSite = new osFtpSite.Site(name, host, root, user, pass);
 			osFtpSitesManager.registerSite(newSite);
+=======
+      // LDL5007 testing
+      var newSite = new osFtpSitesManager.Site(name, host, root, user, pass);
+      osFtpSitesManager.registerSite(newSite);
+>>>>>>> origin/master
 
       //if old site, delete its contents
       if (oldSession)
@@ -516,12 +501,14 @@ define(function (require, exports, module) {
 
     //an individual file was choose, build a script string and invoke node to run FTP and this script
     } else {
+
       //build our ftp script
       var ftpScript = osFtpScripts.generateUploadScript(selectedFiles, thisSite);
       invokeFtpScript(ftpScript);
     }
 
   }
+
 
   /**
    * Initialize saved handlers and globals
@@ -550,6 +537,7 @@ define(function (require, exports, module) {
 
   }
 
+
   /**
    * [[Description]]
    * @param {Object} site Object representing the site to upload to
@@ -560,25 +548,10 @@ define(function (require, exports, module) {
     var confirmDialog = osFtpDialog.showConfirmDirectoryUpload(site);
 
     //listen for escape key
-    $(document).keyup(function (event) {
+    handleEscape(confirmDialog);
 
-      //close if escape key is pressed
-      if (event.which == osFtpGlobals.ESCAPE_KEY)
-        confirmDialog.close();
-
-    });
-
-    //listen for cancel (modal doesnt have standard id= attribute, it's data-button-id
-    $('button[data-button-id="' + Dialog.DIALOG_BTN_CANCEL + '"').click(function () {
-
-      //log that the user wants to close
-      console.log('Dialog closed without save');
-
-      //close the dialog
-      confirmDialog.close();
-
-    });
-
+    //handle cancel button
+    handleCancel(confirmDialog);
 
     //listen for ok
     $('button[data-button-id="' + Dialog.DIALOG_BTN_OK + '"').click(function () {
@@ -608,19 +581,56 @@ define(function (require, exports, module) {
 
 
   /**
+   * Handle CANCEL button for all dialogs
+   * @param {Object} dialog Dialog object
+   */
+  function handleCancel(dialog) {
+
+    //listen for cancel (modal doesnt have standard id= attribute, it's data-button-id
+    $('button[data-button-id="' + Dialog.DIALOG_BTN_CANCEL + '"').click(function () {
+
+      //log that the user wants to close
+      console.log('Dialog closed without save');
+
+      //close the dialog
+      dialog.close();
+
+      //set the global for the listener
+      globalDialogCurrent = null;
+
+    });
+
+  }
+
+
+  /**
+   * Handle escape button for all dialogs
+   * @param {Object} dialog Dialog object
+   */
+  function handleEscape(dialog) {
+
+    //set the global for the listener
+    globalDialogCurrent = dialog;
+
+  }
+
+
+  /**
    * [[Description]]
    * @param {Object} site Object representing the site to upload to
    */
   function invokeFtpScript(ftpScript) {
 
-      if (osFtpCommon.isSet(ftpScript)) {
+    //if the script is defined
+    if (osFtpCommon.isSet(ftpScript)) {
 
-        //select the file name we want to create
-        var scriptFileName = osFtpGlobals.FTP_SCRIPT_FILE_NAME + osFtpGlobals.FTP_SCRIPT_FILE_EXTENSION;
+      //select the file name we want to create
+      var scriptFileName = osFtpGlobals.FTP_SCRIPT_FILE_NAME + osFtpGlobals.FTP_SCRIPT_FILE_EXTENSION;
 
-        //invoke node js to build and run our ftp script file
-        osFtpDomain.runFtpCommandStdin(scriptFileName, ftpScript);
-      }
+      //invoke node js to build and run our ftp script file
+      osFtpDomain.runFtpCommandStdin(scriptFileName, ftpScript);
+
+    }
   }
 
 });
