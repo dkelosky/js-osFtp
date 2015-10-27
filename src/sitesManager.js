@@ -12,53 +12,33 @@ define(function (require, exports, module) {
 
 	var osFtpGlobals = require('src/globals');
 	var osFtpCommon  = require('src/common');
+	var osFtpSite    = require('src/site');
 
-	exports.Site        = Site;
 	exports.getAllSites = getAllSites;
 	exports.registerSite = registerSite;
 	exports.removeSite   = removeSite;
 
 	var sitesList = [];
 
-	function Site(name, hostAddr, rootDir, userName, password){
-		this.objId    = osFtpGlobals.OBJECT_FTP_SITE_ID;
-		this.name     = name;
-		this.hostAddr = hostAddr;
-		this.rootDir  = rootDir;
-		this.userName = userName;
-		this.password = password;
-		this.getCommandId = function(){
-			return osFtpGlobals.COMMAND_RUN_SITE_BASE_ID + this.name;
-		};
-		this.getCommandLabel = function(){
-			return osFtpGlobals.COMMAND_RUN_SITE_BASE_LABEL + this.name;
-		};
-		this.isValid = function(){
-			if (this.objId == osFtpGlobals.OBJECT_FTP_SITE_ID){
-				return true;
-			} else{
-				return false;
-			}
-		};
-	}
-
-
-
 	function registerSite(newSite){
 		var returnStatus = false;
 
-		if (newSite.isValid()){
+		if (osFtpSite.validateSite(newSite)){
 			var tempSite = getSiteByName(newSite.name);
+
 			if (osFtpCommon.isSet(tempSite)){
 				var index = sitesList.indexOf(tempSite);
 				sitesList[index] = newSite;
-			}
-			else{
+			 }
+			 else{
 				sitesList.push(newSite);
 			}
 
 			returnStatus = true;
-		}
+
+        }
+
+        console.log(sitesList);
 
 		return returnStatus;
 	}
@@ -68,7 +48,7 @@ define(function (require, exports, module) {
 		var returnStatus = false;
 
 		var Site = getSiteByName(siteName);
-		if (Site.isValid()){
+		if (osFtpSite.validateSite(Site)){
 			var index = sitesList.indexOf(Site);
 			sitesList.splice(index, 1);
 
@@ -80,7 +60,7 @@ define(function (require, exports, module) {
 
 
 	function getSiteByName(name){
-		var returnSite = '';
+		var returnSite = undefined;
 
 		for (var i = 0; i < sitesList.length; i++){
 			if (sitesList[i].name == name){
