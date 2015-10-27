@@ -1,7 +1,13 @@
 # js-osFtp
 
-This Brackets extension uses native OS services for FTP.  Native OS FTP services are more robust and work well when other extensions fall short, 
-for example, at the time this was created, no existing Bracket's FTP extension could propertly FTP to and from z/OS.
+This Brackets extension uses native OS services for FTP.  Native OS FTP services are more robust and work well when other extensions fall short.  For example, at the time this was created, no existing Bracket's FTP extension could propertly FTP to and from z/OS.
+
+### To install using Git:
+* Use ‘Help’ -> ‘Show Extensions Folder’.  
+* Open the ‘user’ folder.  
+* Copy this path and CD to it in Git CMD.  
+* git clone https://github.com/dkelosky/js-osFtp.git
+* Restart Brackets.  
 
 --- 
 ## FTP Files to a Remote Destiniation
