@@ -65,7 +65,7 @@ define(function (require, exports, module) {
   function invokeNode(file, data) {
 
     //log input
-    console.log('doFtpStdin(\n' + file + ', ...);');
+    console.log('doFtpStdin(' + file + ', ...);');
 
     //show we're busy
     showBusy();

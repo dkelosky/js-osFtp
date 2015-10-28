@@ -115,9 +115,11 @@ maxerr: 50, node: true */
     //orient to node file system
     var fs = require('fs');
 
+    var scriptDirectory = getScriptsDirectory(cwd);
+
     //sychronously open, write to, and close a temp script file
-    console.log('Opening file - ' + cwd + file);
-    var newFile = fs.openSync(cwd + file, 'w');
+    console.log('Opening file - ' + scriptDirectory + file);
+    var newFile = fs.openSync(scriptDirectory + file, 'w');
 
     console.log('Writing file data...');
     fs.writeSync(newFile, data);
@@ -127,7 +129,7 @@ maxerr: 50, node: true */
     console.log('File closed');
 
     //run ftp with options to suppress auto login and to supply a script file
-    var bar = new runProcess(cwd, 'ftp', ['-ins:' + cwd + file], function(response, isError) {
+    var bar = new runProcess(cwd, 'ftp', ['-ins:' + scriptDirectory + file], function(response, isError) {
 
       if (isError) {
         console.log('Error response was: \n' + response)
@@ -251,6 +253,23 @@ maxerr: 50, node: true */
       //log that we reached the end
       console.log('End of stderr reached');
     });
+  }
+
+
+
+
+  /**
+   * Function to get the working directory for the script files
+   * @returns {String} The directory where the scripts will go
+   */
+  function getScriptsDirectory(directory) {
+
+    var directories = directory.split('\/');
+    directories.pop();
+    directories.pop();
+    directories.push('scripts/');
+    return directories.join('\/');
+
   }
 
 
