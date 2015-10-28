@@ -27,6 +27,14 @@
 /*global define */
 
 define({
+	PRODUCT_SETTINGS              : 'JS-OSFTP Settings\u2026',
+	TRANSFER_TYPE                 : 'Transfer Type',
+	TREAT_TYPE_AS_ASCII_LABEL     : 'Treat the following filetypes as ASCII files:',
+	TREAT_FILE_WIHTOUT_EXTENSION_AS_ASCII : 'Treat files without extension as ASCII file',
+	BUTTON_CANCEL                 : 'Cancel',
+	BUTTON_SAVE                   : 'Save',
+	BUTTON_ADD                    : 'Add',
+	BUTTON_REMOVE                 : 'Remove',
     'COMMAND_PRODUCT_SETTINGS_LABEL' : 'OSFTP Setting...',
     'COMMAND_RUN_SCRIPT_LABEL'    : 'Run as FTP Script',
     'COMMAND_GET_FROM_SITE_LABEL' : 'Get from FTP Site...',

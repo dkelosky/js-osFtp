@@ -10,9 +10,24 @@ define(function (require, exports) {
 	var dialog,
 		$dialog;
 
+	function setValues(values){
+
+	}
+
+	function assignActions(){
+
+	}
+
 	function init() {
 		console.log('init');
-		return false;
+
+		setValues(Preferences.getAll());
+		asssignActions();
+
+		$("#osftp-setting-tabs a", $dialog).click(function (e) {
+			e.preventDefault();
+			$(this).tab('show');
+		});
 	}
 
 	function collectValues(){
