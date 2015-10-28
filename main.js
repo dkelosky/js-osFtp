@@ -16,6 +16,8 @@ define(function (require, exports, module) {
    */
   var AppInit         = brackets.getModule('utils/AppInit');
   var CommandManager  = brackets.getModule('command/CommandManager');
+  var Commands        = brackets.getModule('command/Commands');
+  var Menus           = brackets.getModule('command/Menus');
   var ExtensionUtils  = brackets.getModule('utils/ExtensionUtils');
   var StatusBar       = brackets.getModule('widgets/StatusBar');
 
@@ -23,11 +25,15 @@ define(function (require, exports, module) {
   /**
    * Extension modules
    */
-  var osFtpGlobals  = require('src/globals');
-  var osFtpHandlers = require('src/handlers');
-  var osFtpMenu     = require('src/menu');
-  var osFtpStrings  = require('strings');
+  var osFtpSettingsDialog = require('src/settingsDialog');
+  var osFtpGlobals        = require('src/globals');
+  var osFtpHandlers       = require('src/handlers');
+  var osFtpMenu           = require('src/menu');
+  var osFtpStrings        = require('strings');
 
+  // Register settings command and add it to the menu.
+  CommandManager.register(osFtpStrings.COMMAND_PRODUCT_SETTINGS_LABEL, osFtpGlobals.COMMAND_PROD_SETTINGS_ID, osFtpSettingsDialog.show);
+  Menus.getMenu(Menus.AppMenuBar.FILE_MENU).addMenuItem(osFtpGlobals.COMMAND_PROD_SETTINGS_ID, "", Menus.AFTER, Commands.FILE_PROJECT_SETTINGS);
 
   /**
    * Initialization complete

@@ -27,6 +27,7 @@
 /*global define */
 
 define({
+    'COMMAND_PRODUCT_SETTINGS_LABEL' : 'OSFTP Setting...',
     'COMMAND_RUN_SCRIPT_LABEL'    : 'Run as FTP Script',
     'COMMAND_GET_FROM_SITE_LABEL' : 'Get from FTP Site...',
     'COMMAND_EDIT_SITE_LABEL'     : 'Edit FTP Site...',

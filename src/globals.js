@@ -5,6 +5,7 @@ define(function (require, exports, module) {
   /**
    * Global variables
    */
+  var COMMAND_PROD_SETTINGS_ID    = 'theauthor.osftp.osftp-settings';
   var COMMAND_GET_FROM_SITE_ID    = 'theauthor.osftp.osftp_get_from_site';
   var COMMAND_EDIT_SITE_ID        = 'theauthor.osftp.osftp_edit_site';
   var COMMAND_NEW_SITE_ID         = 'theauthor.osftp.osftp_new_site';
@@ -33,6 +34,8 @@ define(function (require, exports, module) {
   /**
    * Exported variables
    */
+
+  exports.COMMAND_PROD_SETTINGS_ID    = COMMAND_PROD_SETTINGS_ID;
   exports.COMMAND_GET_FROM_SITE_ID    = COMMAND_GET_FROM_SITE_ID;
   exports.COMMAND_EDIT_SITE_ID        = COMMAND_EDIT_SITE_ID;
   exports.COMMAND_NEW_SITE_ID         = COMMAND_NEW_SITE_ID;
