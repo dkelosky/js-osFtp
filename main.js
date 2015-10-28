@@ -6,6 +6,8 @@
  * @TODO - allow for ftp get of data
  * @TODO - script folder
  * @TODO - settings for ftp type
+ * @TODO - automation testing to add and remove sites, submit jobs, and verify success
+ * @TODO - send event on node complete
  */
 define(function (require, exports, module) {
   'use strict';
