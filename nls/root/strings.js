@@ -31,6 +31,7 @@ define({
 	TRANSFER_TYPE                 : 'Transfer Type',
 	TREAT_TYPE_AS_ASCII_LABEL     : 'Treat the following filetypes as ASCII files:',
 	TREAT_FILE_WIHTOUT_EXTENSION_AS_ASCII : 'Treat files without extension as ASCII file',
+	BUTTON_DEFAULTS               : 'Restore Defaults',
 	BUTTON_CANCEL                 : 'Cancel',
 	BUTTON_SAVE                   : 'Save',
 	BUTTON_ADD                    : 'Add',

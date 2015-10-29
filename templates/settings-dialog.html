@@ -18,7 +18,7 @@
 				</div>
 				<div class='row-fluid'>
 					<div class='span6'>
-						<div id='osftp-settings-transferAsAsciiTable'></div>
+						<div id='osftp-settings-transferAsAsciiTable' type='table' settingsProperty='transferAsAsciiTable'></div>
 
 
 					</div>
@@ -40,7 +40,7 @@
 				<div class='row-fluid'>
 					<div class='span12'>
 						<label for='osftp-setttings-treatFileWithoutExtensionAsAscii'>
-							<input id='osftp-settings-treatFileWithoutExtensionAsAscii' type='checkbox' settingProperty='treatFileWithoutExtentionAsAscii' />
+							<input id='osftp-settings-treatFileWithoutExtensionAsAscii' type='checkbox' settingsProperty='treatFileWithoutExtentionAsAscii' />
 							{{TREAT_FILE_WIHTOUT_EXTENSION_AS_ASCII}}
 						</label>
 					</div>
@@ -51,6 +51,7 @@
 
     </div>
     <div class="modal-footer">
+		<button data-button-id="defaults"  class="dialog-button btn left"          >{{BUTTON_DEFAULTS}}</button>
         <button data-button-id="cancel"    class="dialog-button btn cancel btn-80" >{{BUTTON_CANCEL}}</button>
         <button data-button-id="ok"        class="dialog-button btn primary btn-80">{{BUTTON_SAVE}}</button>
     </div>
