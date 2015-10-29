@@ -1,15 +1,14 @@
-.osftp-bold {
-	font-weight: bold !important;
-}
-
 .osftp-status-busy {
-        color: yellow;
+  color: yellow;
+  font-weight: bold !important;
 }
 
 .osftp-status-done {
-        color: green;
+  color: green;
+  font-weight: bold !important;
 }
 
 .osftp-status-error {
-        color: red;
+  color: red;
+  font-weight: bold !important;
 }
