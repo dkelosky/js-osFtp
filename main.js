@@ -5,8 +5,9 @@
  * @TODO - allow for ftp get of data
  * @TODO - automation testing to add and remove sites, submit jobs, and verify success
  * @TODO - send event on node complete
+ * @TODO - allow kill of process if too much time passes (for now, close Brackets)
  */
-define(function (require, exports, module) {
+define(function(require, exports, module) {
   'use strict';
 
 
@@ -37,7 +38,7 @@ define(function (require, exports, module) {
   /**
    * Initialization complete
    */
-  AppInit.appReady(function () {
+  AppInit.appReady(function() {
 
     //register command and add context menu to run a script
     CommandManager.register(osFtpStrings.COMMAND_RUN_SCRIPT_LABEL, osFtpGlobals.COMMAND_RUN_SCRIPT_ID, osFtpHandlers.handleRunScript);

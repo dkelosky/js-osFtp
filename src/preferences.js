@@ -1,4 +1,4 @@
-define(function (require, exports, module) {
+define(function(require, exports, module) {
     "use strict";
 
     var _ = brackets.getModule("thirdparty/lodash");
@@ -19,7 +19,7 @@ define(function (require, exports, module) {
     };
 
     var prefs = PreferencesManager.getExtensionPrefs(prefix);
-    _.each(defaultPreferences, function (definition, key) {
+    _.each(defaultPreferences, function(definition, key) {
         if (definition.os && definition.os[brackets.platform]) {
             prefs.definePreference(key, definition.type, definition.os[brackets.platform].value);
         } else {
@@ -42,7 +42,7 @@ define(function (require, exports, module) {
 
     function getAll() {
         var obj = {};
-        _.each(defaultPreferences, function (definition, key) {
+        _.each(defaultPreferences, function(definition, key) {
             obj[key] = get(key);
         });
         return obj;
@@ -50,7 +50,7 @@ define(function (require, exports, module) {
 
     function getDefaults() {
         var obj = {};
-        _.each(defaultPreferences, function (definition, key) {
+        _.each(defaultPreferences, function(definition, key) {
             var defaultValue;
             if (definition.os && definition.os[brackets.platform]) {
                 defaultValue = definition.os[brackets.platform].value;

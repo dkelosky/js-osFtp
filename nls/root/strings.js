@@ -59,6 +59,7 @@ define({
     DIALOG_CANCEL                         : 'CANCEL',
     DIALOG_DELETE                         : 'DELETE',
     DIALOG_CONFIRM_BODY                   : 'Confirm directory upload to site - ',
+    FAILURE_FTP_EXEC                      : 'FTP execute failure, see console (F12) for more information',
     STATUS_FTP_INDICATOR                  : 'OS FTP',
     STATUS_FTP_TOOLTIP                    : 'OS FTP Status'
 });

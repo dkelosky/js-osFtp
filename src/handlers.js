@@ -1,4 +1,4 @@
-define(function (require, exports, module) {
+define(function(require, exports, module) {
     'use strict';
 
 
@@ -96,7 +96,7 @@ define(function (require, exports, module) {
 
 
   /**
-   * Disables the get command for sites
+   * Disables the get command for sites (cannot deregister the command)
    */
   function disableGetFromSite() {
 
@@ -110,7 +110,7 @@ define(function (require, exports, module) {
 
 
   /**
-   * Disables the edit command for sites
+   * Disables the edit command for sites (cannot deregister the command)
    */
   function disableEditSite() {
 
@@ -146,7 +146,7 @@ define(function (require, exports, module) {
     handleCancel(selectDialog);
 
     //listen for ok
-    $('button[data-button-id="' + Dialog.DIALOG_BTN_OK + '"').click(function () {
+    $('button[data-button-id="' + Dialog.DIALOG_BTN_OK + '"').click(function() {
 
       //get the site that was checked
       selectedSiteIndex = $('input[name=' + RADIO_SITE_NAME + ']:checked').val();
@@ -168,7 +168,7 @@ define(function (require, exports, module) {
 
 
     //listen for dialog done
-    selectDialog.done(function () {
+    selectDialog.done(function() {
 
       //log that the modal is gone
       console.log('Dialog modal is dismissed');
@@ -205,7 +205,7 @@ define(function (require, exports, module) {
     handleCancel(selectDialog);
 
     //listen for ok
-    $('button[data-button-id="' + Dialog.DIALOG_BTN_OK + '"').click(function () {
+    $('button[data-button-id="' + Dialog.DIALOG_BTN_OK + '"').click(function() {
 
       //get the site that was checked
       selectedSiteIndex = $('input[name=' + RADIO_SITE_NAME + ']:checked').val();
@@ -227,7 +227,7 @@ define(function (require, exports, module) {
 
 
     //listen for dialog done
-    selectDialog.done(function () {
+    selectDialog.done(function() {
 
       //log that the modal is gone
       console.log('Dialog modal is dismissed');
@@ -318,7 +318,7 @@ define(function (require, exports, module) {
     if (oldSite) {
 
       //listen for delete (modal doesnt have standard id= attribute, it's data-button-id
-      $('button[data-button-id="' + Dialog.DIALOG_BTN_DONTSAVE + '"').click(function () {
+      $('button[data-button-id="' + Dialog.DIALOG_BTN_DONTSAVE + '"').click(function() {
 
         //setup labels
         var COMMAND_RUN_SITE_ID = osFtpGlobals.COMMAND_RUN_SITE_BASE_ID + osFtpGlobals.sites[oldSiteIndex].name;
@@ -355,7 +355,7 @@ define(function (require, exports, module) {
     }
 
     //listen for ok
-    $('button[data-button-id="' + Dialog.DIALOG_BTN_OK + '"').click(function () {
+    $('button[data-button-id="' + Dialog.DIALOG_BTN_OK + '"').click(function() {
 
       var oldSitesLength = osFtpGlobals.sites.length;
 
@@ -439,7 +439,7 @@ define(function (require, exports, module) {
     });
 
     //listen for dialog done
-    inputDialog.done(function () {
+    inputDialog.done(function() {
 
       //log that the modal is gone
       console.log('Dialog modal is dismissed');
@@ -677,7 +677,7 @@ define(function (require, exports, module) {
     }
 
     //add back saved sites
-    osFtpGlobals.sites.forEach(function (site) {
+    osFtpGlobals.sites.forEach(function(site) {
       addSite(site);
 
     });
@@ -701,7 +701,7 @@ define(function (require, exports, module) {
     handleCancel(confirmDialog);
 
     //listen for ok
-    $('button[data-button-id="' + Dialog.DIALOG_BTN_OK + '"').click(function () {
+    $('button[data-button-id="' + Dialog.DIALOG_BTN_OK + '"').click(function() {
 
       //build our ftp script
       var ftpScript = osFtpScripts.generateUploadScript(fileList, site);
@@ -720,7 +720,7 @@ define(function (require, exports, module) {
 
 
     //listen for dialog done
-    confirmDialog.done(function () {
+    confirmDialog.done(function() {
 
       //log that the modal is gone
       console.log('Dialog modal is dismissed');
@@ -737,7 +737,7 @@ define(function (require, exports, module) {
   function handleCancel(dialog) {
 
     //listen for cancel (modal doesnt have standard id= attribute, it's data-button-id
-    $('button[data-button-id="' + Dialog.DIALOG_BTN_CANCEL + '"').click(function () {
+    $('button[data-button-id="' + Dialog.DIALOG_BTN_CANCEL + '"').click(function() {
 
       //log that the user wants to close
       console.log('Dialog closed without save');
@@ -760,7 +760,7 @@ define(function (require, exports, module) {
   function handleEscape(dialog) {
 
     //listener for escape key
-    $(document).keyup(function (event) {
+    $(document).keyup(function(event) {
 
       //close if escape key is pressed
       if (event.which == osFtpGlobals.ESCAPE_KEY) {

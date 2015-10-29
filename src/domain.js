@@ -1,4 +1,4 @@
-define(function (require, exports, module) {
+define(function(require, exports, module) {
     'use strict';
 
 
@@ -18,6 +18,8 @@ define(function (require, exports, module) {
   var osFtpDomain   = new NodeDomain('ftp', ExtensionUtils.getModulePath(module, '../node/FtpDomain'));
   var osFtpDialog   = require('src/dialog');
   var osFtpGlobals  = require('src/globals');
+  var osFtpStrings  = require('strings');
+
 
 
   /**
@@ -87,16 +89,38 @@ define(function (require, exports, module) {
     //set listener for done
     nodeExec.done(function() {
 
-      //do done stuff
-      nodeDone();
+      //log event
+      console.log('nodeExec.done();');
 
     });
 
-    //set listener for faile
+    //set listener for fail
     nodeExec.fail(function() {
 
-      //do failure stuff
+      //log event
+      console.error('nodeExec.fail();');
+
+      //no other event will be driven
       nodeFail();
+
+    });
+
+    //set listener for process end
+    osFtpDomain.on('ftpMsg', function(event, response) {
+
+      //log event
+      console.log('osFtpDomain.on(' + response.success + ', ' + response.message + ');');
+
+      //inquire for success or failure and proceed accordingly
+      if (response.success)
+
+        //do done stuff
+        nodeDone();
+
+      else
+
+        //do failure stuff
+        nodeFail();
 
     });
 
@@ -109,9 +133,12 @@ define(function (require, exports, module) {
   function nodeDone() {
 
     //log that we completed
-    console.log('Completed via .done');
+    console.log('nodeDone()');
 
-    //show we're busy
+    //disable listener
+    osFtpDomain.off('ftpMsg');
+
+    //show we're done
     showDone();
 
     //clear the status after a short time
@@ -126,10 +153,19 @@ define(function (require, exports, module) {
   function nodeFail() {
 
     //log that we completed
-    console.error('Completed via .fail');
+    console.error('nodeFail()');
+
+    //disable listener
+    osFtpDomain.off('ftpMsg');
+
+    //show we've had an error
+    showError();
+
+    //clear the status after a short time
+    clearStatus();
 
     //show error dialog
-    osFtpDialog.showFailDialog('Failure information goes here...');
+    osFtpDialog.showFailDialog(osFtpStrings.FAILURE_FTP_EXEC);
   }
 
 
@@ -196,7 +232,9 @@ define(function (require, exports, module) {
    */
   function clearStatus() {
 
-    setTimeout(function () {
+    console.log('clearStatus();');
+
+    setTimeout(function() {
 
       //log this event
       console.log('Status clear');

@@ -25,11 +25,21 @@
 maxerr: 50, node: true */
 /*global */
 
-(function () {
+(function() {
   'use strict';
 
-  //this is required, not sure what it does
+
+  /**
+   * Global variables
+   */
+  var globalDomainManager;
+
+
+  /**
+   * Exported functions
+   */
   exports.init = init;
+
 
   /**
    * Initialize this domain
@@ -37,8 +47,12 @@ maxerr: 50, node: true */
    */
   function init(domainManager) {
     
+    //save reference to domain manager
+    globalDomainManager = domainManager;
+
     if (!domainManager.hasDomain('ftp')) {
       
+      //What is this???
       domainManager.registerDomain('ftp', {
         major: 0,
         minor: 1
@@ -63,6 +77,7 @@ maxerr: 50, node: true */
       type: 'number',
       description: 'output 1 desc goes here'
       }]
+
     );
 
     /**
@@ -89,6 +104,16 @@ maxerr: 50, node: true */
       description: 'output 1 desc goes here'
       }]
       );
+
+      domainManager.registerEvent(
+      'ftp',     //domain name
+      'ftpMsg',  //event name
+      [{
+      name: 'response',
+      type: 'Object',
+      description: 'contains Boolean "failure" and String "message"'
+      }]);
+
     }
 
   /**
@@ -97,14 +122,24 @@ maxerr: 50, node: true */
    */
   function doFtp(cwd, ftpScriptFile) {
 
+    //log entry
+    console.log('doFtp();');
+
     //log input script file
     console.log('Input file specified was: ' + ftpScriptFile);
 
     //run ftp with options to suppress auto login and to supply a script file
-    var bar = new runProcess(cwd, 'ftp', ['-ins:' + ftpScriptFile], function(response) {
-      console.log('Command response was: \n' + response)
+    var bar = new runProcess(cwd, 'ftp', ['-ins:' + ftpScriptFile], function() {
+
+      //log complete
+      console.log('doFtp(); complete');
+
+      //send a response
+      issueResponse(true, '');
+
     });
   }
+
 
   /**
    * Command handler
@@ -112,35 +147,56 @@ maxerr: 50, node: true */
    */
   function doFtpStdin(cwd, file, data) {
 
+    //log entry
+    console.log('doFtpStdin();');
+
     //orient to node file system
     var fs = require('fs');
 
+    //get directory where we want to store the scripts
     var scriptDirectory = getScriptsDirectory(cwd);
 
-    //sychronously open, write to, and close a temp script file
+    //sychronously open file
     console.log('Opening file - ' + scriptDirectory + file);
     var newFile = fs.openSync(scriptDirectory + file, 'w');
 
+    //sychronously write file
     console.log('Writing file data...');
     fs.writeSync(newFile, data);
 
+    //sychronously write file
     console.log('Closing file...');
     fs.closeSync(newFile);
     console.log('File closed');
 
     //run ftp with options to suppress auto login and to supply a script file
-    var bar = new runProcess(cwd, 'ftp', ['-ins:' + scriptDirectory + file], function(response, isError) {
+    var bar = new runProcess(cwd, 'ftp', ['-ins:' + scriptDirectory + file], function() {
 
-      if (isError) {
-        console.log('Error response was: \n' + response)
+      //log complete
+      console.log('doFtpStdin(); complete');
 
-      }
-
-      else {
-        console.log('Command response was: \n' + response)
-      }
+      //send a response
+      issueResponse(true, '');
 
     });
+  }
+
+
+  /**
+   * [[Description]]
+   * @param {Boolean} successIndicator Indicates whether or not the processed ended successfully
+   * @param {String} msg              Message to accompany the indicator
+   */
+  function issueResponse(successIndicator, msg) {
+
+    //no real error checking is done for now
+    var response = {
+      success: successIndicator,
+      message: msg
+    };
+
+    //send event that the process completed
+    globalDomainManager.emitEvent('ftp', 'ftpMsg', response);
   }
 
 
@@ -156,7 +212,7 @@ maxerr: 50, node: true */
     //log our spawn
     console.log('runProcess(' + cwd + ', ...);');
 
-    //initialize varialbes
+    //initialize variables
     var spawn = require('child_process').spawn;
     var fs = require('fs');
     var os = require('os');
@@ -210,7 +266,7 @@ maxerr: 50, node: true */
     child.stdin.end();
 
     //log if error data present
-    child.on('error', function (err) {
+    child.on('error', function(err) {
 
       //log error
       console.log('Failed to start child process.' + err.message);
@@ -218,15 +274,16 @@ maxerr: 50, node: true */
     });
 
     //listen for data present
-    child.stdout.on('data', function (buffer) {
+    child.stdout.on('data', function(buffer) {
 
       //append to and build response
       resp += buffer.toString();
+      console.log('stdout: ' + buffer.toString());
 
     });
 
     //listen for data present
-    child.stderr.on('data', function (buffer) {
+    child.stderr.on('data', function(buffer) {
 
       //append to and build response
       failResp += buffer.toString();
@@ -237,25 +294,35 @@ maxerr: 50, node: true */
     child.stdout.on('end', function() {
 
       //provide text response to callback
-      callBack(resp, false);
+      //callBack(resp, false);
 
       //log that we reached the end
-      console.log('End of stdout reached');
-    });
+      console.log('>>> End of stdout reached <<<');
 
+    });
 
     //listen for end of data
     child.stderr.on('end', function() {
 
       //provide text response to callback
-      callBack(failResp, true);
+      //callBack(failResp, true);
 
       //log that we reached the end
-      console.log('End of stderr reached');
+      console.log('>>> End of stderr reached <<< ');
+
     });
+
+    child.on('close', function (code) {
+
+      //log process end
+      console.log('Process exited with code ' + code);
+
+      //invoke callback
+      callBack();
+
+    });
+
   }
-
-
 
 
   /**

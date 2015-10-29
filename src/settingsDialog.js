@@ -1,4 +1,4 @@
-define(function (require, exports) {
+define(function(require, exports) {
     "use strict";
 
     var _ = brackets.getModule("thirdparty/lodash");
@@ -17,7 +17,7 @@ define(function (require, exports) {
     var asciiTabledata;
 
     function setValues(values) {
-        $("*[settingsProperty]", $dialog).each(function () {
+        $("*[settingsProperty]", $dialog).each(function() {
             var $this = $(this),
                 id = $this.attr("id"),
                 type = $this.attr("type"),
@@ -44,7 +44,7 @@ define(function (require, exports) {
     }
 
     function collectValues() {
-        $("*[settingsProperty]", $dialog).each(function () {
+        $("*[settingsProperty]", $dialog).each(function() {
             var $this = $(this),
                 id = $this.attr("id"),
                 type = $this.attr("type"),
@@ -74,7 +74,7 @@ define(function (require, exports) {
 
     function assignActions() {
 
-        $("button[data-button-id='add']", $dialog).on("click", function (e) {
+        $("button[data-button-id='add']", $dialog).on("click", function(e) {
             e.stopPropagation();
 
             // Extract text from input
@@ -90,7 +90,7 @@ define(function (require, exports) {
             $("#osftp-settings-fileExtensionInput").val('');
         });
 
-        $("button[data-button-id='remove']", $dialog).on("click", function (e) {
+        $("button[data-button-id='remove']", $dialog).on("click", function(e) {
             e.stopPropagation();
 
             var text = $("#osftp-settings-fileExtensionInput").val();
@@ -105,7 +105,7 @@ define(function (require, exports) {
             $("#osftp-settings-fileExtensionInput").val('')
         });
 
-        $("button[data-button-id='defaults']", $dialog).on("click", function (e) {
+        $("button[data-button-id='defaults']", $dialog).on("click", function(e) {
             e.stopPropagation();
             setValues(Preferences.getDefaults());
         });
@@ -116,7 +116,7 @@ define(function (require, exports) {
         setValues(Preferences.getAll());
         assignActions();
 
-        $("#osftp-setting-tabs a", $dialog).click(function (e) {
+        $("#osftp-setting-tabs a", $dialog).click(function(e) {
             e.preventDefault();
             $(this).tab('show');
         });
@@ -139,7 +139,7 @@ define(function (require, exports) {
 
         init();
 
-        dialog.done(function (buttonId) {
+        dialog.done(function(buttonId) {
             if (buttonId === "ok") {
                 // Save everything to preferences
                 collectValues();

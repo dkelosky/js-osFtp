@@ -1,4 +1,4 @@
-define(function (require, exports, module) {
+define(function(require, exports, module) {
     'use strict';
 
 
@@ -89,7 +89,7 @@ define(function (require, exports, module) {
     bodyHtml += '<form>';
 
     //add radio buttons for each site
-    sites.forEach(function (site, i) {
+    sites.forEach(function(site, i) {
       bodyHtml += '<input id="' + site.name + '" value="' + i + '" type="radio" name="' + radioSiteName + '"> ' + site.name;
       bodyHtml += '<br>';
     });
@@ -125,7 +125,7 @@ define(function (require, exports, module) {
     var localButtons = [];
 
     //add global buttons to our initial array of buttons
-    buttons.forEach(function (button) {
+    buttons.forEach(function(button) {
 
       //add this button to the array
       localButtons.push(button);
@@ -157,7 +157,7 @@ define(function (require, exports, module) {
     bodyHtml += '<form>';
 
     //add radio buttons for each site
-    inputs.forEach(function (input) {
+    inputs.forEach(function(input) {
 
       bodyHtml += input.label;
       bodyHtml += '<br>';

@@ -30,7 +30,7 @@
  * The i18n plugin will dynamically load the strings for the right locale and populate
  * the exports variable. See src\nls\strings.js for the master file of English strings.
  */
-define(function (require, exports, module) {
+define(function(require, exports, module) {
     "use strict";
 
     module.exports = require("i18n!nls/strings");

@@ -1,4 +1,4 @@
-define(function (require, exports, module) {
+define(function(require, exports, module) {
     'use strict';
 
     var Project = brackets.getModule('project/ProjectManager');
@@ -54,7 +54,7 @@ define(function (require, exports, module) {
 
             // Loop through all file in root directory to locate file that contain
             //   the selected directory.
-            var filesInDir = Project.getAllFiles(function (File, number) {
+            var filesInDir = Project.getAllFiles(function(File, number) {
                 var currentFile = File.fullPath;
                 if (currentFile.indexOf(currentDir) > -1) {
                     fileList.push(File);
@@ -129,9 +129,9 @@ define(function (require, exports, module) {
         };
 
         console.log($table);
-        $table.find("tr").each(function (rowIndex, r) {
+        $table.find("tr").each(function(rowIndex, r) {
             var rowData = [];
-            $(this).find("td").each(function (colIndex, c) {
+            $(this).find("td").each(function(colIndex, c) {
                 rowData.push(c.textContent);
             });
 

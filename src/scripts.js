@@ -3,7 +3,7 @@
  *          - local directory is set to C:\System32 ?
  */
 
-define(function (require, exports, module) {
+define(function(require, exports, module) {
     'use strict';
 
 
