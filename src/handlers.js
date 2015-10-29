@@ -31,7 +31,6 @@ define(function (require, exports, module) {
    * Global variables
    */
   var osFtpPreferences = PreferencesManager.getExtensionPrefs(osFtpGlobals.PREF);
-  var globalDialogCurrent;
 
 
   /**
@@ -43,27 +42,6 @@ define(function (require, exports, module) {
   exports.handleRunScript     = handleRunScript;
   exports.handleRunSite       = handleRunSite;
   exports.init                = init;
-
-
-  /**
-   * Listener for escape key
-   */
-  $(document).keyup(function (event) {
-
-    //close if escape key is pressed
-    if (event.which == osFtpGlobals.ESCAPE_KEY && osFtpCommon.isSet(globalDialogCurrent)) {
-
-      //log that the user wants to close
-      console.log('Dialog escaped without save');
-
-      //close the dialog
-      globalDialogCurrent.close();
-
-      //set the global for the listener
-      globalDialogCurrent = null;
-    }
-
-  });
 
 
   /**
@@ -167,6 +145,9 @@ define(function (require, exports, module) {
       //close the dialog
       selectDialog.close();
 
+      //turn off listeners
+      disableListeners();
+
     });
 
 
@@ -223,6 +204,9 @@ define(function (require, exports, module) {
 
       //close the dialog
       selectDialog.close();
+
+      //turn off listeners
+      disableListeners();
 
     });
 
@@ -337,6 +321,9 @@ define(function (require, exports, module) {
         //close the dialog
         inputDialog.close();
 
+        //turn off listeners
+        disableListeners();
+
       });
     }
 
@@ -407,6 +394,9 @@ define(function (require, exports, module) {
       //close the dialog
       inputDialog.close();
 
+      //turn off listeners
+      disableListeners();
+
     });
 
     //listen for dialog done
@@ -442,7 +432,7 @@ define(function (require, exports, module) {
   function handleRunScript() {
 
     //log that we were called
-    console.log('handleRunScript()');
+    console.log('handleRunScript();');
 
     //get the full path to the item that was selected
     var itemFullPath = Project.getSelectedItem().fullPath;
@@ -470,7 +460,7 @@ define(function (require, exports, module) {
   function handleRunSite() {
 
     //log that we were called
-    console.log('handleRunSite()');
+    console.log('handleRunSite();');
 
     //get the command name
     var name = this.getName();
@@ -489,6 +479,7 @@ define(function (require, exports, module) {
 
     // get the list of the selected file
     var selectedFiles = osFtpCommon.getSelectedFiles();
+
     //determine if the file choosen is a directory or an individual file
     if (Project.getSelectedItem().isDirectory) {
 
@@ -562,6 +553,9 @@ define(function (require, exports, module) {
       //close the dialog
       confirmDialog.close();
 
+      //turn off listeners
+      disableListeners();
+
     });
 
 
@@ -591,8 +585,8 @@ define(function (require, exports, module) {
       //close the dialog
       dialog.close();
 
-      //set the global for the listener
-      globalDialogCurrent = null;
+      //turn off listeners
+      disableListeners();
 
     });
 
@@ -605,8 +599,41 @@ define(function (require, exports, module) {
    */
   function handleEscape(dialog) {
 
-    //set the global for the listener
-    globalDialogCurrent = dialog;
+    //listener for escape key
+    $(document).keyup(function (event) {
+
+      //close if escape key is pressed
+      if (event.which == osFtpGlobals.ESCAPE_KEY) {
+
+        //log that the user wants to close
+        console.log('Dialog escaped without save');
+
+        //close the dialog
+        dialog.close();
+
+        //turn off listeners
+        disableListeners();
+
+      }
+
+    });
+
+  }
+
+
+  /**
+   * Disable all active listeners
+   */
+  function disableListeners() {
+
+    //turn off OK listener
+    $('button[data-button-id="' + Dialog.DIALOG_BTN_OK + '"').off('click');
+
+    //turn off ESCAPE listener
+    $(document).off('keyup');
+
+    //turn off CANCEL listener
+    $('button[data-button-id="' + Dialog.DIALOG_BTN_CANCEL + '"').off('click');
 
   }
 

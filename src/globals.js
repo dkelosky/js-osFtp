@@ -6,11 +6,11 @@ define(function (require, exports, module) {
    * Global variables
    */
   var COMMAND_PROD_SETTINGS_ID    = 'theauthor.osftp.osftp-settings';
-  var COMMAND_GET_FROM_SITE_ID    = 'theauthor.osftp.osftp_get_from_site';
-  var COMMAND_EDIT_SITE_ID        = 'theauthor.osftp.osftp_edit_site';
-  var COMMAND_NEW_SITE_ID         = 'theauthor.osftp.osftp_new_site';
-  var COMMAND_RUN_SCRIPT_ID       = 'theauthor.osftp.osftp_run_script';
-  var COMMAND_RUN_SITE_BASE_ID    = 'theauthor.osftp.osftp_run_';
+  var COMMAND_GET_FROM_SITE_ID    = 'theauthor.osftp.osftp-get-from-site';
+  var COMMAND_EDIT_SITE_ID        = 'theauthor.osftp.osftp-edit-site';
+  var COMMAND_NEW_SITE_ID         = 'theauthor.osftp.osftp-new-site';
+  var COMMAND_RUN_SCRIPT_ID       = 'theauthor.osftp.osftp-run-script';
+  var COMMAND_RUN_SITE_BASE_ID    = 'theauthor.osftp.osftp-run-';
   var COMMAND_RUN_SITE_BASE_LABEL = 'Upload To ';
 
   var OBJECT_FTP_SITE_ID          = 'FTP_SITE_OBJECT';
@@ -21,12 +21,12 @@ define(function (require, exports, module) {
   var FTP_SCRIPT_FILE_EXTENSION   = '.txt';
 
   var PREF                        = 'theauthor.osftp.preferences';
-  var PREF_SITES                  = 'theauthor.osftp.preferences.sites_'
+  var PREF_SITES                  = 'theauthor.osftp.preferences.sites-'
 
   var sites                       = [];
 
   var STATUS_INDICATOR_HTML_ID    = 'theauthor-osftp-status-indicator';
-  var STATUS_INDICATOR_ID         = 'theauthor.osftp.status_indicator';
+  var STATUS_INDICATOR_ID         = 'theauthor.osftp.status-indicator';
 
   var STATUS_VISIBLE_TIME         = 3 * 1000;
 

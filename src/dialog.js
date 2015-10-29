@@ -41,7 +41,6 @@ define(function (require, exports, module) {
   exports.showFailDialog              = showFailDialog;
 
 
-
   /**
    * Dialog to present a confirmation dialog before uploading an entire directory
    * @param   {Object} site [[Description]]
