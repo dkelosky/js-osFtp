@@ -1,252 +1,277 @@
-define(function(require, exports, module) {
-    'use strict';
+define(function (require, exports, module) {
+	'use strict';
 
 
-  /**
-   * Bracket modules
-   */
-  var ExtensionUtils  = brackets.getModule('utils/ExtensionUtils');
-  var File            = brackets.getModule('file/FileUtils');
-  var NodeDomain      = brackets.getModule('utils/NodeDomain');
-  var StatusBar       = brackets.getModule('widgets/StatusBar');
+	/**
+	 * Bracket modules
+	 */
+	var ExtensionUtils = brackets.getModule('utils/ExtensionUtils');
+	var File = brackets.getModule('file/FileUtils');
+	var NodeDomain = brackets.getModule('utils/NodeDomain');
+	var StatusBar = brackets.getModule('widgets/StatusBar');
 
 
-  /**
-   * Extension modules
-   */
-  var osFtpCommon   = require('src/common');
-  var osFtpDomain   = new NodeDomain('ftp', ExtensionUtils.getModulePath(module, '../node/FtpDomain'));
-  var osFtpDialog   = require('src/dialog');
-  var osFtpGlobals  = require('src/globals');
-  var osFtpStrings  = require('strings');
+	/**
+	 * Extension modules
+	 */
+	var osFtpCommon = require('src/common');
+	var osFtpDomain = new NodeDomain('ftp', ExtensionUtils.getModulePath(module, '../node/FtpDomain'));
+	var osFtpDialog = require('src/dialog');
+	var osFtpGlobals = require('src/globals');
+	var osFtpStrings = require('strings');
 
 
+	/**
+	 * Global variables
+	 */
+	var busy = false;
 
-  /**
-   * Exported functions
-   */
-  exports.runFtpCommand       = runFtpCommand;
-  exports.runFtpCommandStdin  = runFtpCommandStdin;
 
+	/**
+	 * Exported functions
+	 */
+	exports.runFtpCommand = runFtpCommand;
+	exports.runFtpCommandStdin = runFtpCommandStdin;
 
-  /**
-   * Function wrapper to invoke our domain function
-   * @param {string} file File to use as an ftp script file
-   */
-  function runFtpCommand(file) {
 
-    //log input
-    console.log('runFtpCommand(' + file+ ');');
+	/**
+	 * Function wrapper to invoke our domain function
+	 * @param {string} file File to use as an ftp script file
+	 */
+	function runFtpCommand(file) {
 
-    //call common wrapper to invoke node functions
-    invokeNode(file);
+		//log input
+		console.log('runFtpCommand(' + file + ');');
 
-  }
+		//call common wrapper to invoke node functions
+		invokeNode(file);
 
+	}
 
-  /**
-   * Function wrapper to invoke our domain function
-   * @param {string} scriptFile File to use as an ftp script file
-   */
-  function runFtpCommandStdin(file, data) {
 
-    //log input
-    console.log('runFtpCommandStdin(' + file+ ', ...);');
+	/**
+	 * Function wrapper to invoke our domain function
+	 * @param {string} scriptFile File to use as an ftp script file
+	 */
+	function runFtpCommandStdin(file, data) {
 
-    //call common wrapper to invoke node functions
-    invokeNode(file, data);
+		//log input
+		console.log('runFtpCommandStdin(' + file + ', ...);');
 
-  }
+		//call common wrapper to invoke node functions
+		invokeNode(file, data);
 
+	}
 
-  /**
-   * Common function to invoke node domain functions
-   * @param {String} file Filename of script file
-   * @param {String} data Optional script file content (file will be created)
-   */
-  function invokeNode(file, data) {
 
-    //log input
-    console.log('doFtpStdin(' + file + ', ...);');
+	/**
+	 * Common function to invoke node domain functions
+	 * @param {String} file Filename of script file
+	 * @param {String} data Optional script file content (file will be created)
+	 */
+	function invokeNode(file, data) {
 
-    //show we're busy
-    showBusy();
+		//log input
+		console.log('doFtpStdin(' + file + ', ...);');
 
-    var nodeExec;
+		var nodeExec;
 
-    //if we just have a file
-    if (!osFtpCommon.isSet(data))
+		//if we're already processing an FTP script
+		if (busy) {
 
-      //invoke domain function
-      nodeExec = osFtpDomain.exec('doFtp', getNodeDirectory(), file)
+			//log that we're currently busy
+			console.log('FTP script process already executing');
 
-    //else we have data in addition to a file
-    else
+			//show error dialog
+			osFtpDialog.showFailDialog(osFtpStrings.FAILURE_FTP_PROCESS_IN_PROGRESS);
+		} else {
 
-      //invoke domain function
-      nodeExec = osFtpDomain.exec('doFtpStdin', getNodeDirectory(), file, data)
+			//show we're busy
+			showBusy();
 
-    //set listener for done
-    nodeExec.done(function() {
+			//if we just have a file
+			if (!osFtpCommon.isSet(data))
 
-      //log event
-      console.log('nodeExec.done();');
+			//invoke domain function
+				nodeExec = osFtpDomain.exec('doFtp', getNodeDirectory(), file)
 
-    });
+			//else we have data in addition to a file
+			else
 
-    //set listener for fail
-    nodeExec.fail(function() {
+			//invoke domain function
+				nodeExec = osFtpDomain.exec('doFtpStdin', getNodeDirectory(), file, data)
 
-      //log event
-      console.error('nodeExec.fail();');
+			//set listener for done
+			nodeExec.done(function () {
 
-      //no other event will be driven
-      nodeFail();
+				//log event
+				console.log('nodeExec.done();');
 
-    });
+			});
 
-    //set listener for process end
-    osFtpDomain.on('ftpMsg', function(event, response) {
+			//set listener for fail
+			nodeExec.fail(function () {
 
-      //log event
-      console.log('osFtpDomain.on(' + response.success + ', ' + response.message + ');');
+				//log event
+				console.error('nodeExec.fail();');
 
-      //inquire for success or failure and proceed accordingly
-      if (response.success)
+				//no other event will be driven
+				nodeFail();
 
-        //do done stuff
-        nodeDone();
+			});
 
-      else
+			//set listener for process end
+			osFtpDomain.on('ftpMsg', function (event, response) {
 
-        //do failure stuff
-        nodeFail();
+				//log event
+				console.log('osFtpDomain.on(' + response.success + ', ' + response.message + ');');
 
-    });
+				//inquire for success or failure and proceed accordingly
+				if (response.success)
 
-  }
+				//do done stuff
+					nodeDone();
 
+				else
 
-  /**
-   * Handle node domain call .done callback
-   */
-  function nodeDone() {
+				//do failure stuff
+					nodeFail();
 
-    //log that we completed
-    console.log('nodeDone()');
+			});
+		}
 
-    //disable listener
-    osFtpDomain.off('ftpMsg');
 
-    //show we're done
-    showDone();
+	}
 
-    //clear the status after a short time
-    clearStatus();
 
-  }
+	/**
+	 * Handle node domain call .done callback
+	 */
+	function nodeDone() {
 
+		//log that we completed
+		console.log('nodeDone()');
 
-  /**
-   * Handle node domain call .fail callback
-   */
-  function nodeFail() {
+		//disable listener
+		osFtpDomain.off('ftpMsg');
 
-    //log that we completed
-    console.error('nodeFail()');
+		//show we're done
+		showDone();
 
-    //disable listener
-    osFtpDomain.off('ftpMsg');
+		//clear the status after a short time
+		clearStatus();
 
-    //show we've had an error
-    showError();
+	}
 
-    //clear the status after a short time
-    clearStatus();
 
-    //show error dialog
-    osFtpDialog.showFailDialog(osFtpStrings.FAILURE_FTP_EXEC);
-  }
+	/**
+	 * Handle node domain call .fail callback
+	 */
+	function nodeFail() {
 
+		//log that we completed
+		console.error('nodeFail()');
 
-  /**
-   * Function to get the working directory for the NodeJs code
-   * @returns {String} The directory where the NodeJs source code resides
-   */
-  function getNodeDirectory() {
+		//disable listener
+		osFtpDomain.off('ftpMsg');
 
-    var extensionDirectory = File.getNativeModuleDirectoryPath(module);
-    var extensionDirectories = extensionDirectory.split('\/');
-    extensionDirectories.pop();
-    extensionDirectories.push('node/');
-    return extensionDirectories.join('\/');
+		//show we've had an error
+		showError();
 
-  }
+		//clear the status after a short time
+		clearStatus();
 
+		//show error dialog
+		osFtpDialog.showFailDialog(osFtpStrings.FAILURE_FTP_EXEC);
+	}
 
-  /**
-   * Show busy status on status bar
-   */
-  function showBusy() {
 
-    //log call
-    console.log('showBusy()');
+	/**
+	 * Function to get the working directory for the NodeJs code
+	 * @returns {String} The directory where the NodeJs source code resides
+	 */
+	function getNodeDirectory() {
 
-    //make sure status bar is showing
-    StatusBar.show();
-    StatusBar.showIndicators();
+		var extensionDirectory = File.getNativeModuleDirectoryPath(module);
+		var extensionDirectories = extensionDirectory.split('\/');
+		extensionDirectories.pop();
+		extensionDirectories.push('node/');
+		return extensionDirectories.join('\/');
 
-    //alter status bar color
-    ExtensionUtils.loadStyleSheet(module, '../css/osFtp.css');
-    StatusBar.updateIndicator(osFtpGlobals.STATUS_INDICATOR_ID, true, 'osftp-status-busy');
+	}
 
-  }
 
+	/**
+	 * Show busy status on status bar
+	 */
+	function showBusy() {
 
-  /**
-   * Show done status on status bar
-   */
-  function showDone() {
+		//log call
+		console.log('showBusy()');
 
-    //alter status bar color
-    ExtensionUtils.loadStyleSheet(module, '../css/osFtp.css');
-    StatusBar.updateIndicator(osFtpGlobals.STATUS_INDICATOR_ID, true, 'osftp-status-done');
+		//indicate that we're busy
+		busy = true;
 
-  }
+		//make sure status bar is showing
+		StatusBar.show();
+		StatusBar.showIndicators();
 
+		//alter status bar color
+		ExtensionUtils.loadStyleSheet(module, '../css/osFtp.css');
+		StatusBar.updateIndicator(osFtpGlobals.STATUS_INDICATOR_ID, true, 'osftp-status-busy');
 
-  /**
-   * Show error status on status bar
-   */
-  function showError() {
+	}
 
-    //alter status bar color
-    ExtensionUtils.loadStyleSheet(module, '../css/osFtp.css');
-    StatusBar.updateIndicator(osFtpGlobals.STATUS_INDICATOR_ID, true, 'osftp-status-error');
 
-  }
+	/**
+	 * Show done status on status bar
+	 */
+	function showDone() {
 
+		//alter status bar color
+		ExtensionUtils.loadStyleSheet(module, '../css/osFtp.css');
+		StatusBar.updateIndicator(osFtpGlobals.STATUS_INDICATOR_ID, true, 'osftp-status-done');
 
-  /**
-   * Clear status on status bar
-   */
-  function clearStatus() {
+	}
 
-    console.log('clearStatus();');
 
-    setTimeout(function() {
+	/**
+	 * Show error status on status bar
+	 */
+	function showError() {
 
-      //log this event
-      console.log('Status clear');
+		//alter status bar color
+		ExtensionUtils.loadStyleSheet(module, '../css/osFtp.css');
+		StatusBar.updateIndicator(osFtpGlobals.STATUS_INDICATOR_ID, true, 'osftp-status-error');
 
-      //alter status bar color
-      ExtensionUtils.loadStyleSheet(module, '../css/osFtp.css');
-      StatusBar.updateIndicator(osFtpGlobals.STATUS_INDICATOR_ID, true, '');
+	}
 
-    },
 
-    osFtpGlobals.STATUS_VISIBLE_TIME);
+	/**
+	 * Clear status on status bar
+	 */
+	function clearStatus() {
 
-  };
+		//log event
+		console.log('clearStatus();');
+
+		//indcate that we're free
+		busy = false;
+
+		//set a timer
+		setTimeout(function () {
+
+				//log this event
+				console.log('Status clear');
+
+				//alter status bar color
+				ExtensionUtils.loadStyleSheet(module, '../css/osFtp.css');
+				StatusBar.updateIndicator(osFtpGlobals.STATUS_INDICATOR_ID, true, '');
+
+			},
+
+			osFtpGlobals.STATUS_VISIBLE_TIME);
+
+	};
 
 });
