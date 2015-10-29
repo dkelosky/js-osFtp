@@ -5,7 +5,6 @@
  * @TODO - allow for ftp get of data
  * @TODO - automation testing to add and remove sites, submit jobs, and verify success
  * @TODO - allow kill of process if too much time passes (for now, close Brackets)
- * @TODO - delete script file on completion?
  */
 define(function(require, exports, module) {
   'use strict';
