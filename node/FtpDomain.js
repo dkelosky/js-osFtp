@@ -287,6 +287,7 @@ maxerr: 50, node: true */
 
       //append to and build response
       failResp += buffer.toString();
+	  console.log('stderr: ' + buffer.toString());
 
     });
 
@@ -303,9 +304,6 @@ maxerr: 50, node: true */
 
     //listen for end of data
     child.stderr.on('end', function() {
-
-      //provide text response to callback
-      //callBack(failResp, true);
 
       //log that we reached the end
       console.log('>>> End of stderr reached <<< ');

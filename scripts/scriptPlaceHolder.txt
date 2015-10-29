@@ -1,0 +1,10 @@
+OPEN ca11
+USER
+kelda16
+vbnm4567
+CD  /a/kelda16/root/
+LCD C:/Users/KELDA16/AppData/Roaming/Brackets/extensions/user/osFtp
+ASCII
+PUT "ftpScript.txt" ftpScript.txt
+BIN
+QUIT
