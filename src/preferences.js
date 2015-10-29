@@ -1,19 +1,25 @@
 define(function (require, exports, module) {
     "use strict";
 
-	var _                   = brackets.getModule("thirdparty/lodash");
-	var PreferencesManager  = brackets.getModule("preferences/PreferencesManager");
-    var StateManager        = PreferencesManager.stateManager;
-    var prefix              = "bracket-osftp";
+    var _ = brackets.getModule("thirdparty/lodash");
+    var PreferencesManager = brackets.getModule("preferences/PreferencesManager");
+    var StateManager = PreferencesManager.stateManager;
+    var prefix = "bracket-osftp";
 
     var defaultPreferences = {
         // features
-        "treatFileWithoutExtentionAsAscii": {"type": "boolean", "value": true},
-		"transferAsAsciiTable"            : {"type": "string",  "value": '{"tableData":[["html"],["js"],["css"],["esp"]]}'}
+        "treatFileWithoutExtentionAsAscii": {
+            "type": "boolean",
+            "value": true
+        },
+        "transferAsAsciiTable": {
+            "type": 'string',
+            "value": '{"tableData":["html","js","css","esp"]}'
+        }
     };
 
     var prefs = PreferencesManager.getExtensionPrefs(prefix);
-   	_.each(defaultPreferences, function (definition, key) {
+    _.each(defaultPreferences, function (definition, key) {
         if (definition.os && definition.os[brackets.platform]) {
             prefs.definePreference(key, definition.type, definition.os[brackets.platform].value);
         } else {

@@ -4,55 +4,54 @@
     </div>
     <div class="modal-body">
 
-		<ul class='nav nav-tabs' id='osftp-settings-tabs'>
-			<li class='active'><a hrel='#osftp-settings-tab-transfer-type'>{{TRANSFER_TYPE}}</a></li>
-		</ul>
+        <ul class='nav nav-tabs' id='osftp-settings-tabs'>
+            <li class='active'><a hrel='#osftp-settings-tab-transfer-type'>{{TRANSFER_TYPE}}</a></li>
+        </ul>
 
-		<div class='tab-content'>
-			<div class='tab-pane active' id='osftp-settings-tab-transfer-type'>
-				<!--- transfer types -->
-				<div class='row-fluid'>
-					<div class='span12'>
-						{{TREAT_TYPE_AS_ASCII_LABEL}}
-					</div>
-				</div>
-				<div class='row-fluid'>
-					<div class='span6'>
-						<div id='osftp-settings-transferAsAsciiTable' type='table' settingsProperty='transferAsAsciiTable'></div>
-
-
-					</div>
-					<div class='span6'>
-						<div class='row-fluid'>
-							<input id='osftp-settings-fileExtensionInput' type='text' />
-						</div>
-						<div class='row-fluid'>
-							<button data-button-id='add'    class='dialog-button btn left'>{{BUTTON_ADD}}</button>
-						</div>
-						<div class='row-fluid'>
-							<button data-button-id='remove' class='dialog-button btn left'>{{BUTTON_REMOVE}}</button>
-						</div>
-					</div>
-				</div>
+        <div class='tab-content'>
+            <div class='tab-pane active' id='osftp-settings-tab-transfer-type'>
+                <!--- transfer types -->
+                <div class='row-fluid'>
+                    <div class='span12'>
+                        {{TREAT_TYPE_AS_ASCII_LABEL}}
+                    </div>
+                </div>
+                <div class='row-fluid'>
+                    <div class='span6'>
+                        <div id='osftp-settings-transferAsAsciiTable' type='table' settingsProperty='transferAsAsciiTable'></div>
 
 
+                    </div>
+                    <div class='span6'>
+                        <div class='row-fluid'>
+                            <input id='osftp-settings-fileExtensionInput' type='text' />
+                        </div>
+                        <div class='row-fluid'>
+                            <button data-button-id='add' class='dialog-button btn left'>{{BUTTON_ADD}}</button>
+                        </div>
+                        <div class='row-fluid'>
+                            <button data-button-id='remove' class='dialog-button btn left'>{{BUTTON_REMOVE}}</button>
+                        </div>
+                    </div>
+                </div>
 
-				<div class='row-fluid'>
-					<div class='span12'>
-						<label for='osftp-setttings-treatFileWithoutExtensionAsAscii'>
-							<input id='osftp-settings-treatFileWithoutExtensionAsAscii' type='checkbox' settingsProperty='treatFileWithoutExtentionAsAscii' />
-							{{TREAT_FILE_WIHTOUT_EXTENSION_AS_ASCII}}
-						</label>
-					</div>
-				</div>
-			</div>
 
-		</div>
+
+                <div class='row-fluid'>
+                    <div class='span12'>
+                        <label for='osftp-setttings-treatFileWithoutExtensionAsAscii'>
+                            <input id='osftp-settings-treatFileWithoutExtensionAsAscii' type='checkbox' settingsProperty='treatFileWithoutExtentionAsAscii' /> {{TREAT_FILE_WIHTOUT_EXTENSION_AS_ASCII}}
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+        </div>
 
     </div>
     <div class="modal-footer">
-		<button data-button-id="defaults"  class="dialog-button btn left"          >{{BUTTON_DEFAULTS}}</button>
-        <button data-button-id="cancel"    class="dialog-button btn cancel btn-80" >{{BUTTON_CANCEL}}</button>
-        <button data-button-id="ok"        class="dialog-button btn primary btn-80">{{BUTTON_SAVE}}</button>
+        <button data-button-id="defaults" class="dialog-button btn left">{{BUTTON_DEFAULTS}}</button>
+        <button data-button-id="cancel" class="dialog-button btn cancel btn-80">{{BUTTON_CANCEL}}</button>
+        <button data-button-id="ok" class="dialog-button btn primary btn-80">{{BUTTON_SAVE}}</button>
     </div>
 </div>
