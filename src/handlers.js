@@ -639,11 +639,12 @@ define(function (require, exports, module) {
 	 */
 	function handleRunSite() {
 
-		//log that we were called
-		console.log('handleRunSite();');
-
 		//get the command name
 		var name = this.getName();
+		name = name.substring(osFtpStrings.COMMAND_RUN_SITE_BASE_LABEL.length, name.length);
+
+		//log that we were called
+		console.log('handleRunSite(' + name + ');');
 
 		//site object associated with this command name
 		var thisSite;
