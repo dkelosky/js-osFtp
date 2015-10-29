@@ -6,6 +6,7 @@ define(function(require, exports, module) {
 	'use strict';
 
 	var osFtpGlobals = require('src/globals');
+	var osFtpStrings = require('strings');
 
 	exports.Site         = Site;
 	exports.validateSite = validateSite;
@@ -24,7 +25,7 @@ define(function(require, exports, module) {
 	};
 
 	Site.prototype.getCommandLabel = function(){
-		return osFtpGlobals.COMMAND_RUN_SITE_BASE_LABEL + this.name;
+		return osFtpStrings.COMMAND_RUN_SITE_BASE_LABEL + this.name;
 	};
 
 	function validateSite(Site){

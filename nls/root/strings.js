@@ -41,6 +41,7 @@ define({
 	COMMAND_GET_FROM_SITE_LABEL: 'Get from FTP Site\u2026',
 	COMMAND_EDIT_SITE_LABEL: 'Edit FTP Site\u2026',
 	COMMAND_NEW_SITE_LABEL: 'New FTP Site\u2026',
+	COMMAND_RUN_SITE_BASE_LABEL: 'Upload to ',
 	DIALOG_ERROR_SITE_EXISTS: 'Site already exists',
 	DIALOG_ERROR_SITE_INVALID: 'Site name is required',
 	DIALOG_ERROR_HOST_INVALID: 'Host name is required',

@@ -55,7 +55,7 @@ define(function (require, exports, module) {
 		console.log('addSite(' + site.name + ');');
 
 		//setup labels
-		var COMMAND_RUN_SITE_LABEL = site.name;
+		var COMMAND_RUN_SITE_LABEL = osFtpStrings.COMMAND_RUN_SITE_BASE_LABEL + site.name;
 		var COMMAND_RUN_SITE_ID = osFtpGlobals.COMMAND_RUN_SITE_BASE_ID + site.name;
 
 		//register command and add a context menu to create a site
