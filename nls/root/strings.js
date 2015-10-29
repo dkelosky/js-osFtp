@@ -27,7 +27,7 @@
 /*global define */
 
 define({
-	PRODUCT_SETTINGS: 'JS-OSFTP Settings\u2026',
+	PRODUCT_SETTINGS: 'JS-OS FTP Settings\u2026',
 	TRANSFER_TYPE: 'Transfer Type',
 	TREAT_TYPE_AS_ASCII_LABEL: 'Treat the following filetypes as ASCII files:',
 	TREAT_FILE_WIHTOUT_EXTENSION_AS_ASCII: 'Treat files without extension as ASCII file',
@@ -36,11 +36,11 @@ define({
 	BUTTON_SAVE: 'Save',
 	BUTTON_ADD: 'Add',
 	BUTTON_REMOVE: 'Remove',
-	COMMAND_PRODUCT_SETTINGS_LABEL: 'OSFTP Setting...',
+	COMMAND_PRODUCT_SETTINGS_LABEL: 'OS FTP Setting\u2026',
 	COMMAND_RUN_SCRIPT_LABEL: 'Run as FTP Script',
-	COMMAND_GET_FROM_SITE_LABEL: 'Get from FTP Site...',
-	COMMAND_EDIT_SITE_LABEL: 'Edit FTP Site...',
-	COMMAND_NEW_SITE_LABEL: 'New FTP Site...',
+	COMMAND_GET_FROM_SITE_LABEL: 'Get from FTP Site\u2026',
+	COMMAND_EDIT_SITE_LABEL: 'Edit FTP Site\u2026',
+	COMMAND_NEW_SITE_LABEL: 'New FTP Site\u2026',
 	DIALOG_ERROR_SITE_EXISTS: 'Site already exists',
 	DIALOG_ERROR_SITE_INVALID: 'Site name is required',
 	DIALOG_ERROR_HOST_INVALID: 'Host name is required',
