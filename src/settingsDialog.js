@@ -67,6 +67,16 @@ define(function (require, exports) {
 
 	function assignActions(){
 
+		$("button[data-button-id='add']", $dialog).on("click", function (e) {
+            e.stopPropagation();
+            // do something
+        });
+
+		$("button[data-button-id='remove']", $dialog).on("click", function (e) {
+            e.stopPropagation();
+            // do something
+        });
+
 		$("button[data-button-id='defaults']", $dialog).on("click", function (e) {
             e.stopPropagation();
             setValues(Preferences.getDefaults());
