@@ -7,6 +7,7 @@ define(function (require, exports, module) {
    */
   var CommandManager      = brackets.getModule('command/CommandManager');
   var Dialog              = brackets.getModule('widgets/Dialogs');
+  var ExtensionUtils      = brackets.getModule('utils/ExtensionUtils');
   var File                = brackets.getModule('file/FileUtils');
   var PreferencesManager  = brackets.getModule('preferences/PreferencesManager');
   var Project             = brackets.getModule('project/ProjectManager');
@@ -50,6 +51,9 @@ define(function (require, exports, module) {
    */
   function addSite(site) {
 
+    //log this call
+    console.log('addSite(' + site.name + ');');
+
     //setup labels
     var COMMAND_RUN_SITE_LABEL = site.name;
     var COMMAND_RUN_SITE_ID    = osFtpGlobals.COMMAND_RUN_SITE_BASE_ID + site.name;
@@ -66,6 +70,9 @@ define(function (require, exports, module) {
    */
   function enableGetFromSite() {
 
+    //log this call
+    console.log('enableGetFromSite();');
+
     //register command and add a context menu to create a site
     CommandManager.register(osFtpStrings.COMMAND_GET_FROM_SITE_LABEL, osFtpGlobals.COMMAND_GET_FROM_SITE_ID, handleGetFromSite);
     osFtpMenu.addToContextMenus(osFtpGlobals.COMMAND_GET_FROM_SITE_ID, false, osFtpGlobals.COMMAND_NEW_SITE_ID, false);
@@ -77,6 +84,9 @@ define(function (require, exports, module) {
    * Enables the edit command for an added site
    */
   function enableEditSite() {
+
+    //log this call
+    console.log('enableEditSite();');
 
     //register command and add a context menu to create a site
     CommandManager.register(osFtpStrings.COMMAND_EDIT_SITE_LABEL, osFtpGlobals.COMMAND_EDIT_SITE_ID, handleEditSite);
@@ -90,6 +100,9 @@ define(function (require, exports, module) {
    */
   function disableGetFromSite() {
 
+    //log this call
+    console.log('disableGetFromSite();');
+
     //remove from the menu
     osFtpMenu.removeFromContextMenus(osFtpGlobals.COMMAND_GET_FROM_SITE_ID);
 
@@ -100,6 +113,9 @@ define(function (require, exports, module) {
    * Disables the edit command for sites
    */
   function disableEditSite() {
+
+    //log this call
+    console.log('disableEditSite();');
 
     //remove from the menu
     osFtpMenu.removeFromContextMenus(osFtpGlobals.COMMAND_EDIT_SITE_ID);
@@ -174,7 +190,6 @@ define(function (require, exports, module) {
     //log that we were called
     console.log('handleGetFromSite()');
 
-
     //radio button site name
     var RADIO_SITE_NAME = 'site';
 
@@ -237,30 +252,13 @@ define(function (require, exports, module) {
     console.log('handleNewOrEditSite()');
 
     //assume a new site
-    var oldSession = false;
+    var oldSite = false;
 
     var nameVal = '';
     var hostVal = '';
     var rootVal = '';
     var userVal = '';
     var passVal = '';
-
-    //if old site object is passed
-    if (osFtpCommon.isSet(oldSiteIndex)) {
-
-      //log this
-      console.log('Old site presented');
-
-      //indicate that this is an old site
-      oldSession = true;
-
-      nameVal = osFtpGlobals.sites[oldSiteIndex].name;
-      hostVal = osFtpGlobals.sites[oldSiteIndex].host;
-      rootVal = osFtpGlobals.sites[oldSiteIndex].root;
-      userVal = osFtpGlobals.sites[oldSiteIndex].user;
-      passVal = osFtpGlobals.sites[oldSiteIndex].pass;
-
-    }
 
     //build input html ids
     var name_id = 'input-name';
@@ -269,17 +267,46 @@ define(function (require, exports, module) {
     var user_id = 'input-user';
     var pass_id = 'input-pass';
 
+    var errorContainer = 'input-error';
+
+    var nameTitle;
+
+    //if old site object is passed
+    if (osFtpCommon.isSet(oldSiteIndex)) {
+
+      //log this
+      console.log('Old site presented');
+
+      //indicate that this is an old site
+      oldSite = true;
+
+      nameVal = osFtpGlobals.sites[oldSiteIndex].name;
+      hostVal = osFtpGlobals.sites[oldSiteIndex].host;
+      rootVal = osFtpGlobals.sites[oldSiteIndex].root;
+      userVal = osFtpGlobals.sites[oldSiteIndex].user;
+      passVal = osFtpGlobals.sites[oldSiteIndex].pass;
+
+      //set the name time
+      nameTitle =  nameVal;
+
+    }
+
     //build html input object
-    var inputFields = [
-      {label: osFtpStrings.DIALOG_INPUT_NAME, id: name_id, value: nameVal, type: 'text'},
-      {label: osFtpStrings.DIALOG_INPUT_HOST, id: host_id, value: hostVal, type: 'text'},
-      {label: osFtpStrings.DIALOG_INPUT_ROOT, id: root_id, value: rootVal, type: 'text'},
-      {label: osFtpStrings.DIALOG_INPUT_USER, id: user_id, value: userVal, type: 'text'},
-      {label: osFtpStrings.DIALOG_INPUT_PASSWORD, id: pass_id, value: passVal, type: 'password'}
-    ];
+    var inputFields = [];
+
+    if (!oldSite)
+      inputFields.push({label: osFtpStrings.DIALOG_INPUT_NAME, id: name_id, value: nameVal, type: 'text'});
+
+    inputFields.push({label: osFtpStrings.DIALOG_INPUT_HOST, id: host_id, value: hostVal, type: 'text'});
+    inputFields.push({label: osFtpStrings.DIALOG_INPUT_ROOT, id: root_id, value: rootVal, type: 'text'});
+    inputFields.push({label: osFtpStrings.DIALOG_INPUT_USER, id: user_id, value: userVal, type: 'text'});
+    inputFields.push({label: osFtpStrings.DIALOG_INPUT_PASSWORD, id: pass_id, value: passVal, type: 'password'});
 
     //show dialog
-    var inputDialog = osFtpDialog.showSiteDialog(inputFields, oldSession);
+    var inputDialog = osFtpDialog.showSiteDialog(inputFields, nameTitle, errorContainer);
+
+    //hide error area
+    $('#' + errorContainer).hide();
 
     //listen for escape key
     handleEscape(inputDialog);
@@ -288,7 +315,7 @@ define(function (require, exports, module) {
     handleCancel(inputDialog);
 
     //if old session
-    if (oldSession) {
+    if (oldSite) {
 
       //listen for delete (modal doesnt have standard id= attribute, it's data-button-id
       $('button[data-button-id="' + Dialog.DIALOG_BTN_DONTSAVE + '"').click(function () {
@@ -330,7 +357,14 @@ define(function (require, exports, module) {
     //listen for ok
     $('button[data-button-id="' + Dialog.DIALOG_BTN_OK + '"').click(function () {
 
-      var name = $('#' + name_id).val();
+      var oldSitesLength = osFtpGlobals.sites.length;
+
+      var name = nameVal;
+
+      //get input fields
+      if (!oldSite)
+        name = $('#' + name_id).val();
+
       var host = $('#' + host_id).val();
       var root = $('#' + root_id).val();
       var user = $('#' + user_id).val();
@@ -346,7 +380,9 @@ define(function (require, exports, module) {
         'pass - ' + '********'//pass
       );
 
-      //@TODO, validate name is not already used
+      //force out any spaces in the name
+      if (!oldSite)
+        name = name.replace(/ /g, '_');
 
       //build site object
       var site = {
@@ -357,45 +393,48 @@ define(function (require, exports, module) {
         pass: pass
       };
 
+      //if the input is valud
+      if (isValid(site, oldSite, errorContainer)) {
 
-      // LDL5007 testing
-      var newSite = new osFtpSite.Site(name, host, root, user, pass);
-      osFtpSitesManager.registerSite(newSite);
+        // LDL5007 testing
+        var newSite = new osFtpSite.Site(name, host, root, user, pass);
+        osFtpSitesManager.registerSite(newSite);
 
+        //if old site, delete its contents
+        if (oldSite)
+          osFtpGlobals.sites.splice(oldSiteIndex, 1);
 
-      //if old site, delete its contents
-      if (oldSession)
-        osFtpGlobals.sites.splice(oldSiteIndex, 1);
+        //save this site
+        osFtpGlobals.sites.push(site);
 
-      //save this site
-      osFtpGlobals.sites.push(site);
+        //set and save this preference
+        setAndSavePref(osFtpGlobals.PREF, osFtpGlobals.PREF_SITES, osFtpGlobals.sites);
 
-      //set and save this preference
-      setAndSavePref(osFtpGlobals.PREF, osFtpGlobals.PREF_SITES, osFtpGlobals.sites);
+        //enable extra options if we have at least one site
+        if (osFtpGlobals.sites.length > 0 && oldSitesLength == 0) {
 
-      //enable extra options if we have at least one site
-      if (osFtpGlobals.sites.length > 0) {
+          //add getting from a site
+          enableGetFromSite();
 
-        //add getting from a site
-        enableGetFromSite();
+          //add editing of site
+          enableEditSite();
 
-        //add editing of site
-        enableEditSite();
+        }
+
+        //add new site if this didnt exist before
+        if (!oldSite)
+          addSite(site);
+
+        //log that we are saving this site
+        console.log('Dialog closed with save');
+
+        //close the dialog
+        inputDialog.close();
+
+        //turn off listeners
+        disableListeners();
 
       }
-
-      //add new site if this didnt exist before
-      if (!oldSession)
-        addSite(site);
-
-      //log that we are saving this site
-      console.log('Dialog closed with save');
-
-      //close the dialog
-      inputDialog.close();
-
-      //turn off listeners
-      disableListeners();
 
     });
 
@@ -408,6 +447,124 @@ define(function (require, exports, module) {
     });
 
   }
+
+
+  /**
+   * Validates and issues error messages for user input
+   * @param   {Object}  site The inputted site
+   * @returns {Boolean} Returns whether or not this site input is valid
+   */
+  function isValid(site, bypassName, errorContainer) {
+
+    var isValid = true;
+    var validateResponses = [];
+
+    var errorHtml = '';
+
+    //collect validation of each field
+    if (!bypassName)
+      validateResponses.push(validateSiteName(site.name));
+
+    validateResponses.push(validateHostName(site.host));
+
+    //process all responses
+    validateResponses.forEach(function  (validateResponse) {
+
+      //if there is one failure
+      if (!validateResponse.isValid) {
+
+        //mark this input as invalud
+        isValid = false
+
+        errorHtml += '<p class="osftp-status-error">';
+        errorHtml += validateResponse.msg;
+        errorHtml += '</p>';
+      }
+
+    });
+
+    //show error area
+    $('#' + errorContainer).html(errorHtml);
+
+    //show error area
+    $('#' + errorContainer).show();
+
+    //return indicator
+    return isValid;
+  }
+
+
+  /**
+   * Validates the site name field
+   * @param   {String} name Name of the site
+   * @returns {Object} Contains a boolean indicator and error message if invalid
+   */
+  function validateSiteName(name) {
+
+    //assume valid
+    var validateResponse = {
+      isValid: true,
+      msg: ''
+    };
+
+
+    //verify at minimum a host is set
+    if (!osFtpCommon.isSet(name)) {
+
+      //this is required
+      validateResponse.isValid = false;
+      validateResponse.msg = osFtpStrings.DIALOG_ERROR_SITE_INVALID;
+    }
+
+    else {
+
+      //locate the site object based on site name
+      osFtpGlobals.sites.forEach(function(site) {
+
+        //if we match on name this is an error
+        if (site.name == name) {
+
+          //site already exists
+          validateResponse.isValid = false;
+          validateResponse.msg = osFtpStrings.DIALOG_ERROR_SITE_EXISTS;
+
+        }
+
+      });
+    }
+
+    //return object
+    return validateResponse;
+
+  }
+
+
+  /**
+   * Validates the site host field
+   * @param   {String} host Host for the site
+   * @returns {Object} Contains a boolean indicator and error message if invalid
+   */
+  function validateHostName(host) {
+
+    //assume valid
+    var validateResponse  = {
+      isValid: true,
+      msg: ''
+    };
+
+    //verify at minimum a host is set
+    if (!osFtpCommon.isSet(host)) {
+
+      //this is required
+      validateResponse.isValid = false;
+      validateResponse.msg = osFtpStrings.DIALOG_ERROR_HOST_INVALID;
+    }
+
+    //return object
+    return validateResponse;
+
+  }
+
 
 
   /**
@@ -504,6 +661,9 @@ define(function (require, exports, module) {
 
     //get saved preferences
     osFtpGlobals.sites = osFtpPreferences.get(osFtpGlobals.PREF_SITES) || [];
+
+    //load our style sheet
+    ExtensionUtils.loadStyleSheet(module, '../css/osFtp.css');
 
     //enable extra options if we have at least one site
     if (osFtpGlobals.sites.length > 0) {

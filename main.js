@@ -1,11 +1,8 @@
 /**
  * @TODO - Package and publish
- * @TODO - add error checking for invalid input (i.e. invalid characters, duplicate site names, ...)
  * @TODO - add error reporting, perhaps add panel for logging data to see errors
  * @TODO - allow for key bindings
  * @TODO - allow for ftp get of data
- * @TODO - script folder
- * @TODO - settings for ftp type
  * @TODO - automation testing to add and remove sites, submit jobs, and verify success
  * @TODO - send event on node complete
  */

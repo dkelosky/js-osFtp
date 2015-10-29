@@ -11,6 +11,7 @@ define(function (require, exports, module) {
   /**
    * Extension modules
    */
+  var osFtpCommon  = require('src/common');
   var osFtpStrings = require('strings');
 
 
@@ -109,11 +110,11 @@ define(function (require, exports, module) {
 
   /**
    * Shows the site edit dialog
-   * @param   {Object} inputs   Array of input fields in html used to build the dialog
-   * @param   {Boolean} existing Indicates whether or not this is an existing site
-   * @returns {Object} Brackets dialog object
+   * @param   {Object}  inputs   Array of input fields in html used to build the dialog
+   * @param   {String}  nameTitle Set if existing site
+   * @returns {Object}  Brackets dialog object
    */
-  function showSiteDialog(inputs, existing) {
+  function showSiteDialog(inputs, nameTitle, errorId) {
 
     //log this
     console.log('showSiteDialog()');
@@ -132,7 +133,7 @@ define(function (require, exports, module) {
     });
 
     //if existing site
-    if (existing) {
+    if (osFtpCommon.isSet(nameTitle)) {
 
       //delete button if we are going are showing an existing site
       var deleteButton = {
@@ -142,7 +143,7 @@ define(function (require, exports, module) {
       }
 
       //adjust title
-      title = osFtpStrings.DIALOG_TITLE_EDIT_SITE;
+      title = osFtpStrings.DIALOG_TITLE_EDIT_SITE + ' - ' + nameTitle;
 
       //add a delete button
       localButtons.push(deleteButton);
@@ -157,6 +158,7 @@ define(function (require, exports, module) {
 
     //add radio buttons for each site
     inputs.forEach(function (input) {
+
       bodyHtml += input.label;
       bodyHtml += '<br>';
       bodyHtml += '<input id="' + input.id + '" type="' + input.type + '" value="' + input.value + '">';
@@ -166,6 +168,9 @@ define(function (require, exports, module) {
 
     //term html tag
     bodyHtml += '</form>';
+
+    //error markers
+    bodyHtml += '<div id="' + errorId + '"></div>';
 
     //show the dialog and return the object
     return Dialog.showModalDialog(
