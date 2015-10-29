@@ -4,7 +4,6 @@
  * @TODO - allow for key bindings
  * @TODO - allow for ftp get of data
  * @TODO - automation testing to add and remove sites, submit jobs, and verify success
- * @TODO - send event on node complete
  * @TODO - allow kill of process if too much time passes (for now, close Brackets)
  */
 define(function(require, exports, module) {
