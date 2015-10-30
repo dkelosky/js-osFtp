@@ -7,7 +7,6 @@ define(function (require, exports, module) {
 	 */
 	var CommandManager = brackets.getModule('command/CommandManager');
 	var Dialog = brackets.getModule('widgets/Dialogs');
-	var ExtensionUtils = brackets.getModule('utils/ExtensionUtils');
 	var File = brackets.getModule('file/FileUtils');
 	var PreferencesManager = brackets.getModule('preferences/PreferencesManager');
 	var Project = brackets.getModule('project/ProjectManager');
@@ -685,9 +684,6 @@ define(function (require, exports, module) {
 
 		//get saved preferences
 		osFtpGlobals.sites = osFtpPreferences.get(osFtpGlobals.PREF_SITES) || [];
-
-		//load our style sheet
-		ExtensionUtils.loadStyleSheet(module, '../css/osFtp.css');
 
 		//enable extra options if we have at least one site
 		if (osFtpGlobals.sites.length > 0) {

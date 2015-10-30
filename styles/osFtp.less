@@ -1,0 +1,53 @@
+@import "colors.less";
+@import "common.less";
+@import "dialogs/osFtp.less";
+@import "brackets/brackets_core_ui_variables.less";
+
+@baseZindex: 100;
+@gutterWidth: 0.65em; // using ems so that it'll be scalable on cmd +/-
+
+#osftp-settings-dialog {
+    .modal-body {
+        min-height: 410px; // this needs to be set to a height that'll prevent the dialog to change size when tabs are being switched.
+    }
+    .nav-tabs {
+        border-bottom: 1px solid @bc-panel-separator;
+
+        .dark & {
+            border-bottom: 1px solid @dark-bc-panel-separator;
+        }
+
+        a {
+            color: @bc-text;
+            border: 1px solid transparent;
+
+            .dark & {
+                color: @dark-bc-text;
+            }
+        }
+        a:hover {
+            background-color: rgba(0, 0, 0, 0.04);
+        }
+        > .active > a {
+            background-color: @bc-panel-bg !important;
+            border: 1px solid @bc-btn-border;
+            border-bottom: 1px solid @bc-panel-bg !important;
+
+            .dark & {
+                background-color: @dark-bc-panel-bg !important;
+                border: 1px solid @dark-bc-btn-border;
+                border-bottom: 1px solid @dark-bc-panel-bg !important;
+            }
+        }
+    }
+    .tab-content {
+        margin-top: 1em;
+    }
+    select {
+        width: 280px;
+    }
+
+    .advanced-features-setting {
+        color: @red-text;
+    }
+}

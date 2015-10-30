@@ -217,7 +217,6 @@ define(function (require, exports, module) {
 		StatusBar.showIndicators();
 
 		//alter status bar color
-		ExtensionUtils.loadStyleSheet(module, '../css/osFtp.css');
 		StatusBar.updateIndicator(osFtpGlobals.STATUS_INDICATOR_ID, true, 'osftp-status-busy');
 
 	}
@@ -229,7 +228,6 @@ define(function (require, exports, module) {
 	function showDone() {
 
 		//alter status bar color
-		ExtensionUtils.loadStyleSheet(module, '../css/osFtp.css');
 		StatusBar.updateIndicator(osFtpGlobals.STATUS_INDICATOR_ID, true, 'osftp-status-done');
 
 	}
@@ -241,7 +239,6 @@ define(function (require, exports, module) {
 	function showError() {
 
 		//alter status bar color
-		ExtensionUtils.loadStyleSheet(module, '../css/osFtp.css');
 		StatusBar.updateIndicator(osFtpGlobals.STATUS_INDICATOR_ID, true, 'osftp-status-error');
 
 	}
@@ -265,7 +262,6 @@ define(function (require, exports, module) {
 				console.log('Status clear');
 
 				//alter status bar color
-				ExtensionUtils.loadStyleSheet(module, '../css/osFtp.css');
 				StatusBar.updateIndicator(osFtpGlobals.STATUS_INDICATOR_ID, true, '');
 
 			},
