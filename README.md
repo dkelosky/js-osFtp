@@ -72,7 +72,15 @@ Note: The ftp executable is invoked with the -ins options so autologin is suppre
   
 Right click a file (not a directory) in the Working file set or Project set and 'Run as FTP Script'
 
+---
+
+## Settings
+
+Add file extensions to control FTP as ASCII or binary.
+
+![alt text][settings]
 
 [newFtpSite]: https://github.com/dkelosky/js-osFtp/blob/master/images/newFtpSite.PNG "New Ftp Site..."
 [addFtpSite]: https://github.com/dkelosky/js-osFtp/blob/master/images/addFtpSite.PNG "Add Ftp Site"
 [runSite]: https://github.com/dkelosky/js-osFtp/blob/master/images/runSite.PNG "Run Site"
+[settings]: https://github.com/dkelosky/js-osFtp/blob/master/images/settings.PNG "Settings"
