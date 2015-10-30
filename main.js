@@ -64,7 +64,7 @@ define(function (require, exports, module) {
 		osFtpMenu.addToContextMenus(osFtpGlobals.COMMAND_NEW_SITE_ID, false);
 
 		//handlers
-		osFtpHandlers.init();
+		osFtpHandlers.handlersInit();
 
 		//add the status indicator
 		addStatusIndicator();

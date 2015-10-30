@@ -19,18 +19,12 @@ define(function (require, exports, module) {
 	var osFtpDialog = require('src/dialog');
 	var osFtpDomain = require('src/domain');
 	var osFtpGlobals = require('src/globals');
-	var osFtpHandlers = require('src/handlers');
+	var osFtpHandlersHelpers = require('src/handlersHelpers');
 	var osFtpMenu = require('src/menu');
 	var osFtpScripts = require('src/scripts');
 	var osFtpStrings = require('strings');
 	var osFtpSite = require('src/site');
 	var osFtpSitesManager = require('src/sitesManager');
-
-
-	/**
-	 * Global variables
-	 */
-	var osFtpPreferences = PreferencesManager.getExtensionPrefs(osFtpGlobals.PREF);
 
 
 	/**
@@ -41,85 +35,7 @@ define(function (require, exports, module) {
 	exports.handleNewOrEditSite = handleNewOrEditSite;
 	exports.handleRunScript = handleRunScript;
 	exports.handleRunSite = handleRunSite;
-	exports.init = init;
-
-
-	/**
-	 * Add a site by registering the site as a command and adding it to the context menus
-	 * @param {Object} site Site object containing information about this site
-	 */
-	function addSite(site) {
-
-		//log this call
-		console.log('addSite(' + site.name + ');');
-
-		//setup labels
-		var COMMAND_RUN_SITE_LABEL = osFtpStrings.COMMAND_RUN_SITE_BASE_LABEL + site.name;
-		var COMMAND_RUN_SITE_ID = osFtpGlobals.COMMAND_RUN_SITE_BASE_ID + site.name;
-
-		//register command and add a context menu to create a site
-		CommandManager.register(COMMAND_RUN_SITE_LABEL, COMMAND_RUN_SITE_ID, osFtpHandlers.handleRunSite);
-		osFtpMenu.addToContextMenus(COMMAND_RUN_SITE_ID, false, osFtpGlobals.COMMAND_GET_FROM_SITE_ID, false);
-
-	}
-
-
-	/**
-	 * Enables the get command for an added site
-	 */
-	function enableGetFromSite() {
-
-		//log this call
-		console.log('enableGetFromSite();');
-
-		//register command and add a context menu to create a site
-		CommandManager.register(osFtpStrings.COMMAND_GET_FROM_SITE_LABEL, osFtpGlobals.COMMAND_GET_FROM_SITE_ID, handleGetFromSite);
-		osFtpMenu.addToContextMenus(osFtpGlobals.COMMAND_GET_FROM_SITE_ID, false, osFtpGlobals.COMMAND_NEW_SITE_ID, false);
-
-	}
-
-
-	/**
-	 * Enables the edit command for an added site
-	 */
-	function enableEditSite() {
-
-		//log this call
-		console.log('enableEditSite();');
-
-		//register command and add a context menu to create a site
-		CommandManager.register(osFtpStrings.COMMAND_EDIT_SITE_LABEL, osFtpGlobals.COMMAND_EDIT_SITE_ID, handleEditSite);
-		osFtpMenu.addToContextMenus(osFtpGlobals.COMMAND_EDIT_SITE_ID, false, osFtpGlobals.COMMAND_NEW_SITE_ID, false);
-
-	}
-
-
-	/**
-	 * Disables the get command for sites (cannot deregister the command)
-	 */
-	function disableGetFromSite() {
-
-		//log this call
-		console.log('disableGetFromSite();');
-
-		//remove from the menu
-		osFtpMenu.removeFromContextMenus(osFtpGlobals.COMMAND_GET_FROM_SITE_ID);
-
-	}
-
-
-	/**
-	 * Disables the edit command for sites (cannot deregister the command)
-	 */
-	function disableEditSite() {
-
-		//log this call
-		console.log('disableEditSite();');
-
-		//remove from the menu
-		osFtpMenu.removeFromContextMenus(osFtpGlobals.COMMAND_EDIT_SITE_ID);
-
-	}
+	exports.handlersInit = handlersInit;
 
 
 	/**
@@ -139,10 +55,10 @@ define(function (require, exports, module) {
 		var selectedSiteIndex;
 
 		//listen for escape key
-		handleEscape(selectDialog);
+		osFtpHandlersHelpers.handleEscape(selectDialog);
 
 		//handle cancel button
-		handleCancel(selectDialog);
+		osFtpHandlersHelpers.handleCancel(selectDialog);
 
 		//listen for ok
 		$('button[data-button-id="' + Dialog.DIALOG_BTN_OK + '"').click(function () {
@@ -158,7 +74,7 @@ define(function (require, exports, module) {
 			console.log('Dialog closed with save');
 
 			//turn off listeners
-			disableListeners();
+			osFtpHandlersHelpers.disableListeners();
 
 			//close the dialog
 			selectDialog.close();
@@ -198,10 +114,10 @@ define(function (require, exports, module) {
 		var selectedSiteIndex;
 
 		//listen for escape key
-		handleEscape(selectDialog);
+		osFtpHandlersHelpers.handleEscape(selectDialog);
 
 		//handle cancel button
-		handleCancel(selectDialog);
+		osFtpHandlersHelpers.handleCancel(selectDialog);
 
 		//listen for ok
 		$('button[data-button-id="' + Dialog.DIALOG_BTN_OK + '"').click(function () {
@@ -217,7 +133,7 @@ define(function (require, exports, module) {
 			console.log('Dialog closed with save');
 
 			//turn off listeners
-			disableListeners();
+			osFtpHandlersHelpers.disableListeners();
 
 			//close the dialog
 			selectDialog.close();
@@ -333,10 +249,10 @@ define(function (require, exports, module) {
 		$('#' + errorContainer).hide();
 
 		//listen for escape key
-		handleEscape(inputDialog);
+		osFtpHandlersHelpers.handleEscape(inputDialog);
 
 		//handle cancel button
-		handleCancel(inputDialog);
+		osFtpHandlersHelpers.handleCancel(inputDialog);
 
 		//if old session
 		if (oldSite) {
@@ -354,23 +270,23 @@ define(function (require, exports, module) {
 				osFtpMenu.removeFromContextMenus(COMMAND_RUN_SITE_ID);
 
 				//set and save this preference
-				setAndSavePref(osFtpGlobals.PREF, osFtpGlobals.PREF_SITES, osFtpGlobals.sites);
+				osFtpHandlersHelpers.setAndSavePref(osFtpGlobals.PREF, osFtpGlobals.PREF_SITES, osFtpGlobals.sites);
 
 				//disable extra options if we have no more sites
 				if (osFtpGlobals.sites.length == 0) {
 
 					//remove edit option
-					disableEditSite();
+					osFtpHandlersHelpers.disableEditSite();
 
 					//remove get option
-					disableGetFromSite();
+					osFtpHandlersHelpers.disableGetFromSite();
 				}
 
 				//log that the user wants to close
 				console.log('Dialog closed to delete site');
 
 				//turn off listeners
-				disableListeners();
+				osFtpHandlersHelpers.disableListeners();
 
 				//close the dialog
 				inputDialog.close();
@@ -418,7 +334,7 @@ define(function (require, exports, module) {
 			};
 
 			//if the input is valud
-			if (isValid(site, oldSite, errorContainer)) {
+			if (osFtpHandlersHelpers.isValid(site, oldSite, errorContainer)) {
 
 				// LDL5007 testing
 				var newSite = new osFtpSite.Site(name, host, root, user, pass);
@@ -432,28 +348,28 @@ define(function (require, exports, module) {
 				osFtpGlobals.sites.push(site);
 
 				//set and save this preference
-				setAndSavePref(osFtpGlobals.PREF, osFtpGlobals.PREF_SITES, osFtpGlobals.sites);
+				osFtpHandlersHelpers.setAndSavePref(osFtpGlobals.PREF, osFtpGlobals.PREF_SITES, osFtpGlobals.sites);
 
 				//enable extra options if we have at least one site
 				if (osFtpGlobals.sites.length > 0 && oldSitesLength == 0) {
 
 					//add getting from a site
-					enableGetFromSite();
+					osFtpHandlersHelpers.enableGetFromSite();
 
 					//add editing of site
-					enableEditSite();
+					osFtpHandlersHelpers.enableEditSite();
 
 				}
 
 				//add new site if this didnt exist before
 				if (!oldSite)
-					addSite(site);
+					osFtpHandlersHelpers.addSite(site);
 
 				//log that we are saving this site
 				console.log('Dialog closed with save');
 
 				//turn off listeners
-				disableListeners();
+				osFtpHandlersHelpers.disableListeners();
 
 				//close the dialog
 				inputDialog.close();
@@ -472,137 +388,6 @@ define(function (require, exports, module) {
 
 	}
 
-
-	/**
-	 * Validates and issues error messages for user input
-	 * @param   {Object}  site The inputted site
-	 * @returns {Boolean} Returns whether or not this site input is valid
-	 */
-	function isValid(site, bypassName, errorContainer) {
-
-		var isValid = true;
-		var validateResponses = [];
-
-		var errorHtml = '';
-
-		//collect validation of each field
-		if (!bypassName)
-			validateResponses.push(validateSiteName(site.name));
-
-		validateResponses.push(validateHostName(site.host));
-
-		//process all responses
-		validateResponses.forEach(function (validateResponse) {
-
-			//if there is one failure
-			if (!validateResponse.isValid) {
-
-				//mark this input as invalud
-				isValid = false
-
-				errorHtml += '<p class="osftp-status-error">';
-				errorHtml += validateResponse.msg;
-				errorHtml += '</p>';
-			}
-
-		});
-
-		//show error area
-		$('#' + errorContainer).html(errorHtml);
-
-		//show error area
-		$('#' + errorContainer).show();
-
-		//return indicator
-		return isValid;
-	}
-
-
-	/**
-	 * Validates the site name field
-	 * @param   {String} name Name of the site
-	 * @returns {Object} Contains a boolean indicator and error message if invalid
-	 */
-	function validateSiteName(name) {
-
-		//assume valid
-		var validateResponse = {
-			isValid: true,
-			msg: ''
-		};
-
-
-		//verify at minimum a host is set
-		if (!osFtpCommon.isSet(name)) {
-
-			//this is required
-			validateResponse.isValid = false;
-			validateResponse.msg = osFtpStrings.DIALOG_ERROR_SITE_INVALID;
-		} else {
-
-			//locate the site object based on site name
-			osFtpGlobals.sites.forEach(function (site) {
-
-				//if we match on name this is an error
-				if (site.name == name) {
-
-					//site already exists
-					validateResponse.isValid = false;
-					validateResponse.msg = osFtpStrings.DIALOG_ERROR_SITE_EXISTS;
-
-				}
-
-			});
-		}
-
-		//return object
-		return validateResponse;
-
-	}
-
-
-	/**
-	 * Validates the site host field
-	 * @param   {String} host Host for the site
-	 * @returns {Object} Contains a boolean indicator and error message if invalid
-	 */
-	function validateHostName(host) {
-
-		//assume valid
-		var validateResponse = {
-			isValid: true,
-			msg: ''
-		};
-
-		//verify at minimum a host is set
-		if (!osFtpCommon.isSet(host)) {
-
-			//this is required
-			validateResponse.isValid = false;
-			validateResponse.msg = osFtpStrings.DIALOG_ERROR_HOST_INVALID;
-		}
-
-		//return object
-		return validateResponse;
-
-	}
-
-
-
-	/**
-	 * Set a preference value with its key and save
-	 * @param {String} prefFile Preference file
-	 * @param {String} key      Preference key value
-	 * @param {Object} value    Any variable type associated with the key
-	 */
-	function setAndSavePref(prefFile, key, value) {
-
-		//set in preferences
-		osFtpPreferences.set(key, value);
-
-		//save
-		osFtpPreferences.save(prefFile);
-	}
 
 
 	/**
@@ -664,14 +449,14 @@ define(function (require, exports, module) {
 		if (Project.getSelectedItem().isDirectory) {
 
 			//upload this directory
-			uploadDirectory(thisSite, selectedFiles);
+			osFtpHandlersHelpers.uploadDirectory(thisSite, selectedFiles);
 
 			//an individual file was choose, build a script string and invoke node to run FTP and this script
 		} else {
 
 			//build our ftp script
 			var ftpScript = osFtpScripts.generateUploadScript(selectedFiles, thisSite);
-			invokeFtpScript(ftpScript);
+			osFtpHandlersHelpers.invokeFtpScript(ftpScript);
 		}
 
 	}
@@ -680,162 +465,15 @@ define(function (require, exports, module) {
 	/**
 	 * Initialize saved handlers and globals
 	 */
-	function init() {
+	function handlersInit() {
 
-		//get saved preferences
-		osFtpGlobals.sites = osFtpPreferences.get(osFtpGlobals.PREF_SITES) || [];
+		//log this
+		console.log('handlersInit()');
 
-		//enable extra options if we have at least one site
-		if (osFtpGlobals.sites.length > 0) {
-
-			//add getting from a site
-			enableGetFromSite();
-
-			//add editing of site
-			enableEditSite();
-
-		}
-
-		//add back saved sites
-		osFtpGlobals.sites.forEach(function (site) {
-			addSite(site);
-
-		});
+		//init helpers
+		osFtpHandlersHelpers.handlersHelpersInit(osFtpGlobals, osFtpDomain);
 
 	}
 
-
-	/**
-	 * [[Description]]
-	 * @param {Object} site Object representing the site to upload to
-	 */
-	function uploadDirectory(site, fileList) {
-
-		//show dialog
-		var confirmDialog = osFtpDialog.showConfirmDirectoryUpload(site);
-
-		//listen for escape key
-		handleEscape(confirmDialog);
-
-		//handle cancel button
-		handleCancel(confirmDialog);
-
-		//listen for ok
-		$('button[data-button-id="' + Dialog.DIALOG_BTN_OK + '"').click(function () {
-
-			//log that we are saving this site
-			console.log('Dialog closed with save');
-
-			//turn off listeners
-			disableListeners();
-
-			//close the dialog
-			confirmDialog.close();
-
-			//build our ftp script
-			var ftpScript = osFtpScripts.generateUploadScript(fileList, site);
-
-			//invoke script
-			invokeFtpScript(ftpScript);
-
-		});
-
-
-		//listen for dialog done
-		confirmDialog.done(function () {
-
-			//log that the modal is gone
-			console.log('Dialog modal is dismissed');
-
-		});
-
-	}
-
-
-	/**
-	 * Handle CANCEL button for all dialogs
-	 * @param {Object} dialog Dialog object
-	 */
-	function handleCancel(dialog) {
-
-		//listen for cancel (modal doesnt have standard id= attribute, it's data-button-id
-		$('button[data-button-id="' + Dialog.DIALOG_BTN_CANCEL + '"').click(function () {
-
-			//log that the user wants to close
-			console.log('Dialog closed without save');
-
-			//turn off listeners
-			disableListeners();
-
-			//close the dialog
-			dialog.close();
-
-		});
-
-	}
-
-
-	/**
-	 * Handle escape button for all dialogs
-	 * @param {Object} dialog Dialog object
-	 */
-	function handleEscape(dialog) {
-
-		//listener for escape key
-		$(document).keyup(function (event) {
-
-			//close if escape key is pressed
-			if (event.which == osFtpGlobals.ESCAPE_KEY) {
-
-				//log that the user wants to close
-				console.log('Dialog escaped without save');
-
-				//turn off listeners
-				disableListeners();
-
-				//close the dialog
-				dialog.close();
-
-			}
-
-		});
-
-	}
-
-
-	/**
-	 * Disable all active listeners
-	 */
-	function disableListeners() {
-
-		//turn off OK listener
-		$('button[data-button-id="' + Dialog.DIALOG_BTN_OK + '"').off('click');
-
-		//turn off ESCAPE listener
-		$(document).off('keyup');
-
-		//turn off CANCEL listener
-		$('button[data-button-id="' + Dialog.DIALOG_BTN_CANCEL + '"').off('click');
-
-	}
-
-
-	/**
-	 * [[Description]]
-	 * @param {Object} site Object representing the site to upload to
-	 */
-	function invokeFtpScript(ftpScript) {
-
-		//if the script is defined
-		if (osFtpCommon.isSet(ftpScript)) {
-
-			//select the file name we want to create
-			var scriptFileName = osFtpGlobals.FTP_SCRIPT_FILE_NAME + osFtpGlobals.FTP_SCRIPT_FILE_EXTENSION;
-
-			//invoke node js to build and run our ftp script file
-			osFtpDomain.runFtpCommandStdin(scriptFileName, ftpScript);
-
-		}
-	}
 
 });
