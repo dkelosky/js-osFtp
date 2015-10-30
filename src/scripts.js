@@ -157,11 +157,12 @@ define(function (require, exports, module) {
 		var asciiFileList = JSON.parse(Preferences.get('transferAsAsciiTable')).tableData;
 		var noExtAsAscii  = Preferences.get('treatFileWithoutExtentionAsAscii');
 
+		console.log(asciiFileList);
+
 		// Extract file extension.
 		var fileExt = FileUtils.getFileExtension(inputFile);
 
-
-		if (asciiFileList.indexOf(fileExt.toUpperCase()) != -1) {
+		if (asciiFileList.indexOf(fileExt.toLowerCase()) != -1) {
 			returnStatus = true;
 		} else if (!osFtpCommon.isSet(fileExt)){
 			if (noExtAsAscii){
