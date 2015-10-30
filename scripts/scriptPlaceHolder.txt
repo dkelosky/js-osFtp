@@ -1,2 +1,0 @@
-QUIT
-;retain folder existence for temp script files

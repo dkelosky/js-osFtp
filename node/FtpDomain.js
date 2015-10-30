@@ -154,6 +154,10 @@ maxerr: 50, node: true */
 		//get directory where we want to store the scripts
 		var scriptDirectory = getScriptsDirectory(cwd);
 
+		//create directory if it doesn't exist
+		if (!fs.existsSync(scriptDirectory))
+			fs.mkdirSync(scriptDirectory);
+
 		//sychronously open file
 		console.log('Opening file - ' + scriptDirectory + file);
 		var newFile = fs.openSync(scriptDirectory + file, 'w');
