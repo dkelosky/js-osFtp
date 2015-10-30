@@ -52,6 +52,8 @@ define(function(require, exports, module) {
         if (selectedItem.isDirectory) {
             var currentDir = selectedItem.fullPath;
 
+			Project.rerenderTree();
+
             // Loop through all file in root directory to locate file that contain
             //   the selected directory.
             var filesInDir = Project.getAllFiles(function(File, number) {
