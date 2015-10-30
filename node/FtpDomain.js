@@ -340,6 +340,9 @@ maxerr: 50, node: true */
 
 						//this hurts me more than it hurts you... :(
 						child.kill();
+
+						//log this
+						console.log('child.kill();');
 					}
 				}
 			});
@@ -352,8 +355,26 @@ maxerr: 50, node: true */
 		//listen for data present
 		child.stderr.on('data', function (buffer) {
 
+			//get output
+			var output = buffer.toString();
+
+			//console
+			console.error('Fatal script error encountered on -' + output);
+
+			//append failures until we die
+			response = output;
+
+			//log this failure
+			isFailure = true;
+
+			//this hurts me more than it hurts you... :(
+			child.kill();
+
+			//log this
+			console.log('child.kill();');
+
 			//log output
-			console.log('stderr: ' + buffer.toString());
+			console.log('stderr: ' + output);
 
 		});
 

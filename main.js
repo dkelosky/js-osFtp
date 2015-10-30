@@ -10,7 +10,6 @@
  *       	run ftp scripts
  *        	adjust settings
  * @TODO - encoding issues (i.e. ftp to unix and remove \r)?
- * @TODO - allow setting of binary list too
  * @TODO - allow for permission settings (like chmod)
  */
 define(function (require, exports, module) {
