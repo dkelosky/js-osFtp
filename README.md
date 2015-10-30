@@ -76,7 +76,7 @@ Right click a file (not a directory) in the Working file set or Project set and 
 
 ## Settings
 
-Add file extensions to control FTP as ASCII or binary.
+Add file extensions to control FTP as ASCII or binary.  See File->OS FTP Settings...
 
 ![alt text][settings]
 
