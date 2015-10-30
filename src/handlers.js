@@ -404,11 +404,13 @@ define(function (require, exports, module) {
 		//determine if the file choosen is a directory or an individual file
 		if (File.getDirectoryPath(itemFullPath) == itemFullPath) {
 
-			//@TODO all for processing and ftp'ing an entire directory
-			//for now, log message if an attempt is made to ftp a directory
+			//attempt is made to ftp a directory
 			console.log('Select FTP script file - not a directory');
 
-			//an individual file was choose, build a script string and invoke node to run FTP and this script
+			//show error dialog
+			osFtpDialog.showFailDialog(osFtpStrings.FAILURE_FTP_RUN_DIRECTORY);
+
+		//an individual file was choose, build a script string and invoke node to run FTP and this script
 		} else {
 
 			//invoke node js to run our ftp script file

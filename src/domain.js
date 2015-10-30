@@ -84,6 +84,7 @@ define(function (require, exports, module) {
 
 			//show error dialog
 			osFtpDialog.showFailDialog(osFtpStrings.FAILURE_FTP_PROCESS_IN_PROGRESS);
+
 		} else {
 
 			//show we're busy
@@ -93,13 +94,13 @@ define(function (require, exports, module) {
 			if (!osFtpCommon.isSet(data))
 
 			//invoke domain function
-				nodeExec = osFtpDomain.exec('doFtp', getNodeDirectory(), file)
+			nodeExec = osFtpDomain.exec('doFtp', getNodeDirectory(), file)
 
 			//else we have data in addition to a file
 			else
 
 			//invoke domain function
-				nodeExec = osFtpDomain.exec('doFtpStdin', getNodeDirectory(), file, data)
+			nodeExec = osFtpDomain.exec('doFtpStdin', getNodeDirectory(), file, data)
 
 			//set listener for done
 			nodeExec.done(function () {
@@ -130,12 +131,12 @@ define(function (require, exports, module) {
 				if (response.success)
 
 				//do done stuff
-					nodeDone();
+				nodeDone();
 
 				else
 
 				//do failure stuff
-					nodeFail();
+				nodeFail();
 
 			});
 		}
