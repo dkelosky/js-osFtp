@@ -78,7 +78,7 @@ define(function(require, exports) {
             e.stopPropagation();
 
             // Extract text from input
-            var text = $("#osftp-settings-fileExtensionInput").val();
+            var text = $("#osftp-settings-fileExtensionInput").val().toLowerCase();
             if (osFtpCommon.isSet(text)){
                 if (asciiTabledata.tableData.indexOf(text) == -1){
                     asciiTabledata.tableData.push(text);
