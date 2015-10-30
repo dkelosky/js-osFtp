@@ -163,7 +163,7 @@ define(function (require, exports, module) {
 
 		if (asciiFileList.indexOf(fileExt.toUpperCase()) != -1) {
 			returnStatus = true;
-		} else if (osFtpCommon.isSet(fileExt)){
+		} else if (!osFtpCommon.isSet(fileExt)){
 			if (noExtAsAscii){
 				returnStatus = true;
 			}
