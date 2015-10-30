@@ -34,6 +34,12 @@ maxerr: 50, node: true */
 	 */
 	var globalDomainManager;
 
+	/**
+	 * We won't catch all errors but can some of the sever ones.  the only garunteed way to know if there is an error
+	 * in the ftp process is to analyze the console log on every ftp.
+	 */
+	var failureStrings = ['Unknown host', 'Not connected', 'Invalid command'];
+
 
 	/**
 	 * Exported functions
@@ -52,7 +58,7 @@ maxerr: 50, node: true */
 
 		if (!domainManager.hasDomain('ftp')) {
 
-			//What is this???
+			//Bracket's doc makes me wonder - WHY?!
 			domainManager.registerDomain('ftp', {
 				major: 0,
 				minor: 1
@@ -71,11 +77,11 @@ maxerr: 50, node: true */
 				name: 'scriptFile', // parameters
 				type: 'string',
 				description: 'Fully qualified FTP script file to execute'
-      }], [{
+      			}], [{
 				name: 'output1', // return values
 				type: 'number',
 				description: 'output 1 desc goes here'
-      }]
+      			}]
 
 		);
 
@@ -91,26 +97,27 @@ maxerr: 50, node: true */
 					name: 'scriptFile',
 					type: 'string',
 					description: 'Fully qualified FTP script file to execute'
-      },
+      			},
 				{
 					name: 'scriptFile',
 					type: 'string',
 					description: 'Fully qualified FTP script file to execute'
-      }], [{
+				}], [{
 				name: 'output1',
 				type: 'number',
 				description: 'output 1 desc goes here'
-      }]
+      			}]
 		);
 
 		domainManager.registerEvent(
 			'ftp', //domain name
 			'ftpMsg', //event name
-      [{
+      		[{
 				name: 'response',
 				type: 'Object',
 				description: 'contains Boolean "failure" and String "message"'
-      }]);
+			}]
+		);
 
 	}
 
@@ -127,15 +134,37 @@ maxerr: 50, node: true */
 		console.log('Input file specified was: ' + ftpScriptFile);
 
 		//run ftp with options to suppress auto login and to supply a script file
-		var bar = new runProcess(cwd, 'ftp', ['-ins:' + ftpScriptFile], function () {
+		var bar = new runProcess(cwd, 'ftp', ['-ins:' + ftpScriptFile], function(isFailure, response) {
 
 			//log complete
 			console.log('doFtp(); complete');
 
-			//send a response
-			issueResponse(true, '');
+			//process the response
+			processResponse(isFailure, response);
 
 		});
+	}
+
+
+
+	/**
+	 * Determine whether the response is positive or not and route message back to Brackets side of things
+	 * @param {Boolean} isFailure Indicates whether we think there was a likely failure
+	 * @param {String} message   General information to accompany our indicator
+	 */
+	function  processResponse(isFailure, message) {
+
+		//log this
+		console.log('processResponse(' + isFailure + ', ' + message + '');
+
+		//assume success
+		var isSucces = true;
+
+		//perform analysis - more in the future
+		if (isFailure) isSucces = false;
+
+		//send a response
+		issueResponse(isSucces, message);
 	}
 
 
@@ -171,7 +200,7 @@ maxerr: 50, node: true */
 		fs.closeSync(newFile);
 
 		//run ftp with options to suppress auto login and to supply a script file
-		var bar = new runProcess(cwd, 'ftp', ['-ins:' + scriptDirectory + file], function () {
+		var bar = new runProcess(cwd, 'ftp', ['-ins:' + scriptDirectory + file], function(isFailure, response) {
 
 			//log complete
 			console.log('doFtpStdin(); complete');
@@ -180,8 +209,8 @@ maxerr: 50, node: true */
 			console.log('Deleteing file...');
 			fs.unlinkSync(scriptDirectory + file);
 
-			//send a response
-			issueResponse(true, '');
+			//process the response
+			processResponse(isFailure, response);
 
 		});
 	}
@@ -193,6 +222,9 @@ maxerr: 50, node: true */
 	 * @param {String} msg              Message to accompany the indicator
 	 */
 	function issueResponse(successIndicator, msg) {
+
+		//log this
+		console.log('issueResponse(' + successIndicator + ', ' + msg + ');');
 
 		//no real error checking is done for now
 		var response = {
@@ -251,10 +283,10 @@ maxerr: 50, node: true */
 			 * 'null,undefined'   - means use defaults ('pipe' for stdin, stdout, and stder, else 'ignore')
 			 */
 			stdio: [
-        'pipe', //'pipe' is an option          --- child.stdin is shorthand for stdio[0]
-        'pipe', //fs.openSync('out.txt', 'w'), //--- child.stdout is shorthand for stdio[1]
-        'pipe' //fs.openSync('err.txt', 'w')  --- child.stderr is shorthand for stdio[3]
-        ]
+			'pipe', //'pipe' is an option          --- child.stdin is shorthand for stdio[0]
+			'pipe', //fs.openSync('out.txt', 'w'), //--- child.stdout is shorthand for stdio[1]
+			'pipe' //fs.openSync('err.txt', 'w')  --- child.stderr is shorthand for stdio[3]
+			]
 		};
 
 		//log our spawn
@@ -264,8 +296,8 @@ maxerr: 50, node: true */
 		var child = spawn(cmd, args, options);
 
 		//init response variable
-		var resp = '';
-		var failResp = '';
+		var isFailure = false;
+		var response = '';
 
 		//must end input
 		child.stdin.end();
@@ -281,17 +313,46 @@ maxerr: 50, node: true */
 		//listen for data present
 		child.stdout.on('data', function (buffer) {
 
-			//append to and build response
-			resp += buffer.toString();
-			console.log('stdout: ' + buffer.toString());
+			//get output
+			var output = buffer.toString();
+			var subOutput = '';
+
+			//check for fatal errors
+			failureStrings.forEach(function(failMessage){
+
+				//if stdoutput is at least as long as a failure message
+				if (failMessage.length <= output.length) {
+
+					//substring it for this failure message
+					subOutput = output.substring(0, failMessage.length);
+
+					//if we match on failure, log this failure response
+					if (failMessage == subOutput)  {
+
+						//console
+						console.error('Fatal script error encountered on -' + subOutput);
+
+						//append failures until we die
+						response = subOutput;
+
+						//log this failure
+						isFailure = true;
+
+						//this hurts me more than it hurts you... :(
+						child.kill();
+					}
+				}
+			});
+
+			//log output
+			console.log('stdout: ' + output);
 
 		});
 
 		//listen for data present
 		child.stderr.on('data', function (buffer) {
 
-			//append to and build response
-			failResp += buffer.toString();
+			//log output
 			console.log('stderr: ' + buffer.toString());
 
 		});
@@ -299,11 +360,8 @@ maxerr: 50, node: true */
 		//listen for end of data
 		child.stdout.on('end', function () {
 
-			//provide text response to callback
-			//callBack(resp, false);
-
 			//log that we reached the end
-			console.log('>>> End of stdout reached <<<');
+			console.log('child.stdout.on("end");');
 
 		});
 
@@ -311,7 +369,7 @@ maxerr: 50, node: true */
 		child.stderr.on('end', function () {
 
 			//log that we reached the end
-			console.log('>>> End of stderr reached <<< ');
+			console.log('child.stderr.on("end");');
 
 		});
 
@@ -321,7 +379,7 @@ maxerr: 50, node: true */
 			console.log('Process exited with code ' + code);
 
 			//invoke callback
-			callBack();
+			callBack(isFailure, response);
 
 		});
 
@@ -341,6 +399,22 @@ maxerr: 50, node: true */
 		return directories.join('\/');
 
 	}
+
+
+    /**
+     * Determines whether or not a variable exists, is null, or contains no data
+     * @param   {String} variable Any variable type
+     * @returns {Boolean}  Returns true if the variable is defined
+     */
+    function isSet(variable) {
+
+        //if there is no problem with this variable, return true
+        if (variable != 'undefined' && variable != null && variable != '')
+            return true;
+
+        //otherwise return false
+        return false;
+    }
 
 
 }());

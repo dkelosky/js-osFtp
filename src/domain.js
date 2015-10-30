@@ -19,6 +19,7 @@ define(function (require, exports, module) {
 	var osFtpDialog = require('src/dialog');
 	var osFtpGlobals = require('src/globals');
 	var osFtpStrings = require('strings');
+    var osFtpFailDialog = require('text!templates/ftpFailureDialog.html');
 
 
 	/**
@@ -130,13 +131,13 @@ define(function (require, exports, module) {
 				//inquire for success or failure and proceed accordingly
 				if (response.success)
 
-				//do done stuff
-				nodeDone();
+					//do done stuff
+					nodeDone();
 
 				else
 
-				//do failure stuff
-				nodeFail();
+					//do failure stuff
+					nodeFail(response.message);
 
 			});
 		}
@@ -168,10 +169,12 @@ define(function (require, exports, module) {
 	/**
 	 * Handle node domain call .fail callback
 	 */
-	function nodeFail() {
+	function nodeFail(failureText) {
 
 		//log that we completed
-		console.error('nodeFail()');
+		console.error('nodeFail(' + failureText + ')');
+
+		var dialogHtml;
 
 		//disable listener
 		osFtpDomain.off('ftpMsg');
@@ -182,8 +185,15 @@ define(function (require, exports, module) {
 		//clear the status after a short time
 		clearStatus();
 
+		//substitute values in our html
+		dialogHtml = Mustache.render(osFtpFailDialog, osFtpStrings);
+
 		//show error dialog
-		osFtpDialog.showFailDialog(osFtpStrings.FAILURE_FTP_EXEC);
+		osFtpDialog.showCommonDialog(osFtpStrings.DIALOG_TITLE_FAIL, dialogHtml);
+
+		//show failure text
+		$('#osftp-failure-text').text(failureText);
+
 	}
 
 
