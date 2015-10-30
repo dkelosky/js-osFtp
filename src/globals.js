@@ -22,6 +22,8 @@ define(function (require, exports, module) {
 	var PREF = 'theauthor.osftp.preferences';
 	var PREF_SITES = 'theauthor.osftp.preferences.sites-'
 
+	var SETTINGS_PREF = 'theauthor.osftp.setting-preferences';
+
 	var sites = [];
 
 	var STATUS_INDICATOR_HTML_ID = 'theauthor-osftp-status-indicator';
@@ -50,6 +52,8 @@ define(function (require, exports, module) {
 
 	exports.PREF = PREF;
 	exports.PREF_SITES = PREF_SITES;
+
+	exports.SETTINGS_PREF = SETTINGS_PREF;
 
 	exports.sites = sites;
 
