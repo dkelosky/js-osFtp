@@ -1,4 +1,4 @@
-define(function (require, exports, module) {
+define(function (require, exports) {
 	'use strict';
 
 
@@ -7,9 +7,7 @@ define(function (require, exports, module) {
 	 */
 	var CommandManager = brackets.getModule('command/CommandManager');
 	var Dialog = brackets.getModule('widgets/Dialogs');
-	var File = brackets.getModule('file/FileUtils');
 	var PreferencesManager = brackets.getModule('preferences/PreferencesManager');
-	var Project = brackets.getModule('project/ProjectManager');
 
 
 	/**
@@ -45,7 +43,7 @@ define(function (require, exports, module) {
 	exports.handleCancel = handleCancel;
 	exports.handleEscape = handleEscape;
 	exports.disableListeners = disableListeners;
-	exports.isValid = isValid;
+	exports.isValidInput = isValidInput;
 	exports.setAndSavePref = setAndSavePref;
 
 
@@ -306,7 +304,7 @@ define(function (require, exports, module) {
 	 * @param   {Object}  site The inputted site
 	 * @returns {Boolean} Returns whether or not this site input is valid
 	 */
-	function isValid(site, bypassName, errorContainer) {
+	function isValidInput(site, bypassName, errorContainer) {
 
 		var isValid = true;
 		var validateResponses = [];
@@ -326,7 +324,7 @@ define(function (require, exports, module) {
 			if (!validateResponse.isValid) {
 
 				//mark this input as invalud
-				isValid = false
+				isValid = false;
 
 				errorHtml += '<p class="osftp-status-error">';
 				errorHtml += validateResponse.msg;

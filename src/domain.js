@@ -94,14 +94,14 @@ define(function (require, exports, module) {
 			//if we just have a file
 			if (!osFtpCommon.isSet(data))
 
-			//invoke domain function
-			nodeExec = osFtpDomain.exec('doFtp', getNodeDirectory(), file)
+				//invoke domain function
+				nodeExec = osFtpDomain.exec('doFtp', getNodeDirectory(), file);
 
 			//else we have data in addition to a file
 			else
 
-			//invoke domain function
-			nodeExec = osFtpDomain.exec('doFtpStdin', getNodeDirectory(), file, data)
+				//invoke domain function
+				nodeExec = osFtpDomain.exec('doFtpStdin', getNodeDirectory(), file, data);
 
 			//set listener for done
 			nodeExec.done(function () {
@@ -267,7 +267,7 @@ define(function (require, exports, module) {
 		busy = false;
 
 		//set a timer
-		setTimeout(function () {
+		setTimeout(function() {
 
 				//log this event
 				console.log('Status clear');
@@ -279,6 +279,6 @@ define(function (require, exports, module) {
 
 			osFtpGlobals.STATUS_VISIBLE_TIME);
 
-	};
+	}
 
 });

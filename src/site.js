@@ -2,7 +2,7 @@
  *  Sites Manager
  */
 
-define(function(require, exports, module) {
+define(function(require, exports) {
 	'use strict';
 
 	var osFtpGlobals = require('src/globals');
@@ -38,7 +38,7 @@ define(function(require, exports, module) {
 		}
 
 		return returnStatus;
-	};
+	}
 
 
 

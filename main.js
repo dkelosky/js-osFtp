@@ -1,4 +1,7 @@
 /**
+ *
+ * See http://brackets.io/docs/current/ for current Brackets extension documentation
+ *
  * @TODO - Package and publish
  * @TODO - allow for key bindings
  * @TODO - allow for ftp get
@@ -12,9 +15,12 @@
  * @TODO - encoding issues (i.e. ftp to unix and remove \r)?
  * @TODO - allow for permission settings (like chmod)
  * @TODO - allow for FTP to a windows machine
+ * @TODO - add support for ftp from Linux
  * @TODO - JSHint
  */
 define(function (require, exports, module) {
+
+	//http://ejohn.org/blog/ecmascript-5-strict-mode-json-and-more/
 	'use strict';
 
 

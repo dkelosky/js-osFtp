@@ -1,5 +1,18 @@
+/**
+ * See http://jshint.com/docs/
+ */
 {
+	//enforcing
+	"undef": true, 				//warn if variables are used without being defined
+	"unused": true, 			//warn if unused variables
+	//environments
+	"browser": true, 			//define browser globals
+	"devel": true, 				//allow for console.log
+	//custom globals
 	"globals": {
-		"$": false
+		"brackets": false, 		//define brackets core loader
+		"define": false, 		//define brackets 'define' funciton
+		"Mustache": false, 		//allow for Mustache
+		"$": false 				//ignore jQuery statements for warnings
 	}
 }

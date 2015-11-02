@@ -1,4 +1,4 @@
-define(function (require, exports, module) {
+define(function (require, exports) {
 	'use strict';
 
 
@@ -20,7 +20,7 @@ define(function (require, exports, module) {
 	var FTP_SCRIPT_FILE_EXTENSION = '.txt';
 
 	var PREF = 'theauthor.osftp.preferences';
-	var PREF_SITES = 'theauthor.osftp.preferences.sites-'
+	var PREF_SITES = 'theauthor.osftp.preferences.sites-';
 
 	var SETTINGS_PREF = 'theauthor.osftp.setting-preferences';
 

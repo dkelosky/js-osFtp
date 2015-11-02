@@ -1,7 +1,6 @@
 define(function(require, exports) {
     "use strict";
 
-    var _ = brackets.getModule("thirdparty/lodash");
     var Dialogs = brackets.getModule("widgets/Dialogs");
     var Strings = require("../strings");
     var Preferences = require("./preferences");
@@ -24,7 +23,7 @@ define(function(require, exports) {
                 tag = $this.prop("tagName").toLowerCase(),
                 property = $this.attr("settingsProperty");
 
-            console.log("SETTING PROPERTIES: " + id + " " + type + " " + tag + " " + property)
+            console.log("SETTING PROPERTIES: " + id + " " + type + " " + tag + " " + property);
 
             if (type === "checkbox") {
                 $this.prop("checked", values[property]);
@@ -102,7 +101,7 @@ define(function(require, exports) {
                 }
             }
 
-            $("#osftp-settings-fileExtensionInput").val('')
+            $("#osftp-settings-fileExtensionInput").val('');
         });
 
         $("button[data-button-id='defaults']", $dialog).on("click", function(e) {

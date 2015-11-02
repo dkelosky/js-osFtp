@@ -1,4 +1,4 @@
-define(function (require, exports, module) {
+define(function (require, exports) {
 	'use strict';
 
 
@@ -141,7 +141,7 @@ define(function (require, exports, module) {
 				className: Dialog.DIALOG_BTN_CLASS_NORMAL,
 				id: Dialog.DIALOG_BTN_DONTSAVE,
 				text: osFtpStrings.DIALOG_DELETE
-			}
+			};
 
 			//adjust title
 			title = osFtpStrings.DIALOG_TITLE_EDIT_SITE + ' - ' + nameTitle;

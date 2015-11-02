@@ -1,4 +1,4 @@
-define(function (require, exports, module) {
+define(function (require, exports) {
 	'use strict';
 
 
@@ -8,7 +8,6 @@ define(function (require, exports, module) {
 	var CommandManager = brackets.getModule('command/CommandManager');
 	var Dialog = brackets.getModule('widgets/Dialogs');
 	var File = brackets.getModule('file/FileUtils');
-	var PreferencesManager = brackets.getModule('preferences/PreferencesManager');
 	var Project = brackets.getModule('project/ProjectManager');
 
 
@@ -334,7 +333,7 @@ define(function (require, exports, module) {
 			};
 
 			//if the input is valud
-			if (osFtpHandlersHelpers.isValid(site, oldSite, errorContainer)) {
+			if (osFtpHandlersHelpers.isValidInput(site, oldSite, errorContainer)) {
 
 				// LDL5007 testing
 				var newSite = new osFtpSite.Site(name, host, root, user, pass);

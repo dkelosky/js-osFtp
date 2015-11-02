@@ -3,14 +3,13 @@
  */
 
 
-define(function(require, exports, module) {
+define(function(require, exports) {
   'use strict';
 
 	/**
 	 * Exetension modules
 	 */
 
-	var osFtpGlobals = require('src/globals');
 	var osFtpCommon  = require('src/common');
 	var osFtpSite    = require('src/site');
 
@@ -60,7 +59,7 @@ define(function(require, exports, module) {
 
 
 	function getSiteByName(name){
-		var returnSite = undefined;
+		var returnSite;
 
 		for (var i = 0; i < sitesList.length; i++){
 			if (sitesList[i].name == name){

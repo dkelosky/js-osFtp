@@ -25,6 +25,7 @@ To install using Git:
 * Permissions cannot be altered (e.g. no accommodations for chmod).
 * Retrieval from a remote site is not yet implemented.
 * FTP to a remote Windows machine is not supported
+* FTP from Linux is not supported
 
 --- 
 ## FTP Files to a Remote Destination
