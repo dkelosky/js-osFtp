@@ -13,23 +13,43 @@ define(function (require, exports) {
 
 
 	function init(){
-		hideChmodOption();
+		setValues();
 
 		assignActions();
 	}
 
-	function collectValues(){
+	function setValues(inputSite){
+
+
 
 	}
 
+	function collectValues(){
+
+
+
+	}
+
+
 	function showChmodOption(){
 		$("*[chmodOption]", $dialog).each(function(){
+			$(this).show();
+		});
+
+		// testing edit option
+		$("*[editOption]", $dialog).each(function(){
+			console.log('edit option show');
 			$(this).show();
 		});
 	}
 
 	function hideChmodOption(){
 		$("*[chmodOption]", $dialog).each(function(){
+			$(this).hide();
+		});
+
+		$("*[editOption]", $dialog).each(function(){
+			console.log('edit option hide')
 			$(this).hide();
 		});
 	}
@@ -46,6 +66,20 @@ define(function (require, exports) {
 			}
 		})
 
+	}
+
+
+	function getCurrentModeString(){
+		var returnStr = '';
+
+		// get value from owner
+
+		// get value from group
+
+		// get value from public
+
+
+		return returnStr;
 	}
 
 	function show(){
