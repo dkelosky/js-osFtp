@@ -23,7 +23,6 @@
 
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4,
 maxerr: 50, node: true */
-/*global */
 
 (function () {
 	'use strict';
@@ -134,7 +133,7 @@ maxerr: 50, node: true */
 		console.log('Input file specified was: ' + ftpScriptFile);
 
 		//run ftp with options to suppress auto login and to supply a script file
-		var bar = new runProcess(cwd, 'ftp', ['-ins:' + ftpScriptFile], function(isFailure, response) {
+		new RunProcess(cwd, 'ftp', ['-ins:' + ftpScriptFile], function(isFailure, response) {
 
 			//log complete
 			console.log('doFtp(); complete');
@@ -200,7 +199,7 @@ maxerr: 50, node: true */
 		fs.closeSync(newFile);
 
 		//run ftp with options to suppress auto login and to supply a script file
-		var bar = new runProcess(cwd, 'ftp', ['-ins:' + scriptDirectory + file], function(isFailure, response) {
+		new RunProcess(cwd, 'ftp', ['-ins:' + scriptDirectory + file], function(isFailure, response) {
 
 			//log complete
 			console.log('doFtpStdin(); complete');
@@ -244,14 +243,13 @@ maxerr: 50, node: true */
 	 * @param {String} args     Arguments for cmd executable
 	 * @param {Function} callBack Callback for function complete
 	 */
-	function runProcess(cwd, cmd, args, callBack) {
+	function RunProcess(cwd, cmd, args, callBack) {
 
 		//log our spawn
 		console.log('runProcess(' + cwd + ', ...);');
 
 		//initialize variables
 		var spawn = require('child_process').spawn;
-		var fs = require('fs');
 		var os = require('os');
 
 		var isWindows = (os.platform() == 'win32');
@@ -420,22 +418,6 @@ maxerr: 50, node: true */
 		return directories.join('\/');
 
 	}
-
-
-    /**
-     * Determines whether or not a variable exists, is null, or contains no data
-     * @param   {String} variable Any variable type
-     * @returns {Boolean}  Returns true if the variable is defined
-     */
-    function isSet(variable) {
-
-        //if there is no problem with this variable, return true
-        if (variable != 'undefined' && variable !== null && variable !== '')
-            return true;
-
-        //otherwise return false
-        return false;
-    }
 
 
 }());
