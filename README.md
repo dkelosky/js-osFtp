@@ -1,6 +1,6 @@
 # js-osFtp
 
-This Brackets extension uses native OS services for FTP.  You can even FTP to a mainframe!  
+This Brackets extension uses native OS FTP clients to perform FTP.  You can even FTP to a mainframe!  
 
 Native OS FTP services are more robust and work well when other FTP clients / extensions fall short.  At the time this extension was created, no existing Bracket's FTP extension could propertly FTP to and from z/OS.
 
