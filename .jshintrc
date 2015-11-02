@@ -1,5 +1,6 @@
 /**
- * See http://jshint.com/docs/
+ * See http://jshint.com/docs/ &
+ * https://github.com/jshint/jshint/blob/master/examples/.jshintrc
  */
 {
 	//enforcing
@@ -8,6 +9,7 @@
 	//environments
 	"browser": true, 			//define browser globals
 	"devel": true, 				//allow for console.log
+	"jasmine": true, 			//allow for jasmine
 	//custom globals
 	"globals": {
 		"brackets": false, 		//define brackets core loader
