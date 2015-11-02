@@ -1,8 +1,3 @@
-/**
- * @TODO - this fails for FTPing folders located in 'C:\Users\Dan\AppData\Roaming\Brackets\extensions\user\js-osFtp'
- *          - local directory is set to C:\System32 ?
- */
-
 define(function (require, exports, module) {
 	'use strict';
 

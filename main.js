@@ -1,7 +1,7 @@
 /**
  * @TODO - Package and publish
  * @TODO - allow for key bindings
- * @TODO - allow for ftp get of data
+ * @TODO - allow for ftp get
  * @TODO - automation testing to
  * 			add and remove sites,
  * 			submit multiple jobs
@@ -11,6 +11,8 @@
  *        	adjust settings
  * @TODO - encoding issues (i.e. ftp to unix and remove \r)?
  * @TODO - allow for permission settings (like chmod)
+ * @TODO - allow for FTP to a windows machine
+ * @TODO - JSHint
  */
 define(function (require, exports, module) {
 	'use strict';
@@ -24,16 +26,16 @@ define(function (require, exports, module) {
 	var Commands = brackets.getModule('command/Commands');
 	var Menus = brackets.getModule('command/Menus');
 	var ExtensionUtils = brackets.getModule('utils/ExtensionUtils');
-	var StatusBar = brackets.getModule('widgets/StatusBar');
 
 
 	/**
 	 * Extension modules
 	 */
-	var osFtpSettingsDialog = require('src/settingsDialog');
 	var osFtpGlobals = require('src/globals');
 	var osFtpHandlers = require('src/handlers');
 	var osFtpMenu = require('src/menu');
+	var osFtpSettingsDialog = require('src/settingsDialog');
+	var osFtpStatus = require('src/status');
 	var osFtpStrings = require('strings');
 
 
@@ -66,33 +68,9 @@ define(function (require, exports, module) {
 		osFtpHandlers.handlersInit();
 
 		//add the status indicator
-		addStatusIndicator();
+		osFtpStatus.addStatusIndicator();
 
 	});
-
-
-	/**
-	 * Adds the status indicator to the bottom bar
-	 */
-	function addStatusIndicator() {
-
-		//build status indicator
-		var statusIndicatorHtml = $('<div id="' +
-			osFtpGlobals.STATUS_INDICATOR_HTML_ID +
-			'">' +
-			osFtpStrings.STATUS_FTP_INDICATOR +
-			'</div>');
-
-		//add to bar
-		StatusBar.addIndicator(
-			osFtpGlobals.STATUS_INDICATOR_ID, //unique id
-			statusIndicatorHtml, //html
-			true, //show the indicator
-			'', //class style
-			osFtpStrings.STATUS_FTP_TOOLTIP //tooltip text
-		);
-
-	}
 
 
 });
