@@ -2,6 +2,8 @@
  *
  * See http://brackets.io/docs/current/ for current Brackets extension documentation
  *
+ * https://github.com/adobe/brackets/wiki/How-to-Hack-on-Brackets#getcode
+ *
  * @TODO - Package and publish
  * @TODO - allow for key bindings
  * @TODO - allow for ftp get
