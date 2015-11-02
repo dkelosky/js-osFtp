@@ -2,7 +2,7 @@
 
 This Brackets extension uses native OS services for FTP.  You can even FTP to a mainframe!  
 
-Native OS FTP services are more robust and work well when other FTP clients or extensions fall short.  At the time this was created, no existing Bracket's FTP extension could propertly FTP to and from z/OS.
+Native OS FTP services are more robust and work well when other FTP clients / extensions fall short.  At the time this extension was created, no existing Bracket's FTP extension could propertly FTP to and from z/OS.
 
 ### Features
 * Uploads individual files or complete directory structures to a remote site root path.  
@@ -24,6 +24,7 @@ To install using Git:
 * Only basic error checking is performed.  Verify your first FTP for a newly defined site.
 * Permissions cannot be altered (e.g. no accommodations for chmod).
 * Retrieval from a remote site is not yet implemented.
+* FTP to a remote Windows machine is not supported
 
 --- 
 ## FTP Files to a Remote Destination
