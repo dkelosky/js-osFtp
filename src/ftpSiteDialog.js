@@ -56,13 +56,24 @@ define(function (require, exports) {
 		});
 	}
 
+
 	function collectValues(){
+		// If all is pass then collect data
+		var site = Sites.newSite($("#osftp-ftp-site-siteName", $dialog).val(),
+								 $("#osftp-ftp-site-hostName", $dialog).val(),
+								 $("#osftp-ftp-site-rootDir",  $dialog).val(),
+							 	 $("#osftp-ftp-site-userName", $dialog).val(),
+							 	 $("#osftp-ftp-site-password", $dialog).val());
 
+		site.debugPrint();
 
-
+		return site;
 	}
 
 
+	function validateInputs(){
+		return true;
+	}
 
 
 
@@ -112,6 +123,15 @@ define(function (require, exports) {
 		$("button[data-button-id='remove']", $dialog).on("click", function(e) {
             e.stopPropagation();
         });
+
+		$("button[data-button-id='ok']", $dialog).on("click", function(e) {
+			// Validate input here
+			if (!validateInputs()){
+				e.stopPropagation();
+			}
+
+        });
+
 
 	}
 
