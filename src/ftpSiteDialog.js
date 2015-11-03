@@ -31,6 +31,11 @@ define(function (require, exports) {
 			$("#osftp-ftp-site-userName", $dialog).val(inputSite.userName);
 			$("#osftp-ftp-site-password", $dialog).val(inputSite.password);
 
+			if (osftpCommon.isSet(inputSite.getChmodStr())){
+				setChmodMode(inputSite.getChmodStr());
+				$('#toggle-chmod-option', $dialog).prop("checked",true);
+			}
+
 			isEditMode = true;
 		} else {
 			isEditMode = false;
@@ -61,6 +66,9 @@ define(function (require, exports) {
 				$(this).hide();
 			}
 		});
+
+		// Update Chmod options
+		updateChmodOption();
 	}
 
 
@@ -71,6 +79,10 @@ define(function (require, exports) {
 										$("#osftp-ftp-site-rootDir",  $dialog).val(),
 										$("#osftp-ftp-site-userName", $dialog).val(),
 										$("#osftp-ftp-site-password", $dialog).val());
+
+		if ($('#toggle-chmod-option', $dialog).prop("checked")){
+			site.setChmodStr(getChmodModeString);
+		}
 
 		site.debugPrint();
 
@@ -116,15 +128,13 @@ define(function (require, exports) {
 	}
 
 
-	function showChmodOption(){
+	function updateChmodOption(){
 		$("*[chmodOption]", $dialog).each(function(){
-			$(this).show();
-		});
-	}
-
-	function hideChmodOption(){
-		$("*[chmodOption]", $dialog).each(function(){
-			$(this).hide();
+			if ($('#toggle-chmod-option', $dialog).prop("checked")){
+				$(this).show();
+			} else {
+				$(this).hide();
+			}
 		});
 	}
 
@@ -132,22 +142,7 @@ define(function (require, exports) {
 	function assignActions(){
 
 		$('#toggle-chmod-option', $dialog).change(function(){
-			if (this.checked){
-				showChmodOption();
-
-				//Test code
-				var site = SitesManager.newSite("field1", "field2", "field3", "field4", "field5");
-				console.log("test edit site " + JSON.stringify(site));
-				setValues(site);
-
-			}
-			else {
-				hideChmodOption();
-
-				//Test code
-				console.log("test add site");
-				setValues();
-			}
+			updateChmodOption();
 		});
 
 		$("input[type='checkbox']", $dialog).change(function(){
@@ -155,7 +150,6 @@ define(function (require, exports) {
 		});
 
 		$("#osftp-ftp-site-chmodNumericValue", $dialog).change(function(){
-			console.log($(this).val());
 			setChmodMode($(this).val());
 		})
 

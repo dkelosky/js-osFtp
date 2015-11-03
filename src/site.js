@@ -19,6 +19,15 @@ define(function(require, exports) {
 		this.rootDir  = rootDir;
 		this.userName = userName;
 		this.password = password;
+		this.chmodStr = 'undefined';
+	}
+
+	Site.prototype.setChmodStr = function(newMode){
+		this.chmodStr = newMode;
+	}
+
+	Site.prototype.getChmodStr = function(){
+		return this.chmodStr;
 	}
 
 	Site.prototype.getCommandId = function(){
