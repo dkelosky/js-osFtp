@@ -1,9 +1,10 @@
 define(function (require, exports) {
 	"use strict";
 
-	var Dialogs = brackets.getModule("widgets/Dialogs");
-	var Strings = require("../strings");
-	var Sites    = require("./site");
+	var Dialogs      = brackets.getModule("widgets/Dialogs");
+	var Strings      = require("../strings");
+	var SitesManager = require("./sitesManager");
+	var osftpCommon  = require("./common");
 
 	var ftpSiteDialogTemplat = require("text!templates/ftp-site-dialog.html");
 
@@ -11,19 +12,16 @@ define(function (require, exports) {
 
 	var dialog,
 		$dialog;
-
+	var isEditMode;
 
 	function init(inputSite){
 		setValues(inputSite);
-
 		assignActions();
 	}
 
 	function setValues(inputSite){
-		var isEditMode = false;
-
 		// If input is a site then fill in the fields with info
-		if (Sites.validateSite(inputSite)){
+		if (SitesManager.validateSite(inputSite)){
 
 			$("#osftp-ftp-site-siteName", $dialog).val(inputSite.name);
 			$("#osftp-ftp-site-hostName", $dialog).val(inputSite.hostAddr);
@@ -32,21 +30,20 @@ define(function (require, exports) {
 			$("#osftp-ftp-site-password", $dialog).val(inputSite.password);
 
 			isEditMode = true;
+		} else {
+			isEditMode = false;
 		}
 
 		// Set the correct title
 		if (isEditMode){
 			var title = Strings.DIALOG_TITLE_EDIT_SITE + ' ' + inputSite.name;
-			console.log(title);
 			$(".dialog-title", $dialog).text(title);
-
 		} else {
 			$(".dialog-title", $dialog).text(Strings.DIALOG_TITLE_ADD_SITE);
 		}
 
 		// Hide fields depend on the mode
 		$("*[editOption]", $dialog).each(function(){
-
 			var isShow = $(this).attr("editOption");
 			if (isShow === isEditMode.toString()){
 				$(this).show();
@@ -59,22 +56,54 @@ define(function (require, exports) {
 
 	function collectValues(){
 		// If all is pass then collect data
-		var site = Sites.newSite($("#osftp-ftp-site-siteName", $dialog).val(),
-								 $("#osftp-ftp-site-hostName", $dialog).val(),
-								 $("#osftp-ftp-site-rootDir",  $dialog).val(),
-							 	 $("#osftp-ftp-site-userName", $dialog).val(),
-							 	 $("#osftp-ftp-site-password", $dialog).val());
+		var site = SitesManager.newSite($("#osftp-ftp-site-siteName", $dialog).val(),
+										$("#osftp-ftp-site-hostName", $dialog).val(),
+										$("#osftp-ftp-site-rootDir",  $dialog).val(),
+										$("#osftp-ftp-site-userName", $dialog).val(),
+										$("#osftp-ftp-site-password", $dialog).val());
 
 		site.debugPrint();
+
+		SitesManager.registerSite(site);
+		console.log(SitesManager.getSitesArray());
+
 
 		return site;
 	}
 
 
 	function validateInputs(){
+
+		var siteName = $("#osftp-ftp-site-siteName", $dialog).val();
+		var hostName = $("#osftp-ftp-site-hostName", $dialog).val();
+		var rootDir  = $("#osftp-ftp-site-rootDir",  $dialog).val();
+		var userName = $("#osftp-ftp-site-userName", $dialog).val();
+		var userName = $("#osftp-ftp-site-userName", $dialog).val();
+		var password = $("#osftp-ftp-site-password", $dialog).val();
+
+		if (!isEditMode){
+			if (!osftpCommon.isSet(siteName)){
+				setErrorMessage(Strings.DIALOG_ERROR_SITE_INVALID);
+				return false;
+			}
+
+			if (SitesManager.isSiteExisted(siteName)){
+				setErrorMessage(Strings.DIALOG_ERROR_SITE_EXISTS);
+				return false;
+			}
+		}
+
+		if(!osftpCommon.isSet(hostName)){
+			setErrorMessage(Strings.DIALOG_ERROR_HOST_INVALID);
+			return false;
+		}
+
 		return true;
 	}
 
+	function setErrorMessage(message){
+		$("#osftp-ftp-site-inputErrorMessage").text(message);
+	}
 
 
 	function showChmodOption(){
@@ -97,7 +126,7 @@ define(function (require, exports) {
 				showChmodOption();
 
 				//Test code
-				var site = new Sites.Site("field1", "field2", "field3", "field4", "field5");
+				var site = SitesManager.newSite("field1", "field2", "field3", "field4", "field5");
 				console.log("test edit site " + JSON.stringify(site));
 				setValues(site);
 

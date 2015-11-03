@@ -9,7 +9,6 @@ define(function(require, exports) {
 	var osFtpStrings = require('strings');
 
 	exports.Site         = Site;
-	exports.newSite      = newSite;
 	exports.validateSite = validateSite;
 
 
@@ -59,13 +58,6 @@ define(function(require, exports) {
 
 		return true;
 	}
-
-
-
-	function newSite(name, hostAddr, rootDir, userName, password){
-		return new Site(name, hostAddr, rootDir, userName, password);
-	}
-
 
 
 });
