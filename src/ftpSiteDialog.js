@@ -3,6 +3,7 @@ define(function (require, exports) {
 
 	var Dialogs = brackets.getModule("widgets/Dialogs");
 	var Strings = require("../strings");
+	var Sites    = require("./site");
 
 	var ftpSiteDialogTemplat = require("text!templates/ftp-site-dialog.html");
 
@@ -12,16 +13,47 @@ define(function (require, exports) {
 		$dialog;
 
 
-	function init(){
-		setValues();
+	function init(inputSite){
+		setValues(inputSite);
 
 		assignActions();
 	}
 
 	function setValues(inputSite){
+		var isEditMode = false;
 
+		// If input is a site then fill in the fields with info
+		if (Sites.validateSite(inputSite)){
 
+			$("#osftp-ftp-site-siteName", $dialog).val(inputSite.name);
+			$("#osftp-ftp-site-hostName", $dialog).val(inputSite.hostAddr);
+			$("#osftp-ftp-site-rootDir",  $dialog).val(inputSite.rootDir);
+			$("#osftp-ftp-site-userName", $dialog).val(inputSite.userName);
+			$("#osftp-ftp-site-password", $dialog).val(inputSite.password);
 
+			isEditMode = true;
+		}
+
+		// Set the correct title
+		if (isEditMode){
+			var title = Strings.DIALOG_TITLE_EDIT_SITE + ' ' + inputSite.name;
+			console.log(title);
+			$(".dialog-title", $dialog).text(title);
+
+		} else {
+			$(".dialog-title", $dialog).text(Strings.DIALOG_TITLE_ADD_SITE);
+		}
+
+		// Hide fields depend on the mode
+		$("*[editOption]", $dialog).each(function(){
+
+			var isShow = $(this).attr("editOption");
+			if (isShow === isEditMode.toString()){
+				$(this).show();
+			} else {
+				$(this).hide();
+			}
+		});
 	}
 
 	function collectValues(){
@@ -31,25 +63,17 @@ define(function (require, exports) {
 	}
 
 
+
+
+
 	function showChmodOption(){
 		$("*[chmodOption]", $dialog).each(function(){
-			$(this).show();
-		});
-
-		// testing edit option
-		$("*[editOption]", $dialog).each(function(){
-			console.log('edit option show');
 			$(this).show();
 		});
 	}
 
 	function hideChmodOption(){
 		$("*[chmodOption]", $dialog).each(function(){
-			$(this).hide();
-		});
-
-		$("*[editOption]", $dialog).each(function(){
-			console.log('edit option hide')
 			$(this).hide();
 		});
 	}
@@ -60,9 +84,19 @@ define(function (require, exports) {
 		$('#toggle-chmod-option', $dialog).change(function(){
 			if (this.checked){
 				showChmodOption();
+
+				//Test code
+				var site = new Sites.Site("field1", "field2", "field3", "field4", "field5");
+				console.log("test edit site " + JSON.stringify(site));
+				setValues(site);
+
 			}
 			else {
 				hideChmodOption();
+
+				//Test code
+				console.log("test add site");
+				setValues();
 			}
 		});
 
@@ -152,23 +186,24 @@ define(function (require, exports) {
 		publicGroup |= $("#osftp-ftp-site-chmodPublicWrite",   $dialog).prop("checked") ? 2 : 0;
 		publicGroup |= $("#osftp-ftp-site-chmodPublicExecute", $dialog).prop("checked") ? 1 : 0;
 
-
 		return ownerGroup.toString() + groupGroup.toString() + publicGroup.toString();
 	}
 
-	function show(){
+	function show(inputSite){
 		var compiledTemplate = Mustache.render(ftpSiteDialogTemplat, Strings);
 
 		dialog = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
 		$dialog = dialog.getElement();
 
-		init();
+		init(inputSite);
 
 		dialog.done(function(buttonId) {
 			if (buttonId === "ok") {
-				collectValues();
+				inputSite = collectValues();
 			}
 		});
+
+		return inputSite;
 	}
 
 
