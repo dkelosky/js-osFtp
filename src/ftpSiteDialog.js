@@ -14,6 +14,8 @@ define(function (require, exports) {
 		$dialog;
 	var isEditMode;
 
+	var SERVER_TYPES = ["zOS", "Windows", "Linux"];
+
 	function init(inputSite){
 		setValues(inputSite);
 		assignActions();
@@ -40,6 +42,14 @@ define(function (require, exports) {
 			$(".dialog-title", $dialog).text(title);
 		} else {
 			$(".dialog-title", $dialog).text(Strings.DIALOG_TITLE_ADD_SITE);
+		}
+
+		// Set server types list:
+		for (var i in SERVER_TYPES){
+			$("#osftp-ftp-site-serverType", $dialog)
+				.append($("<option></options>")
+				.attr("value", i.toString())
+				.text(SERVER_TYPES[i]));
 		}
 
 		// Hide fields depend on the mode

@@ -29,11 +29,14 @@
 			</div>
 			<div class="span6">
 				<div class="row-fluid">
-					<label for="toggle-chmod-option">Toggle CHMOD Option</label>
-					<input id="toggle-chmod-option" type="checkbox"/>
+					<label  class="span4" for="osftp-ftp-site-serverType">{{DIALOG_SERVER_TYPE}}</label>
+					<select class="span8"  id="osftp-ftp-site-serverType"></select>
 				</div>
-				<div class="row-fluid" chmodOption>
-					<h5 for="osftp-ftp-site-chmod">{{DIALOG_TITLE_CHMOD}}</h5>
+				<div class="row-fluid">
+					<label for="toggle-chmod-option">
+						<input id="toggle-chmod-option" type="checkbox"/>
+						{{DIALOG_TOGGLE_CHMOD}}
+					</label>
 				</div>
 				<div class="row-fluid" chmodOption>
 					<h5 class="dialog-chmod-group">{{DIALOG_CHMOD_GROUP_OWNER}}</h5>
