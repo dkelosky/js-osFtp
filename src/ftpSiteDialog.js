@@ -81,7 +81,7 @@ define(function (require, exports) {
 										$("#osftp-ftp-site-password", $dialog).val());
 
 		if ($('#toggle-chmod-option', $dialog).prop("checked")){
-			site.setChmodStr(getChmodModeString);
+			site.setChmodStr(getChmodModeString());
 		}
 
 		site.debugPrint();
@@ -154,7 +154,7 @@ define(function (require, exports) {
 		})
 
 		$("button[data-button-id='remove']", $dialog).on("click", function(e) {
-            e.stopPropagation();
+            SitesManager.removeSite($("#osftp-ftp-site-siteName", $dialog).val());
         });
 
 		$("button[data-button-id='ok']", $dialog).on("click", function(e) {
@@ -162,7 +162,6 @@ define(function (require, exports) {
 			if (!validateInputs()){
 				e.stopPropagation();
 			}
-
         });
 	}
 
@@ -250,11 +249,9 @@ define(function (require, exports) {
 
 		dialog.done(function(buttonId) {
 			if (buttonId === "ok") {
-				inputSite = collectValues();
+				collectValues();
 			}
 		});
-
-		return inputSite;
 	}
 
 

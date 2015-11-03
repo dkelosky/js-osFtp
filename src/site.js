@@ -45,6 +45,7 @@ define(function(require, exports) {
 		console.log("rootDir:  " + this.rootDir);
 		console.log("userName: " + this.userName);
 		console.log("password: " + this.password);
+		console.log("chmodStr: " + this.chmodStr);
 
 	}
 
