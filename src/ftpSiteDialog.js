@@ -239,7 +239,7 @@ define(function (require, exports) {
 		return ownerGroup.toString() + groupGroup.toString() + publicGroup.toString();
 	}
 
-	function show(inputSite){
+	function show(inputSite, callback){
 		var compiledTemplate = Mustache.render(ftpSiteDialogTemplat, Strings);
 
 		dialog = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
@@ -250,6 +250,10 @@ define(function (require, exports) {
 		dialog.done(function(buttonId) {
 			if (buttonId === "ok") {
 				collectValues();
+
+				if (typeof callback === 'function'){
+					callback();
+				}
 			}
 		});
 	}

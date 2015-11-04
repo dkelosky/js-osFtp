@@ -46,8 +46,6 @@ define(function (require, exports, module) {
 	var osFtpStatus = require('src/status');
 	var osFtpStrings = require('strings');
 
-	var osFtpSiteDialog = require('src/ftpSiteDialog');
-
 
 	/**
 	 * Perform initialization
@@ -60,7 +58,7 @@ define(function (require, exports, module) {
 	CommandManager.register(osFtpStrings.COMMAND_PRODUCT_SETTINGS_LABEL, osFtpGlobals.COMMAND_PROD_SETTINGS_ID, osFtpSettingsDialog.show);
 	Menus.getMenu(Menus.AppMenuBar.FILE_MENU).addMenuItem(osFtpGlobals.COMMAND_PROD_SETTINGS_ID, '', Menus.AFTER, Commands.FILE_PROJECT_SETTINGS);
 
-	CommandManager.register("testing dialog", "testing dialog", osFtpSiteDialog.show);
+	CommandManager.register("testing dialog", "testing dialog", osFtpHandlers.handleNewSite);
 	Menus.getMenu(Menus.AppMenuBar.FILE_MENU).addMenuItem("testing dialog", '', Menus.AFTER, Commands.FILE_PROJECT_SETTINGS);
 
 

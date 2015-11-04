@@ -24,11 +24,13 @@ define(function (require, exports) {
 	var osFtpStrings = require('strings');
 	var osFtpSite = require('src/site');
 	var osFtpSitesManager = require('src/sitesManager');
+	var osFtpSiteDialog   = require('src/ftpSiteDialog');
 
 
 	/**
 	 * Exported functions
 	 */
+	exports.handleNewSite  = handleNewSite;
 	exports.handleEditSite = handleEditSite;
 	exports.handleGetFromSite = handleGetFromSite;
 	exports.handleNewOrEditSite = handleNewOrEditSite;
@@ -36,6 +38,11 @@ define(function (require, exports) {
 	exports.handleRunSite = handleRunSite;
 	exports.handlersInit = handlersInit;
 
+
+	function handleNewSite(){
+		// Show new site dialog
+		osFtpSiteDialog.show("undefined" ,osFtpHandlersHelpers.updateSiteList);
+	}
 
 	/**
 	 * Handler for editting an added site
