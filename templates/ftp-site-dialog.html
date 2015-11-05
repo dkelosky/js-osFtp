@@ -1,0 +1,136 @@
+<div id="osftp-ftp-site-dialog" class="modal">
+	<div class="modal-header">
+		<h1 class="dialog-title">{{DIALOG_TITLE_ADD_SITE}}</h1>
+	</div>
+
+	<div class="modal-body">
+		<div class="row-fluid">
+			<div class="span6">
+				<div class="row-fluid" editOption="false">
+					<label for="osftp-ftp-site-siteName">{{DIALOG_INPUT_NAME}}</label>
+					<input id="osftp-ftp-site-siteName" type="text"/>
+				</div>
+				<div class="row-fluid">
+					<label for="osftp-ftp-site-hostName">{{DIALOG_INPUT_HOST}}</label>
+					<input id="osftp-ftp-site-hostName" type="text"/>
+				</div>
+				<div class="row-fluid">
+					<label for="osftp-ftp-site-rootDir">{{DIALOG_INPUT_ROOT}}</label>
+					<input id="osftp-ftp-site-rootDir" type="text"/>
+				</div>
+				<div class="row-fluid">
+					<label for="osftp-ftp-site-userName">{{DIALOG_INPUT_USER}}</label>
+					<input id="osftp-ftp-site-userName" type="text"/>
+				</div>
+				<div class="row-fluid">
+					<label for="osftp-ftp-site-password">{{DIALOG_INPUT_PASSWORD}}</label>
+					<input id="osftp-ftp-site-password" type="password"/>
+				</div>
+			</div>
+			<div class="span6">
+				<div class="row-fluid">
+					<label  class="span4" for="osftp-ftp-site-serverType">{{DIALOG_SERVER_TYPE}}</label>
+					<select class="span8"  id="osftp-ftp-site-serverType"></select>
+				</div>
+				<div class="row-fluid">
+					<label for="toggle-chmod-option">
+						<input id="toggle-chmod-option" type="checkbox"/>
+						{{DIALOG_TOGGLE_CHMOD}}
+					</label>
+				</div>
+				<div class="row-fluid" chmodOption>
+					<h5 class="dialog-chmod-group">{{DIALOG_CHMOD_GROUP_OWNER}}</h5>
+				</div>
+				<div class="row-fluid" chmodOption>
+					<div class="span4">
+						<label for="osftp-ftp-site-chmodOwnerRead">
+							<input  id="osftp-ftp-site-chmodOwnerRead" type="checkbox">
+							{{CHECKBOX_READ}}
+						</label>
+					</div>
+					<div class="span4">
+						<label for="osftp-ftp-site-chmodOwnerWrite">
+							<input  id="osftp-ftp-site-chmodOwnerWrite" type="checkbox">
+							{{CHECKBOX_WRITE}}
+						</label>
+					</div>
+					<div class="span4">
+						<label for="osftp-ftp-site-chmodOwnerExecute">
+							<input  id="osftp-ftp-site-chmodOwnerExecute" type="checkbox">
+							{{CHECKBOX_EXECUTE}}
+						</label>
+					</div>
+				</div>
+				<div class="row-fluid" chmodOption>
+					<h5 class="dialog-chmod-group">{{DIALOG_CHMOD_GROUP_GROUP}}</h5>
+				</div>
+				<div class="row-fluid" chmodOption>
+					<div class="span4">
+						<label for="osftp-ftp-site-chmodGroupRead">
+							<input  id="osftp-ftp-site-chmodGroupRead" type="checkbox">
+							{{CHECKBOX_READ}}
+						</label>
+					</div>
+					<div class="span4">
+						<label for="osftp-ftp-site-chmodGroupWrite">
+							<input  id="osftp-ftp-site-chmodGroupWrite" type="checkbox">
+							{{CHECKBOX_WRITE}}
+						</label>
+					</div>
+					<div class="span4">
+						<label for="osftp-ftp-site-chmodGroupExecute">
+							<input  id="osftp-ftp-site-chmodGroupExecute" type="checkbox">
+							{{CHECKBOX_EXECUTE}}
+						</label>
+					</div>
+				</div>
+				<div class="row-fuild" chmodOption>
+					<h5 class="dialog-chmod-group">{{DIALOG_CHMOD_GROUP_PUBLIC}}</h5>
+				</div>
+				<div class="row-fluid" chmodOption>
+					<div class="span4">
+						<label for="osftp-ftp-site-chmodPublicRead">
+							<input  id="osftp-ftp-site-chmodPublicRead" type="checkbox">
+							{{CHECKBOX_READ}}
+						</label>
+					</div>
+					<div class="span4">
+						<label for="osftp-ftp-site-chmodPublicWrite">
+							<input  id="osftp-ftp-site-chmodPublicWrite" type="checkbox">
+							{{CHECKBOX_WRITE}}
+						</label>
+					</div>
+					<div class="span4">
+						<label for="osftp-ftp-site-chmodPublicExecute">
+							<input  id="osftp-ftp-site-chmodPublicExecute" type="checkbox">
+							{{CHECKBOX_EXECUTE}}
+						</label>
+					</div>
+				</div>
+				<div class="row-fluid" chmodOption>
+					<div class="span8">
+						<label class="span8" for="osftp-ftp-site-chmodNumericValue">{{DIALOG_CHMOD_NUMERIC_VALUE}}</label>
+						<input class="span4" id="osftp-ftp-site-chmodNumericValue" type="text"/>
+					</div>
+					<div class="span4" id="osftp-ftp-site-chmodNumericValueStatus" style="color:red"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal-footer">
+		<div class="row-fluid">
+			<div class="span6">
+				<div id="osftp-ftp-site-inputErrorMessage" style="color:red"></div>
+			</div>
+			<div class="span6">
+				<button data-button-id="remove" class="dialog-button btn" editOption="true">{{BUTTON_REMOVE}}</button>
+        		<button data-button-id="cancel" class="dialog-button btn cancel btn-80">{{BUTTON_CANCEL}}</button>
+        		<button data-button-id="ok" class="dialog-button btn primary btn-80">{{BUTTON_SAVE}}</button>
+			</div>
+		</div>
+
+    </div>
+
+
+</div>

@@ -11,6 +11,7 @@ define(function(require, exports) {
 	exports.Site         = Site;
 	exports.validateSite = validateSite;
 
+
 	function Site(name, hostAddr, rootDir, userName, password){
 		this.objId    = osFtpGlobals.OBJECT_FTP_SITE_ID;
 		this.name     = name;
@@ -18,6 +19,15 @@ define(function(require, exports) {
 		this.rootDir  = rootDir;
 		this.userName = userName;
 		this.password = password;
+		this.chmodStr = 'undefined';
+	}
+
+	Site.prototype.setChmodStr = function(newMode){
+		this.chmodStr = newMode;
+	}
+
+	Site.prototype.getChmodStr = function(){
+		return this.chmodStr;
 	}
 
 	Site.prototype.getCommandId = function(){
@@ -28,21 +38,36 @@ define(function(require, exports) {
 		return osFtpStrings.COMMAND_RUN_SITE_BASE_LABEL + this.name;
 	};
 
-	function validateSite(Site){
-		var returnStatus = false;
+	Site.prototype.debugPrint = function(){
+		console.log("objId: " + this.objId);
+		console.log("name:  " + this.name);
+		console.log("hostAddr: " + this.hostAddr);
+		console.log("rootDir:  " + this.rootDir);
+		console.log("userName: " + this.userName);
+		console.log("password: " + this.password);
+		console.log("chmodStr: " + this.chmodStr);
 
-		if (Site !== 'undefined'){
-			if (this.objId == osFtpGlobals.OBJECT_FTP_SITE_ID){
-				return true;
-			}
-		}
-
-		return returnStatus;
 	}
 
+	function validateSite(inputSite){
 
+		// Check if inputSite is an object
+		if (typeof inputSite !== 'object'){
+			return false;
+		}
 
+		// Check if object have objId property
+		if (!inputSite.hasOwnProperty("objId")){
+			return false;
+		}
 
+		// Check if the object ID is correct
+		if (inputSite.objId !== osFtpGlobals.OBJECT_FTP_SITE_ID){
+			return false;
+		}
+
+		return true;
+	}
 
 
 });

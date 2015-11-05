@@ -19,6 +19,7 @@ define(function (require, exports) {
 	var osFtpMenu = require('src/menu');
 	var osFtpScripts = require('src/scripts');
 	var osFtpStrings = require('strings');
+	var osFtpSitesManager = require('src/sitesManager');
 
 
 	/**
@@ -32,6 +33,8 @@ define(function (require, exports) {
 	/**
 	 * Exported functions
 	 */
+
+	exports.updateSiteList = updateSiteList;
 	exports.addSite = addSite;
 	exports.enableGetFromSite = enableGetFromSite;
 	exports.enableEditSite = enableEditSite;
@@ -45,6 +48,39 @@ define(function (require, exports) {
 	exports.disableListeners = disableListeners;
 	exports.isValidInput = isValidInput;
 	exports.setAndSavePref = setAndSavePref;
+
+	function updateSiteList(){
+		console.log('updateSiteList()');
+		var sitesCmdArr = [];
+
+		// Get all of the current commands
+		var cmdArr = CommandManager.getAll();
+
+		// Filter out only Sites commands
+
+		// Get the list of current monitor sites
+		var sitesArr = osFtpSitesManager.getSitesArray();
+
+		if (siteArr.length > 0){
+			enableEditSite();
+		} else {
+			disableEditSite();
+		}
+
+
+		for (var i in sitesArr){
+			if (cmdArr.indexOf(sitesArr[i].getCommandId()) === -1)
+			{
+				addSite(sitesArr[i]);
+			}
+		}
+
+
+
+
+
+
+	}
 
 
 	/**
