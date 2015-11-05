@@ -30,18 +30,20 @@ define(function(require, exports) {
    */
   function addToContextMenus(id, addMenuDivider, afterId, before) {
 
-    //function vars
-    var contextMenu;
+
+    /**
+     * Add to working set
+     */
 
     //get menu item for working set
-    contextMenu = Menus.getContextMenu(Menus.ContextMenuIds.WORKING_SET_CONTEXT_MENU);
+    var workingSetContextMenu = Menus.getContextMenu(Menus.ContextMenuIds.WORKING_SET_CONTEXT_MENU);
 
     //add menu divider if requested
     if (addMenuDivider)
-      contextMenu.addMenuDivider();
+      workingSetContextMenu.addMenuDivider();
 
     //add menu item for working set
-    addContextMenuItem(contextMenu, id, afterId, before);
+    addContextMenuItem(workingSetContextMenu, id, afterId, before);
 
 
     /**
@@ -49,14 +51,14 @@ define(function(require, exports) {
      */
 
     //get menu item for project set
-    contextMenu = Menus.getContextMenu(Menus.ContextMenuIds.PROJECT_MENU);
+    var projectSetContextMenu = Menus.getContextMenu(Menus.ContextMenuIds.PROJECT_MENU);
 
     //add menu divider if requested
     if (addMenuDivider)
-      contextMenu.addMenuDivider();
+      projectSetContextMenu.addMenuDivider();
 
     //add menu item for project set
-    addContextMenuItem(contextMenu, id, afterId, before);
+    addContextMenuItem(projectSetContextMenu, id, afterId, before);
 
   }
 
