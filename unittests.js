@@ -2,6 +2,8 @@
  * Need to run brackets from source
  *
  * https://github.com/adobe/brackets/wiki/How-to-Hack-on-Brackets
+ *
+ * Test commit to dev
  */
 
 
