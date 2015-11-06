@@ -27,6 +27,7 @@
 /*global define */
 
 define({
+	EXTENSION: 'OS FTP',
 	PRODUCT_SETTINGS: 'JS-OS FTP Settings\u2026',
 	TRANSFER_TYPE: 'Transfer Type',
 	TREAT_TYPE_AS_ASCII_LABEL: 'Treat the following filetypes as ASCII files:',
@@ -52,7 +53,9 @@ define({
 	DIALOG_TITLE_EDIT_SITE: 'Edit FTP Site',
 	DIALOG_TITLE_CONFIRM_UPLOAD: 'Confirm Directory Upload',
 	DIALOG_TITLE_GET_FROM_SITE: 'Get From FTP Site',
-	DIALOG_TITLE_FAIL: 'FTP Failure',
+	DIALOG_TITLE_FTP_FAIL: 'FTP Failure',
+	DIALOG_TITLE_NEW_VERSION: 'New Version Detected',
+	DIALOG_TITLE_INIT_FAIL: 'Initialization Failure',
 	DIALOG_TITLE_SELECT_SITE: 'Select FTP Site',
 	DIALOG_TOGGLE_CHMOD: 'Set permission',
 	DIALOG_SERVER_TYPE: 'Server Type:',
@@ -69,6 +72,9 @@ define({
 	DIALOG_CANCEL: 'CANCEL',
 	DIALOG_DELETE: 'DELETE',
 	DIALOG_CONFIRM_BODY: 'Confirm directory upload to site - ',
+	NEW_VERSION_EXEC: 'A new version of OS FTP has been detected.  You must restart Brackets to use this extension.',
+	FAILURE_INIT_EXEC: 'Initialization failure.  The package.json file could not be loaded from the root directory.  ' +
+						'See the console log (F12) for more information.  You may need a clean install of the extension.  Failure text is:',
 	FAILURE_FTP_EXEC: 'FTP execute failure.  The FTP process has been terminated.  See the console log (F12) for more information.  First failure text is:',
 	FAILURE_FTP_PROCESS_IN_PROGRESS: 'FTP process is already in progress.  Please wait for process completion.',
 	FAILURE_FTP_RUN_DIRECTORY: 'You must select an individual file to run as an FTP script.  Directories are ineligbile.',

@@ -17,9 +17,9 @@ define(function (require, exports, module) {
 	var osFtpCommon = require('src/common');
 	var osFtpDomain = new NodeDomain('ftp', ExtensionUtils.getModulePath(module, '../node/FtpDomain'));
 	var osFtpDialog = require('src/dialog');
+    var osFtpFailDialog = require('text!templates/ftpFailureDialog.html');
 	var osFtpGlobals = require('src/globals');
 	var osFtpStrings = require('strings');
-    var osFtpFailDialog = require('text!templates/ftpFailureDialog.html');
 
 
 	/**
@@ -189,7 +189,7 @@ define(function (require, exports, module) {
 		dialogHtml = Mustache.render(osFtpFailDialog, osFtpStrings);
 
 		//show error dialog
-		osFtpDialog.showCommonDialog(osFtpStrings.DIALOG_TITLE_FAIL, dialogHtml);
+		osFtpDialog.showCommonDialog(osFtpStrings.DIALOG_TITLE_FTP_FAIL, dialogHtml);
 
 		//show failure text
 		$('#osftp-failure-text').text(failureText);
