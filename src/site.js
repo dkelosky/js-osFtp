@@ -8,9 +8,8 @@ define(function(require, exports) {
 	var osFtpGlobals = require('src/globals');
 	var osFtpStrings = require('strings');
 
-	exports.Site         = Site;
-	exports.validateSite = validateSite;
-
+	exports.Site   = Site;
+	exports.revise = revise;
 
 	function Site(name, hostAddr, rootDir, userName, password){
 		this.objId    = osFtpGlobals.OBJECT_FTP_SITE_ID;
@@ -19,7 +18,7 @@ define(function(require, exports) {
 		this.rootDir  = rootDir;
 		this.userName = userName;
 		this.password = password;
-		this.chmodStr = 'undefined';
+		this.chmodStr = undefined;
 	}
 
 	Site.prototype.setChmodStr = function(newMode){
@@ -32,11 +31,11 @@ define(function(require, exports) {
 
 	Site.prototype.getCommandId = function(){
 		return osFtpGlobals.COMMAND_RUN_SITE_BASE_ID + this.name;
-	};
+	}
 
 	Site.prototype.getCommandLabel = function(){
 		return osFtpStrings.COMMAND_RUN_SITE_BASE_LABEL + this.name;
-	};
+	}
 
 	Site.prototype.debugPrint = function(){
 		console.log("objId: " + this.objId);
@@ -44,30 +43,21 @@ define(function(require, exports) {
 		console.log("hostAddr: " + this.hostAddr);
 		console.log("rootDir:  " + this.rootDir);
 		console.log("userName: " + this.userName);
-		console.log("password: " + this.password);
+		console.log("password: " + '**********');
 		console.log("chmodStr: " + this.chmodStr);
-
 	}
 
-	function validateSite(inputSite){
+	function revise(object){
+		var newSite = new Site(object.name,
+							   object.hostAddr,
+							   object.rootDir,
+							   object.userName,
+							   object.password);
 
-		// Check if inputSite is an object
-		if (typeof inputSite !== 'object'){
-			return false;
-		}
+		newSite.setChmodStr(object.chmodStr);
 
-		// Check if object have objId property
-		if (!inputSite.hasOwnProperty("objId")){
-			return false;
-		}
-
-		// Check if the object ID is correct
-		if (inputSite.objId !== osFtpGlobals.OBJECT_FTP_SITE_ID){
-			return false;
-		}
-
-		return true;
+		return newSite;
 	}
-
 
 });
+

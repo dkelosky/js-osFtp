@@ -16,6 +16,20 @@ define(function (require, exports) {
 
 	var SERVER_TYPES = ["zOS", "Windows", "Linux"];
 
+	function okButtonHandle(){
+		var site = collectValues();
+		SitesManager.registerSite(site);
+		console.log(SitesManager.getSitesArray());
+	}
+
+	function cancelButtonHandle(){
+	}
+
+	function removeButtonHandle(handle){
+		var site = collectValues();
+		SitesManager.removeSite(site.name);
+	}
+
 	function init(inputSite){
 		setValues(inputSite);
 		assignActions();
@@ -31,8 +45,8 @@ define(function (require, exports) {
 			$("#osftp-ftp-site-userName", $dialog).val(inputSite.userName);
 			$("#osftp-ftp-site-password", $dialog).val(inputSite.password);
 
-			if (osftpCommon.isSet(inputSite.getChmodStr())){
-				setChmodMode(inputSite.getChmodStr());
+			if (osftpCommon.isSet(inputSite.chmodStr)){
+				setChmodMode(inputSite.chmodStr);
 				$('#toggle-chmod-option', $dialog).prop("checked",true);
 			}
 
@@ -86,10 +100,6 @@ define(function (require, exports) {
 
 		site.debugPrint();
 
-		SitesManager.registerSite(site);
-		console.log(SitesManager.getSitesArray());
-
-
 		return site;
 	}
 
@@ -115,10 +125,17 @@ define(function (require, exports) {
 			}
 		}
 
-		if(!osftpCommon.isSet(hostName)){
+		// Validate host name
+		if (!osftpCommon.isSet(hostName)){
 			setErrorMessage(Strings.DIALOG_ERROR_HOST_INVALID);
 			return false;
 		}
+
+		// Validate file permission
+		if (!setChmodMode(getChmodModeString())){
+			return false;
+		}
+
 
 		return true;
 	}
@@ -152,10 +169,6 @@ define(function (require, exports) {
 		$("#osftp-ftp-site-chmodNumericValue", $dialog).change(function(){
 			setChmodMode($(this).val());
 		})
-
-		$("button[data-button-id='remove']", $dialog).on("click", function(e) {
-            SitesManager.removeSite($("#osftp-ftp-site-siteName", $dialog).val());
-        });
 
 		$("button[data-button-id='ok']", $dialog).on("click", function(e) {
 			// Validate input here
@@ -210,9 +223,14 @@ define(function (require, exports) {
 			$("#osftp-ftp-site-chmodPublicWrite",   $dialog).prop("checked", (arr[2] & 2) ? true : false);
 			$("#osftp-ftp-site-chmodPublicExecute", $dialog).prop("checked", (arr[2] & 1) ? true : false);
 
+			$("#osftp-ftp-site-chmodNumericValue", $dialog).val(getChmodModeString());
+
+			return true;
 		} else {
 			$("#osftp-ftp-site-chmodNumericValue", $dialog).val(getChmodModeString());
 			$("#osftp-ftp-site-chmodNumericValueStatus", $dialog).text("Invalid");
+
+			return false;
 		}
 	}
 
@@ -239,7 +257,7 @@ define(function (require, exports) {
 		return ownerGroup.toString() + groupGroup.toString() + publicGroup.toString();
 	}
 
-	function show(inputSite, callback){
+	function show(inputSite){
 		var compiledTemplate = Mustache.render(ftpSiteDialogTemplat, Strings);
 
 		dialog = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
@@ -249,15 +267,12 @@ define(function (require, exports) {
 
 		dialog.done(function(buttonId) {
 			if (buttonId === "ok") {
-				collectValues();
-
-				if (typeof callback === 'function'){
-					callback();
-				}
+				okButtonHandle();
+			} else if (buttonId === "cancel"){
+				cancelButtonHandle();
+			} else if (buttonId === "remove"){
+				removeButtonHandle();
 			}
 		});
 	}
-
-
-
 });

@@ -30,18 +30,26 @@ define(function (require, exports) {
 	/**
 	 * Exported functions
 	 */
-	exports.handleNewSite  = handleNewSite;
-	exports.handleEditSite = handleEditSite;
-	exports.handleGetFromSite = handleGetFromSite;
-	exports.handleNewOrEditSite = handleNewOrEditSite;
-	exports.handleRunScript = handleRunScript;
-	exports.handleRunSite = handleRunSite;
+	exports.handleNewOrEditSite  = handleNewOrEditSite;
+	exports.handleEditSite       = handleEditSite;
+	exports.handleGetFromSite    = handleGetFromSite;
+	exports.handleRunScript      = handleRunScript;
+	exports.handleRunSite        = handleRunSite;
 	exports.handlersInit = handlersInit;
 
 
-	function handleNewSite(){
-		// Show new site dialog
-		osFtpSiteDialog.show("undefined" ,osFtpHandlersHelpers.updateSiteList);
+	/**
+	 * Handler function for when a new site is added or an existing site is updated
+	 * @param {Number} oldSiteIndex Index into sites array
+	 */
+	function handleNewOrEditSite(site){
+		console.log('handleNewOrEditSite()');
+		if (osFtpSitesManager.validateSite(site)){
+			osFtpSiteDialog.show(site);
+		} else {
+			// Show new site dialog
+			osFtpSiteDialog.show();
+		}
 	}
 
 	/**
@@ -56,7 +64,8 @@ define(function (require, exports) {
 		var RADIO_SITE_NAME = 'site';
 
 		//show dialog
-		var selectDialog = osFtpDialog.showSiteSelectDialog(osFtpGlobals.sites, RADIO_SITE_NAME);
+		var selectDialog = osFtpDialog.showSiteSelectDialog(osFtpSitesManager.getSitesArray(), RADIO_SITE_NAME);
+		// var selectDialog = osFtpDialog.showSiteSelectDialog(osFtpGlobals.sites, RADIO_SITE_NAME);
 
 		var selectedSiteIndex;
 
@@ -94,9 +103,11 @@ define(function (require, exports) {
 			//log that the modal is gone
 			console.log('Dialog modal is dismissed');
 
+			var sitesArr = osFtpSitesManager.getSitesArray();
+
 			//if edit site index was set
 			if (osFtpCommon.isSet(selectedSiteIndex))
-				CommandManager.execute(osFtpGlobals.COMMAND_NEW_SITE_ID, selectedSiteIndex);
+				CommandManager.execute(osFtpGlobals.COMMAND_NEW_SITE_ID, sitesArr[selectedSiteIndex]);
 
 		});
 
@@ -164,239 +175,6 @@ define(function (require, exports) {
 
 
 	/**
-	 * Handler function for when a new site is added or an existing site is updated
-	 * @param {Number} oldSiteIndex Index into sites array
-	 */
-	function handleNewOrEditSite(oldSiteIndex) {
-
-		//log that we were called
-		console.log('handleNewOrEditSite()');
-
-		//assume a new site
-		var oldSite = false;
-
-		var nameVal = '';
-		var hostVal = '';
-		var rootVal = '';
-		var userVal = '';
-		var passVal = '';
-
-		//build input html ids
-		var name_id = 'input-name';
-		var host_id = 'input-host';
-		var root_id = 'input-root';
-		var user_id = 'input-user';
-		var pass_id = 'input-pass';
-
-		var errorContainer = 'input-error';
-
-		var nameTitle;
-
-		//if old site object is passed
-		if (osFtpCommon.isSet(oldSiteIndex)) {
-
-			//log this
-			console.log('Old site presented');
-
-			//indicate that this is an old site
-			oldSite = true;
-
-			nameVal = osFtpGlobals.sites[oldSiteIndex].name;
-			hostVal = osFtpGlobals.sites[oldSiteIndex].host;
-			rootVal = osFtpGlobals.sites[oldSiteIndex].root;
-			userVal = osFtpGlobals.sites[oldSiteIndex].user;
-			passVal = osFtpGlobals.sites[oldSiteIndex].pass;
-
-			//set the name time
-			nameTitle = nameVal;
-
-		}
-
-		//build html input object
-		var inputFields = [];
-
-		if (!oldSite)
-			inputFields.push({
-				label: osFtpStrings.DIALOG_INPUT_NAME,
-				id: name_id,
-				value: nameVal,
-				type: 'text'
-			});
-
-		inputFields.push({
-			label: osFtpStrings.DIALOG_INPUT_HOST,
-			id: host_id,
-			value: hostVal,
-			type: 'text'
-		});
-		inputFields.push({
-			label: osFtpStrings.DIALOG_INPUT_ROOT,
-			id: root_id,
-			value: rootVal,
-			type: 'text'
-		});
-		inputFields.push({
-			label: osFtpStrings.DIALOG_INPUT_USER,
-			id: user_id,
-			value: userVal,
-			type: 'text'
-		});
-		inputFields.push({
-			label: osFtpStrings.DIALOG_INPUT_PASSWORD,
-			id: pass_id,
-			value: passVal,
-			type: 'password'
-		});
-
-		//show dialog
-		var inputDialog = osFtpDialog.showSiteDialog(inputFields, nameTitle, errorContainer);
-
-		//hide error area
-		$('#' + errorContainer).hide();
-
-		//listen for escape key
-		osFtpHandlersHelpers.handleEscape(inputDialog);
-
-		//handle cancel button
-		osFtpHandlersHelpers.handleCancel(inputDialog);
-
-		//if old session
-		if (oldSite) {
-
-			//listen for delete (modal doesnt have standard id= attribute, it's data-button-id
-			$('button[data-button-id="' + Dialog.DIALOG_BTN_DONTSAVE + '"').click(function () {
-
-				//setup labels
-				var COMMAND_RUN_SITE_ID = osFtpGlobals.COMMAND_RUN_SITE_BASE_ID + osFtpGlobals.sites[oldSiteIndex].name;
-
-				//remove old site from array
-				osFtpGlobals.sites.splice(oldSiteIndex, 1);
-
-				//remove site from context menu
-				osFtpMenu.removeFromContextMenus(COMMAND_RUN_SITE_ID);
-
-				//set and save this preference
-				osFtpHandlersHelpers.setAndSavePref(osFtpGlobals.PREF, osFtpGlobals.PREF_SITES, osFtpGlobals.sites);
-
-				//disable extra options if we have no more sites
-				if (osFtpGlobals.sites.length == 0) {
-
-					//remove edit option
-					osFtpHandlersHelpers.disableEditSite();
-
-					//remove get option
-					osFtpHandlersHelpers.disableGetFromSite();
-				}
-
-				//log that the user wants to close
-				console.log('Dialog closed to delete site');
-
-				//turn off listeners
-				osFtpHandlersHelpers.disableListeners();
-
-				//close the dialog
-				inputDialog.close();
-
-			});
-		}
-
-		//listen for ok
-		$('button[data-button-id="' + Dialog.DIALOG_BTN_OK + '"').click(function () {
-
-			var oldSitesLength = osFtpGlobals.sites.length;
-
-			var name = nameVal;
-
-			//get input fields
-			if (!oldSite)
-				name = $('#' + name_id).val();
-
-			var host = $('#' + host_id).val();
-			var root = $('#' + root_id).val();
-			var user = $('#' + user_id).val();
-			var pass = $('#' + pass_id).val();
-
-			//log input
-			console.log(
-				'Dialog inputs are:  ' +
-				'name - ' + name + ', ' +
-				'host - ' + host + ', ' +
-				'root - ' + root + ', ' +
-				'user - ' + user + ', ' +
-				'pass - ' + '********' //pass
-			);
-
-			//force out any spaces in the name
-			if (!oldSite)
-				name = name.replace(/ /g, '_');
-
-			//build site object
-			var site = {
-				name: name,
-				host: host,
-				root: root,
-				user: user,
-				pass: pass
-			};
-
-			//if the input is valud
-			if (osFtpHandlersHelpers.isValidInput(site, oldSite, errorContainer)) {
-
-				// LDL5007 testing
-				var newSite = new osFtpSite.Site(name, host, root, user, pass);
-				osFtpSitesManager.registerSite(newSite);
-
-				//if old site, delete its contents
-				if (oldSite)
-					osFtpGlobals.sites.splice(oldSiteIndex, 1);
-
-				//save this site
-				osFtpGlobals.sites.push(site);
-
-				//set and save this preference
-				osFtpHandlersHelpers.setAndSavePref(osFtpGlobals.PREF, osFtpGlobals.PREF_SITES, osFtpGlobals.sites);
-
-				//enable extra options if we have at least one site
-				if (osFtpGlobals.sites.length > 0 && oldSitesLength == 0) {
-
-					//add getting from a site
-					osFtpHandlersHelpers.enableGetFromSite();
-
-					//add editing of site
-					osFtpHandlersHelpers.enableEditSite();
-
-				}
-
-				//add new site if this didnt exist before
-				if (!oldSite)
-					osFtpHandlersHelpers.addSite(site);
-
-				//log that we are saving this site
-				console.log('Dialog closed with save');
-
-				//turn off listeners
-				osFtpHandlersHelpers.disableListeners();
-
-				//close the dialog
-				inputDialog.close();
-
-			}
-
-		});
-
-		//listen for dialog done
-		inputDialog.done(function () {
-
-			//log that the modal is gone
-			console.log('Dialog modal is dismissed');
-
-		});
-
-	}
-
-
-
-	/**
 	 * Function driven when a file is called to be executed as an FTP script
 	 */
 	function handleRunScript() {
@@ -439,8 +217,9 @@ define(function (require, exports) {
 		console.log('handleRunSite(' + name + ');');
 
 		//site object associated with this command name
-		var thisSite;
+		var thisSite = osFtpSitesManager.getSiteByName(name);
 
+/*
 		//locate the site object based on site name
 		osFtpGlobals.sites.forEach(function (site) {
 
@@ -449,6 +228,7 @@ define(function (require, exports) {
 				thisSite = site;
 
 		});
+*/
 
 		// get the list of the selected file
 		var selectedFiles = osFtpCommon.getSelectedFiles();
@@ -478,8 +258,13 @@ define(function (require, exports) {
 		//log this
 		console.log('handlersInit()');
 
-		//init helpers
-		osFtpHandlersHelpers.handlersHelpersInit(osFtpGlobals, osFtpDomain);
+		//Polulate all of the handles
+		var sitesArr = osFtpSitesManager.getSitesArray();
+		console.log(sitesArr);
+		for (var i in sitesArr){
+			osFtpHandlersHelpers.addSite(sitesArr[i]);
+		}
+
 
 	}
 

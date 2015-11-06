@@ -45,6 +45,7 @@ define(function (require, exports, module) {
 	var osFtpSettingsDialog = require('src/settingsDialog');
 	var osFtpStatus = require('src/status');
 	var osFtpStrings = require('strings');
+	var osFtpSitesManager = require('src/sitesManager');
 
 
 	/**
@@ -57,11 +58,6 @@ define(function (require, exports, module) {
 	//register settings command and add it to the menu.
 	CommandManager.register(osFtpStrings.COMMAND_PRODUCT_SETTINGS_LABEL, osFtpGlobals.COMMAND_PROD_SETTINGS_ID, osFtpSettingsDialog.show);
 	Menus.getMenu(Menus.AppMenuBar.FILE_MENU).addMenuItem(osFtpGlobals.COMMAND_PROD_SETTINGS_ID, '', Menus.AFTER, Commands.FILE_PROJECT_SETTINGS);
-
-	CommandManager.register("testing dialog", "testing dialog", osFtpHandlers.handleNewSite);
-	Menus.getMenu(Menus.AppMenuBar.FILE_MENU).addMenuItem("testing dialog", '', Menus.AFTER, Commands.FILE_PROJECT_SETTINGS);
-
-
 
 	/**
 	 * Initialization complete
@@ -76,8 +72,8 @@ define(function (require, exports, module) {
 		CommandManager.register(osFtpStrings.COMMAND_NEW_SITE_LABEL, osFtpGlobals.COMMAND_NEW_SITE_ID, osFtpHandlers.handleNewOrEditSite);
 		osFtpMenu.addToContextMenus(osFtpGlobals.COMMAND_NEW_SITE_ID, false);
 
-		//handlers
-		osFtpHandlers.handlersInit();
+		//Sites Manager Init
+		osFtpSitesManager.init();
 
 		//add the status indicator
 		osFtpStatus.addStatusIndicator();
