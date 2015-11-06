@@ -35,8 +35,6 @@ define(function (require, exports) {
 	exports.handleGetFromSite    = handleGetFromSite;
 	exports.handleRunScript      = handleRunScript;
 	exports.handleRunSite        = handleRunSite;
-	exports.handlersInit = handlersInit;
-
 
 	/**
 	 * Handler function for when a new site is added or an existing site is updated
@@ -219,16 +217,8 @@ define(function (require, exports) {
 		//site object associated with this command name
 		var thisSite = osFtpSitesManager.getSiteByName(name);
 
-/*
-		//locate the site object based on site name
-		osFtpGlobals.sites.forEach(function (site) {
-
-			//if we match on name this is the site we want
-			if (site.name == name)
-				thisSite = site;
-
-		});
-*/
+		//debug
+		console.log(thisSite);
 
 		// get the list of the selected file
 		var selectedFiles = osFtpCommon.getSelectedFiles();
@@ -248,25 +238,5 @@ define(function (require, exports) {
 		}
 
 	}
-
-
-	/**
-	 * Initialize saved handlers and globals
-	 */
-	function handlersInit() {
-
-		//log this
-		console.log('handlersInit()');
-
-		//Polulate all of the handles
-		var sitesArr = osFtpSitesManager.getSitesArray();
-		console.log(sitesArr);
-		for (var i in sitesArr){
-			osFtpHandlersHelpers.addSite(sitesArr[i]);
-		}
-
-
-	}
-
 
 });

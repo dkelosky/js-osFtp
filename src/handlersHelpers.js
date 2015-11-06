@@ -21,11 +21,11 @@ define(function (require, exports) {
 	var osFtpStrings = require('strings');
 	var osFtpSitesManager = require('src/sitesManager');
 	var osFtpGlobals = require('src/globals');
+	var osFtpDomain  = require('src/domain');
 
 	/**
 	 * Global variables
 	 */
-	var osFtpDomain;
 	var osFtpPreferences;
 
 	/**

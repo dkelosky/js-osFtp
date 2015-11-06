@@ -21,6 +21,26 @@ define(function(require, exports) {
 		this.chmodStr = undefined;
 	}
 
+	Site.prototype.getName = function(){
+		return this.name;
+	}
+
+	Site.prototype.getHostAddr = function(){
+		return this.hostAddr;
+	}
+
+	Site.prototype.getRootDir = function(){
+		return this.rootDir;
+	}
+
+	Site.prototype.getUserName = function(){
+		return this.userName;
+	}
+
+	Site.prototype.getPassword = function(){
+		return this.password;
+	}
+
 	Site.prototype.setChmodStr = function(newMode){
 		this.chmodStr = newMode;
 	}
