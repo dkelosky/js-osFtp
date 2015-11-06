@@ -12,6 +12,10 @@ define(function (require, exports) {
 	var COMMAND_RUN_SCRIPT_ID = 'theauthor.osftp.osftp-run-script';
 	var COMMAND_RUN_SITE_BASE_ID = 'theauthor.osftp.osftp-run-';
 
+	var COMMAND_RESTART_ID = 'debug.refreshWindow';
+
+	var DEFAULT_VERSION = '0.0.0';
+
 	var OBJECT_FTP_SITE_ID = 'FTP_SITE_OBJECT';
 
 	var ESCAPE_KEY = 27;
@@ -21,6 +25,7 @@ define(function (require, exports) {
 
 	var PREF = 'theauthor.osftp.preferences';
 	var PREF_SITES = 'theauthor.osftp.preferences.sites-';
+	var PREF_VERSION = 'theauthor.osftp.preferences.version-';
 
 	var SETTINGS_PREF = 'theauthor.osftp.setting-preferences';
 
@@ -43,6 +48,10 @@ define(function (require, exports) {
 	exports.COMMAND_RUN_SCRIPT_ID = COMMAND_RUN_SCRIPT_ID;
 	exports.COMMAND_RUN_SITE_BASE_ID = COMMAND_RUN_SITE_BASE_ID;
 
+	exports.COMMAND_RESTART_ID = COMMAND_RESTART_ID;
+
+	exports.DEFAULT_VERSION = DEFAULT_VERSION;
+
 	exports.OBJECT_FTP_SITE_ID = OBJECT_FTP_SITE_ID;
 
 	exports.ESCAPE_KEY = ESCAPE_KEY;
@@ -52,6 +61,7 @@ define(function (require, exports) {
 
 	exports.PREF = PREF;
 	exports.PREF_SITES = PREF_SITES;
+	exports.PREF_VERSION = PREF_VERSION;
 
 	exports.SETTINGS_PREF = SETTINGS_PREF;
 

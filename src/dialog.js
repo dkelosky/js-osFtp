@@ -208,7 +208,7 @@ define(function (require, exports) {
 		//show the dialog and return the object
 		return Dialog.showModalDialog(
 			null, //class
-			osFtpStrings.DIALOG_TITLE_FAIL, //title
+			osFtpStrings.DIALOG_TITLE_FTP_FAIL, //title
 			bodyHtml, //body html
 			null, //button array
 			true); //disable auto dismiss
