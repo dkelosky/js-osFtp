@@ -331,7 +331,7 @@ maxerr: 50, node: true */
 						console.error('Fatal script error encountered on -' + subOutput);
 
 						//append failures until we die
-						response = subOutput;
+						response += (subOutput + '  ');
 
 						//log this failure
 						isFailure = true;
