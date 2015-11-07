@@ -13,26 +13,53 @@ define(function(require, exports) {
 	var osFtpCommon  = require('src/common');
 	var osFtpSite    = require('src/site');
 	var osFtpGlobals = require('src/globals');
+	var osFtpHandlersHelpers = require('src/handlersHelpers');
+	var Preferences  = require('src/preferences');
 
+	exports.init         = init;
 	exports.registerSite = registerSite;
 	exports.removeSite   = removeSite;
 	exports.getSitesArray = getSitesArray;
+	exports.getSiteByName = getSiteByName;
 	exports.isSiteExisted = isSiteExisted;
 	exports.newSite       = newSite;
 	exports.validateSite  = validateSite;
 
+	var SITES_MANAGER = "sitesManager";
+	var sitesManager;
 
-	var sitesManager = {};
+	function init(){
+		console.log('sitesManager.init()');
+		sitesManager = {};
+
+		var objString = Preferences.get(SITES_MANAGER);
+		var tempObj = JSON.parse(objString) || {};
+
+		for (var i in tempObj){
+			if (validateSite(tempObj[i])){
+				registerSite(osFtpSite.revise(tempObj[i]));
+			}
+		}
+	}
 
 	function registerSite(newSite){
 		var returnStatus = false;
 
-		if (osFtpSite.validateSite(newSite)){
+		if (validateSite(newSite)){
 			sitesManager[newSite.name] = newSite;
+
+			osFtpHandlersHelpers.addSite(newSite);
+
+			// Update preferences
+			Preferences.set(SITES_MANAGER, JSON.stringify(sitesManager));
+			Preferences.save();
+
 			returnStatus = true;
         }
 
         console.log(JSON.stringify(sitesManager));
+
+
 
 		return returnStatus;
 	}
@@ -41,9 +68,14 @@ define(function(require, exports) {
 	function removeSite(siteName){
 		var returnStatus = false;
 
-		var Site = getSiteByName(siteName);
-		if (osFtpSite.validateSite(Site)){
-			sitesManager[siteName] = null;
+		var site = getSiteByName(siteName);
+		if (validateSite(site)){
+			delete sitesManager[siteName];
+
+			osFtpHandlersHelpers.removeSite(site);
+
+			Preferences.set(SITES_MANAGER, JSON.stringify(sitesManager));
+			Preferences.save();
 		}
 
 		return returnStatus;
@@ -55,7 +87,7 @@ define(function(require, exports) {
 	}
 
 	function isSiteExisted(name){
-		return osFtpSite.validateSite(sitesManager[name]);
+		return validateSite(sitesManager[name]);
 	}
 
 	function getSitesArray(){

@@ -20,22 +20,20 @@ define(function (require, exports) {
 	var osFtpScripts = require('src/scripts');
 	var osFtpStrings = require('strings');
 	var osFtpSitesManager = require('src/sitesManager');
-
+	var osFtpGlobals = require('src/globals');
+	var osFtpDomain  = require('src/domain');
 
 	/**
 	 * Global variables
 	 */
-	var osFtpDomain;
-	var osFtpGlobals;
 	var osFtpPreferences;
-
 
 	/**
 	 * Exported functions
 	 */
 
-	exports.updateSiteList = updateSiteList;
-	exports.addSite = addSite;
+	exports.addSite    = addSite;
+	exports.removeSite = removeSite;
 	exports.enableGetFromSite = enableGetFromSite;
 	exports.enableEditSite = enableEditSite;
 	exports.disableEditSite = disableEditSite;
@@ -49,39 +47,6 @@ define(function (require, exports) {
 	exports.isValidInput = isValidInput;
 	exports.setAndSavePref = setAndSavePref;
 
-	function updateSiteList(){
-		console.log('updateSiteList()');
-		var sitesCmdArr = [];
-
-		// Get all of the current commands
-		var cmdArr = CommandManager.getAll();
-
-		// Filter out only Sites commands
-
-		// Get the list of current monitor sites
-		var sitesArr = osFtpSitesManager.getSitesArray();
-
-		if (siteArr.length > 0){
-			enableEditSite();
-		} else {
-			disableEditSite();
-		}
-
-
-		for (var i in sitesArr){
-			if (cmdArr.indexOf(sitesArr[i].getCommandId()) === -1)
-			{
-				addSite(sitesArr[i]);
-			}
-		}
-
-
-
-
-
-
-	}
-
 
 	/**
 	 * Add a site by registering the site as a command and adding it to the context menus
@@ -92,16 +57,34 @@ define(function (require, exports) {
 		//log this call
 		console.log('addSite(' + site.name + ');');
 
-		//setup labels
-		var COMMAND_RUN_SITE_LABEL = osFtpStrings.COMMAND_RUN_SITE_BASE_LABEL + site.name;
-		var COMMAND_RUN_SITE_ID = osFtpGlobals.COMMAND_RUN_SITE_BASE_ID + site.name;
+		if (osFtpSitesManager.getSitesArray().length > 0){
+			enableEditSite();
+		}
+
+		var cmdId    = site.getCommandId();
+		var cmdLabel = site.getCommandLabel();
 
 		//register command and add a context menu to create a site
-		CommandManager.register(COMMAND_RUN_SITE_LABEL, COMMAND_RUN_SITE_ID, osFtpHandlers.handleRunSite);
-		osFtpMenu.addToContextMenus(COMMAND_RUN_SITE_ID, false, osFtpGlobals.COMMAND_GET_FROM_SITE_ID, false);
-
+		CommandManager.register(cmdLabel, cmdId, osFtpHandlers.handleRunSite);
+		osFtpMenu.addToContextMenus(cmdId, false, osFtpGlobals.COMMAND_EDIT_SITE_ID, false);
 	}
 
+	/**
+	 * Remove a site from menu
+	 *
+	 */
+
+	function removeSite(site) {
+		console.log('remove(' + site.name + ')');
+
+		//remove site from context menu
+		var cmdId = site.getCommandId();
+		osFtpMenu.removeFromContextMenus(cmdId);
+
+		if (osFtpSitesManager.getSitesArray().length == 0){
+			disableEditSite();
+		}
+	}
 
 	/**
 	 * Enables the get command for an added site
@@ -129,7 +112,6 @@ define(function (require, exports) {
 		//register command and add a context menu to create a site
 		CommandManager.register(osFtpStrings.COMMAND_EDIT_SITE_LABEL, osFtpGlobals.COMMAND_EDIT_SITE_ID, osFtpHandlers.handleEditSite);
 		osFtpMenu.addToContextMenus(osFtpGlobals.COMMAND_EDIT_SITE_ID, false, osFtpGlobals.COMMAND_NEW_SITE_ID, false);
-
 	}
 
 
@@ -165,7 +147,7 @@ define(function (require, exports) {
 	 * Initialize
 	 */
 	function handlersHelpersInit(globals, domain) {
-
+/*
 		//log this
 		console.log('handlersHelpersInit(globals)');
 
@@ -196,7 +178,7 @@ define(function (require, exports) {
 
 		});
 
-
+*/
 	}
 
 

@@ -7,12 +7,12 @@ define(function (require, exports, module) {
 	 */
 	var FileUtils = brackets.getModule('file/FileUtils');
 
-
 	/**
 	 * Extension modules
 	 */
-	var osFtpCommon = require('src/common');
-	var Preferences = require("src/preferences");
+	var osFtpCommon  = require('src/common');
+	var sitesManager = require('src/sitesManager');
+	var Preferences  = require("src/preferences");
 
 	/**
 	 * Exported functions
@@ -28,24 +28,25 @@ define(function (require, exports, module) {
 	 */
 
 	function generateUploadScript(listFile, site) {
-		console.log("getneratUploadScript");
+		console.log("getnerateUploadScript");
 
 		// validating inputs
 		if (listFile == undefined) {
 			console.error('listFile is undefinded');
 			return ''
 		}
-		if (site == undefined) {
-			console.error('site is undefinded');
+		if (!sitesManager.validateSite(site)) {
+			console.error('site is invalid');
 			return ''
 		}
 
 		var returnScriptString = '';
 		var localRootDir = '';
-		var newScript = [];
-		var mkdirList = [];
-		var putBinList = [];
+		var newScript    = [];
+		var mkdirList    = [];
+		var putBinList   = [];
 		var putAsciiList = [];
+		var isChmodSet   = false;
 
 		for (var i = 0; i < listFile.length; i++) {
 			if (localRootDir == '') {
@@ -61,17 +62,22 @@ define(function (require, exports, module) {
 			}
 		}
 
+		if (osFtpCommon.isSet(site.getChmodStr())){
+			var CHMOD_CMD = 'QUOTE SITE CHMOD ' + site.getChmodStr() + ' ';
+			isChmodSet = true;
+		}
+
 		//---------------------------------------------------------------------
 		// Start generating the FTP script
 		//---------------------------------------------------------------------
 
 		// Generate logon command:
-		newScript.push('OPEN ' + site.host);
+		newScript.push('OPEN ' + site.getHostAddr());
 		newScript.push('USER');
-		newScript.push(site.user);
-		newScript.push(site.pass);
+		newScript.push(site.getUserName());
+		newScript.push(site.getPassword());
 
-		newScript.push('CD  ' + site.root);
+		newScript.push('CD  ' + site.getRootDir());
 		newScript.push('LCD ' + localRootDir);
 
 
@@ -83,15 +89,27 @@ define(function (require, exports, module) {
 		// Generate put ASCII commands
 		newScript.push('ASCII');
 		for (var i = 0; i < putAsciiList.length; i++) {
-			newScript.push('PUT ' + '"' + FileUtils.convertToNativePath(putAsciiList[i]) + '"' +
-				' ' + FileUtils.convertWindowsPathToUnixPath(putAsciiList[i]).split(' ').join('_'));
+			var fromFile = FileUtils.convertToNativePath(putAsciiList[i]);
+			var toFile   = FileUtils.convertWindowsPathToUnixPath(putAsciiList[i]).split(' ').join('_');
+
+			newScript.push('PUT ' + '"' + fromFile + '"' + ' ' + toFile);
+
+			if (isChmodSet){
+				newScript.push(CHMOD_CMD + toFile);
+			}
 		}
 
 		// Generate put Binary commands
 		newScript.push('BIN');
 		for (var i = 0; i < putBinList.length; i++) {
-			newScript.push('PUT ' + '"' + FileUtils.convertToNativePath(putBinList[i]) + '"' +
-				' ' + FileUtils.convertWindowsPathToUnixPath(putBinList[i]).split(' ').join('_'));
+			var fromFile = FileUtils.convertToNativePath(putBinList[i]);
+			var toFile   = FileUtils.convertWindowsPathToUnixPath(putBinList[i]).split(' ').join('_');
+
+			newScript.push('PUT ' + '"' + fromFile + '"' + ' ' + toFile);
+
+			if (isChmodSet){
+				newScript.push(CHMOD_CMD + toFile);
+			}
 		}
 
 		// End of script
