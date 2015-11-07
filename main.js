@@ -4,7 +4,6 @@
  *
  * https://github.com/adobe/brackets/wiki/How-to-Hack-on-Brackets#getcode
  *
- * @TODO - Package and publish
  * @TODO - allow for key bindings
  * @TODO - allow for ftp get
  * @TODO - automation testing to
@@ -15,10 +14,9 @@
  *       	run ftp scripts
  *        	adjust settings
  * @TODO - encoding issues (i.e. ftp to unix and remove \r)?
- * @TODO - allow for permission settings (like chmod)
  * @TODO - allow for FTP to a windows machine
  * @TODO - add support for ftp from Linux
- * @TODO - JSHint
+ * @TODO - fix all JSHint
  *
  * You must update the version number appropriately for each new packaged files distributed in Brackets registry.
  *
