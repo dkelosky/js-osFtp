@@ -21,7 +21,7 @@ define(function(require, exports, module) {
     function isSet(variable) {
 
         //if there is no problem with this variable, return true
-        if (variable != 'undefined' && variable != null && variable != '')
+        if (variable != 'undefined' && variable != null && variable != '' && variable != [])
             return true;
 
         //otherwise return false

@@ -17,6 +17,10 @@
  * @TODO - allow for FTP to a windows machine
  * @TODO - add support for ftp from Linux
  * @TODO - fix all JSHint
+ * @TODO - Proper names for site preferences
+ * @TODO - new screen shots
+ * @TODO - issue of not uploading a directory right away is occuring again
+ *
  *
  * You must update the version number appropriately for each new packaged files distributed in Brackets registry.
  *

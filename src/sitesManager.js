@@ -32,12 +32,16 @@ define(function(require, exports) {
 		console.log('sitesManager.init()');
 		sitesManager = {};
 
-		var objString = Preferences.get(SITES_MANAGER);
-		var tempObj = JSON.parse(objString) || {};
+		var objString = Preferences.get(SITES_MANAGER) || []; //change from {}
 
-		for (var i in tempObj){
-			if (validateSite(tempObj[i])){
-				registerSite(osFtpSite.revise(tempObj[i]));
+
+		if (osFtpCommon.isSet(objString)) {
+			var tempObj = JSON.parse(objString); //|| {}; fix lees bug,
+
+			for (var i in tempObj){
+				if (validateSite(tempObj[i])){
+					registerSite(osFtpSite.revise(tempObj[i]));
+				}
 			}
 		}
 	}
