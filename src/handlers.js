@@ -32,7 +32,6 @@ define(function (require, exports) {
 	 */
 	exports.handleNewOrEditSite  = handleNewOrEditSite;
 	exports.handleEditSite       = handleEditSite;
-	exports.handleGetFromSite    = handleGetFromSite;
 	exports.handleRunScript      = handleRunScript;
 	exports.handleRunSite        = handleRunSite;
 
@@ -63,7 +62,6 @@ define(function (require, exports) {
 
 		//show dialog
 		var selectDialog = osFtpDialog.showSiteSelectDialog(osFtpSitesManager.getSitesArray(), RADIO_SITE_NAME);
-		// var selectDialog = osFtpDialog.showSiteSelectDialog(osFtpGlobals.sites, RADIO_SITE_NAME);
 
 		var selectedSiteIndex;
 
@@ -108,66 +106,6 @@ define(function (require, exports) {
 				CommandManager.execute(osFtpGlobals.COMMAND_NEW_SITE_ID, sitesArr[selectedSiteIndex]);
 
 		});
-
-	}
-
-
-	/**
-	 * Handler for getting from an added site
-	 */
-	function handleGetFromSite() {
-
-		//log that we were called
-		console.log('handleGetFromSite()');
-
-		//radio button site name
-		var RADIO_SITE_NAME = 'site';
-
-		//show dialog
-		var selectDialog = osFtpDialog.showSiteSelectDialog(osFtpGlobals.sites, RADIO_SITE_NAME);
-
-		var selectedSiteIndex;
-
-		//listen for escape key
-		osFtpHandlersHelpers.handleEscape(selectDialog);
-
-		//handle cancel button
-		osFtpHandlersHelpers.handleCancel(selectDialog);
-
-		//listen for ok
-		$('button[data-button-id="' + Dialog.DIALOG_BTN_OK + '"').click(function () {
-
-			//get the site that was checked
-			selectedSiteIndex = $('input[name=' + RADIO_SITE_NAME + ']:checked').val();
-
-			//if no option was choosen
-			if (!osFtpCommon.isSet(selectedSiteIndex))
-				console.log('No site was selected');
-
-			//log that we are closing
-			console.log('Dialog closed with save');
-
-			//turn off listeners
-			osFtpHandlersHelpers.disableListeners();
-
-			//close the dialog
-			selectDialog.close();
-
-		});
-
-
-		//listen for dialog done
-		selectDialog.done(function () {
-
-			//log that the modal is gone
-			console.log('Dialog modal is dismissed');
-
-			//if edit site index was set
-			if (osFtpCommon.isSet(selectedSiteIndex))
-				osFtpDialog.showGetDialog(osFtpGlobals.sites[selectedSiteIndex]);
-
-		});
-
 
 	}
 

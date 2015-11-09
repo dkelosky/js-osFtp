@@ -29,8 +29,6 @@ define(function (require, exports) {
 
 	var SETTINGS_PREF = 'theauthor.osftp.setting-preferences';
 
-	var sites = [];
-
 	var STATUS_INDICATOR_HTML_ID = 'theauthor-osftp-status-indicator';
 	var STATUS_INDICATOR_ID = 'theauthor.osftp.status-indicator';
 
@@ -40,7 +38,6 @@ define(function (require, exports) {
 	/**
 	 * Exported variables
 	 */
-
 	exports.COMMAND_PROD_SETTINGS_ID = COMMAND_PROD_SETTINGS_ID;
 	exports.COMMAND_GET_FROM_SITE_ID = COMMAND_GET_FROM_SITE_ID;
 	exports.COMMAND_EDIT_SITE_ID = COMMAND_EDIT_SITE_ID;
@@ -64,8 +61,6 @@ define(function (require, exports) {
 	exports.PREF_VERSION = PREF_VERSION;
 
 	exports.SETTINGS_PREF = SETTINGS_PREF;
-
-	exports.sites = sites;
 
 	exports.STATUS_INDICATOR_HTML_ID = STATUS_INDICATOR_HTML_ID;
 	exports.STATUS_INDICATOR_ID = STATUS_INDICATOR_ID;

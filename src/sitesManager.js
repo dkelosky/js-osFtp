@@ -3,82 +3,84 @@
  */
 
 
-define(function(require, exports) {
-  'use strict';
+define(function (require, exports) {
+	'use strict';
 
 	/**
 	 * Exetension modules
 	 */
 
-	var osFtpCommon  = require('src/common');
-	var osFtpSite    = require('src/site');
+	var osFtpCommon = require('src/common');
+	var osFtpSite = require('src/site');
 	var osFtpGlobals = require('src/globals');
 	var osFtpHandlersHelpers = require('src/handlersHelpers');
-	var Preferences  = require('src/preferences');
+	var Preferences = require('src/preferences');
 
-	exports.init         = init;
+	exports.init = init;
 	exports.registerSite = registerSite;
-	exports.removeSite   = removeSite;
+	exports.removeSite = removeSite;
 	exports.getSitesArray = getSitesArray;
 	exports.getSiteByName = getSiteByName;
 	exports.isSiteExisted = isSiteExisted;
-	exports.newSite       = newSite;
-	exports.validateSite  = validateSite;
+	exports.newSite = newSite;
+	exports.validateSite = validateSite;
 
-	var SITES_MANAGER = "sitesManager";
+	var PREF_SITES_MANAGER = 'theauthor.osftp.preferences.sites-manager-';
 	var sitesManager;
 
-	function init(){
-		console.log('sitesManager.init()');
+	function init() {
+
+		console.log('sitesManager.init();');
+
 		sitesManager = {};
 
-		var objString = Preferences.get(SITES_MANAGER) || []; //change from {}
+		var objString = Preferences.get(PREF_SITES_MANAGER) || [];
 
 
 		if (osFtpCommon.isSet(objString)) {
-			var tempObj = JSON.parse(objString); //|| {}; fix lees bug,
+			var tempObj = JSON.parse(objString);
 
-			for (var i in tempObj){
-				if (validateSite(tempObj[i])){
+			for (var i in tempObj) {
+				if (validateSite(tempObj[i])) {
 					registerSite(osFtpSite.revise(tempObj[i]));
 				}
 			}
 		}
 	}
 
-	function registerSite(newSite){
+	function registerSite(newSite) {
+
 		var returnStatus = false;
 
-		if (validateSite(newSite)){
+		if (validateSite(newSite)) {
 			sitesManager[newSite.name] = newSite;
 
 			osFtpHandlersHelpers.addSite(newSite);
 
 			// Update preferences
-			Preferences.set(SITES_MANAGER, JSON.stringify(sitesManager));
+			Preferences.set(PREF_SITES_MANAGER, JSON.stringify(sitesManager));
 			Preferences.save();
 
 			returnStatus = true;
-        }
 
-        console.log(JSON.stringify(sitesManager));
+			console.log('Site registered - ' + newSite.name);
 
-
+		}
 
 		return returnStatus;
 	}
 
 
-	function removeSite(siteName){
+	function removeSite(siteName) {
 		var returnStatus = false;
 
 		var site = getSiteByName(siteName);
-		if (validateSite(site)){
+		if (validateSite(site)) {
 			delete sitesManager[siteName];
 
 			osFtpHandlersHelpers.removeSite(site);
 
-			Preferences.set(SITES_MANAGER, JSON.stringify(sitesManager));
+			Preferences.set(PREF_SITES_MANAGER, JSON.stringify(sitesManager));
 			Preferences.save();
 		}
 
@@ -86,45 +88,45 @@ define(function(require, exports) {
 	}
 
 
-	function getSiteByName(name){
+	function getSiteByName(name) {
 		return sitesManager[name];
 	}
 
-	function isSiteExisted(name){
+	function isSiteExisted(name) {
 		return validateSite(sitesManager[name]);
 	}
 
-	function getSitesArray(){
+	function getSitesArray() {
 		var sitesArray = [];
 
-		for (var name in sitesManager){
+		for (var name in sitesManager) {
 			sitesArray.push(sitesManager[name]);
 		}
 
 		return sitesArray;
 	}
 
-	function validateSite(inputSite){
+	function validateSite(inputSite) {
 
 		// Check if inputSite is an object
-		if (typeof inputSite !== 'object'){
+		if (typeof inputSite !== 'object') {
 			return false;
 		}
 
 		// Check if object have objId property
-		if (!inputSite.hasOwnProperty("objId")){
+		if (!inputSite.hasOwnProperty("objId")) {
 			return false;
 		}
 
 		// Check if the object ID is correct
-		if (inputSite.objId !== osFtpGlobals.OBJECT_FTP_SITE_ID){
+		if (inputSite.objId !== osFtpGlobals.OBJECT_FTP_SITE_ID) {
 			return false;
 		}
 
 		return true;
 	}
 
-	function newSite(name, hostAddr, rootDir, userName, password){
+	function newSite(name, hostAddr, rootDir, userName, password) {
 		return new osFtpSite.Site(name, hostAddr, rootDir, userName, password);
 	}
 
