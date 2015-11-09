@@ -156,9 +156,6 @@ define(function (require, exports) {
 		//site object associated with this command name
 		var thisSite = osFtpSitesManager.getSiteByName(name);
 
-		//debug
-		console.log(thisSite);
-
 		// get the list of the selected file
 		var selectedFiles = osFtpCommon.getSelectedFiles();
 

@@ -65,6 +65,7 @@ define(function (require, exports) {
 		var putBinList   = [];
 		var putAsciiList = [];
 		var isChmodSet   = false;
+		var CHMOD_CMD;
 
 		for (var i = 0; i < listFile.length; i++) {
 			if (!osFtpCommon.isSet(localRootDir)) {
@@ -81,7 +82,7 @@ define(function (require, exports) {
 		}
 
 		if (osFtpCommon.isSet(site.getChmodStr())){
-			var CHMOD_CMD = 'QUOTE SITE CHMOD ' + site.getChmodStr() + ' ';
+			CHMOD_CMD = 'QUOTE SITE CHMOD ' + site.getChmodStr() + ' ';
 			isChmodSet = true;
 		}
 
