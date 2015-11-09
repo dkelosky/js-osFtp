@@ -1,5 +1,4 @@
 /**
- *
  * See http://brackets.io/docs/current/ for current Brackets extension documentation
  *
  * https://github.com/adobe/brackets/wiki/How-to-Hack-on-Brackets#getcode
@@ -19,13 +18,12 @@
  * @TODO - fix all JSHint
  * @TODO - Proper names for site preferences
  * @TODO - new screen shots
- * @TODO - issue of not uploading a directory right away is occuring again
- *
+ * @TODO - Issue of not uploading a directory right away is occuring again
+ * @TODO - Restart doesn't work
  *
  * You must update the version number appropriately for each new packaged files distributed in Brackets registry.
  *
  * Appropriately working in dev or master.
- *
  */
 define(function (require, exports, module) {
 
