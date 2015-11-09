@@ -18,7 +18,6 @@
  * @TODO - fix all JSHint
  * @TODO - allow for timeout / kill of long running FTP process
  * @TODO - report total number of files sent over FTP
- * @TODO - scroll in settings
  * @TODO - move menu items into the menu
  *
  * You must update the version number appropriately for each new packaged files distributed in Brackets registry.

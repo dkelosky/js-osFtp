@@ -88,7 +88,7 @@ define(function (require, exports) {
 
 	function collectValues(){
 		// If all is pass then collect data
-		var site = SitesManager.newSite($("#osftp-ftp-site-siteName", $dialog).val(),
+		var site = SitesManager.newSite($("#osftp-ftp-site-siteName", $dialog).val().replace(/\s+/g, '-'),
 										$("#osftp-ftp-site-hostName", $dialog).val(),
 										$("#osftp-ftp-site-rootDir",  $dialog).val(),
 										$("#osftp-ftp-site-userName", $dialog).val(),
