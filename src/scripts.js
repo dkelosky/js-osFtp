@@ -7,17 +7,23 @@ define(function (require, exports) {
 	 */
 	var FileUtils = brackets.getModule('file/FileUtils');
 
+
 	/**
 	 * Extension modules
 	 */
 	var osFtpCommon  = require('src/common');
-	var sitesManager = require('src/sitesManager');
-	var Preferences  = require("src/preferences");
+	var osFtpDialog = require('src/dialog');
+	var osFtpPreferences  = require('src/preferences');
+	var osFtpSitesManager = require('src/sitesManager');
+	var osProjectFailDialog = require('text!templates/projectFailureDialog.html');
+	var osFtpStrings = require('strings');
+
 
 	/**
 	 * Exported functions
 	 */
 	exports.generateUploadScript = generateUploadScript;
+
 
 	/**
 	 * Build an FTP script based on the list files that was choosen and the site selected
@@ -26,16 +32,28 @@ define(function (require, exports) {
 	 * @returns {String}              Completed FTP script if input is valid
 	 *                                Empty string when input in invalid.
 	 */
-
 	function generateUploadScript(listFile, site) {
-		console.log("getnerateUploadScript");
+
+		//log this call
+		console.log('getnerateUploadScript();');
+
+		var dialogHtml;
 
 		// validating inputs
-		if (listFile == undefined) {
+		if (!osFtpCommon.isSet(listFile)) {
+
+			//log this project error
 			console.error('listFile is undefinded');
+
+			//substitute values in our html
+			dialogHtml = Mustache.render(osProjectFailDialog, osFtpStrings);
+
+			//show error dialog
+			osFtpDialog.showCommonDialog(osFtpStrings.DIALOG_TITLE_PROJECT_FAIL, dialogHtml);
+
 			return '';
 		}
-		if (!sitesManager.validateSite(site)) {
+		if (!osFtpSitesManager.validateSite(site)) {
 			console.error('site is invalid');
 			return '';
 		}
@@ -49,7 +67,7 @@ define(function (require, exports) {
 		var isChmodSet   = false;
 
 		for (var i = 0; i < listFile.length; i++) {
-			if (localRootDir == '') {
+			if (!osFtpCommon.isSet(localRootDir)) {
 				localRootDir = FileUtils.stripTrailingSlash(listFile[i].rootDir);
 			}
 
@@ -139,8 +157,8 @@ define(function (require, exports) {
 
 		var tempDir = '';
 		for (var i = 0; i < listNode.length; i++) {
-			if (listNode[i] != '') {
-				if (tempDir == '') {
+			if (osFtpCommon.isSet(listNode[i])) {
+				if (!osFtpCommon.isSet(tempDir)) {
 					tempDir = listNode[i];
 				} else {
 					tempDir = tempDir + '/' + listNode[i];
@@ -167,8 +185,8 @@ define(function (require, exports) {
 		var returnStatus = false;
 
 		// Getting list from preferences
-		var asciiFileList = JSON.parse(Preferences.get('transferAsAsciiTable')).tableData;
-		var noExtAsAscii  = Preferences.get('treatFileWithoutExtentionAsAscii');
+		var asciiFileList = JSON.parse(osFtpPreferences.get('transferAsAsciiTable')).tableData;
+		var noExtAsAscii  = osFtpPreferences.get('treatFileWithoutExtentionAsAscii');
 
 		console.log(asciiFileList);
 

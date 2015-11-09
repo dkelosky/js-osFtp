@@ -143,6 +143,9 @@ define(function (require, exports) {
 	 */
 	function handleRunSite() {
 
+		//log that we were called
+		console.log('handleRunSite();');
+
 		//get the command name
 		var name = this.getName();
 		name = name.substring(osFtpStrings.COMMAND_RUN_SITE_BASE_LABEL.length, name.length);
@@ -165,7 +168,7 @@ define(function (require, exports) {
 			//upload this directory
 			osFtpHandlersHelpers.uploadDirectory(thisSite, selectedFiles);
 
-			//an individual file was choose, build a script string and invoke node to run FTP and this script
+		//an individual file was choose, build a script string and invoke node to run FTP and this script
 		} else {
 
 			//build our ftp script

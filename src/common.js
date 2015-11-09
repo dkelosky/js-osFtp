@@ -40,6 +40,9 @@ define(function (require, exports, module) {
 	 */
 
 	function getSelectedFiles() {
+
+		console.log('getSelectedFiles();');
+
 		var returnList = [];
 		var fileList = [];
 
