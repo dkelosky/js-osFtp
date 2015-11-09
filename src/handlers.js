@@ -19,10 +19,8 @@ define(function (require, exports) {
 	var osFtpDomain = require('src/domain');
 	var osFtpGlobals = require('src/globals');
 	var osFtpHandlersHelpers = require('src/handlersHelpers');
-	var osFtpMenu = require('src/menu');
 	var osFtpScripts = require('src/scripts');
 	var osFtpStrings = require('strings');
-	var osFtpSite = require('src/site');
 	var osFtpSitesManager = require('src/sitesManager');
 	var osFtpSiteDialog   = require('src/ftpSiteDialog');
 

@@ -7,7 +7,6 @@ define(function (require, exports) {
 	 */
 	var CommandManager = brackets.getModule('command/CommandManager');
 	var Dialog = brackets.getModule('widgets/Dialogs');
-	var PreferencesManager = brackets.getModule('preferences/PreferencesManager');
 
 
 	/**

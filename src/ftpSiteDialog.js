@@ -25,7 +25,7 @@ define(function (require, exports) {
 	function cancelButtonHandle(){
 	}
 
-	function removeButtonHandle(handle){
+	function removeButtonHandle(){
 		var site = collectValues();
 		SitesManager.removeSite(site.name);
 	}
@@ -108,10 +108,13 @@ define(function (require, exports) {
 
 		var siteName = $("#osftp-ftp-site-siteName", $dialog).val();
 		var hostName = $("#osftp-ftp-site-hostName", $dialog).val();
-		var rootDir  = $("#osftp-ftp-site-rootDir",  $dialog).val();
-		var userName = $("#osftp-ftp-site-userName", $dialog).val();
-		var userName = $("#osftp-ftp-site-userName", $dialog).val();
-		var password = $("#osftp-ftp-site-password", $dialog).val();
+
+		/**
+		 * Save these variable inputs but comment them to remove JSHint errors
+		 */
+		//var rootDir  = $("#osftp-ftp-site-rootDir",  $dialog).val();
+		//var userName = $("#osftp-ftp-site-userName", $dialog).val();
+		//var password = $("#osftp-ftp-site-password", $dialog).val();
 
 		if (!isEditMode){
 			if (!osftpCommon.isSet(siteName)){
@@ -168,7 +171,7 @@ define(function (require, exports) {
 
 		$("#osftp-ftp-site-chmodNumericValue", $dialog).change(function(){
 			setChmodMode($(this).val());
-		})
+		});
 
 		$("button[data-button-id='ok']", $dialog).on("click", function(e) {
 			// Validate input here

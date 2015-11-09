@@ -1,4 +1,4 @@
-define(function (require, exports, module) {
+define(function (require, exports) {
 	'use strict';
 
 
@@ -33,11 +33,11 @@ define(function (require, exports, module) {
 		// validating inputs
 		if (listFile == undefined) {
 			console.error('listFile is undefinded');
-			return ''
+			return '';
 		}
 		if (!sitesManager.validateSite(site)) {
 			console.error('site is invalid');
-			return ''
+			return '';
 		}
 
 		var returnScriptString = '';
@@ -137,7 +137,7 @@ define(function (require, exports, module) {
 
 		console.log(listNode);
 
-		var tempDir = ''
+		var tempDir = '';
 		for (var i = 0; i < listNode.length; i++) {
 			if (listNode[i] != '') {
 				if (tempDir == '') {

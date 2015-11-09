@@ -16,10 +16,8 @@
  * @TODO - allow for FTP to a windows machine
  * @TODO - add support for ftp from Linux
  * @TODO - fix all JSHint
- * @TODO - Proper names for site preferences
- * @TODO - new screen shots
- * @TODO - Issue of not uploading a directory right away is occuring again
- * @TODO - Restart doesn't work
+ * @TODO - allow for timeout / kill of long running FTP process
+ * @TODO - report total number of files sent over FTP
  *
  * You must update the version number appropriately for each new packaged files distributed in Brackets registry.
  *
