@@ -25,7 +25,7 @@ define(function (require, exports) {
 	exports.newSite = newSite;
 	exports.validateSite = validateSite;
 
-	var PREF_SITES_MANAGER = 'theauthor.osftp.preferences.sites-manager-';
+	var PREF_SITES_MANAGER = 'sites-manager-';
 	var sitesManager;
 
 	function init() {
