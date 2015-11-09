@@ -20,6 +20,7 @@ define(function (require, exports, module) {
     var osFtpFailDialog = require('text!templates/ftpFailureDialog.html');
 	var osFtpGlobals = require('src/globals');
 	var osFtpStrings = require('strings');
+	var osFtpUpdate = require('src/update');
 
 
 	/**
@@ -45,7 +46,7 @@ define(function (require, exports, module) {
 		console.log('runFtpCommand(' + file + ');');
 
 		//call common wrapper to invoke node functions
-		invokeNode(file);
+		osFtpUpdate.validateNodeState(invokeNode, file);
 
 	}
 
@@ -60,7 +61,7 @@ define(function (require, exports, module) {
 		console.log('runFtpCommandStdin(' + file + ', ...);');
 
 		//call common wrapper to invoke node functions
-		invokeNode(file, data);
+		osFtpUpdate.validateNodeState(invokeNode, file, data);
 
 	}
 
@@ -141,7 +142,6 @@ define(function (require, exports, module) {
 
 			});
 		}
-
 
 	}
 
