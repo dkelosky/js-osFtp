@@ -160,24 +160,29 @@ define(function (require, exports, module) {
 
 	function generateHtmlTreeTable(treeData, treeDiv, otherAttr){
 		console.log("generateHtmlTreeTable");
-
-		var isCheckbox = false;
-		var cellId;
 		var tableId = treeDiv + '-tree';
 
 		var html = '<table id="' + tableId + '" class="table table-striped table-bordered">';
 
 		if (isSet(treeData)){
-			html += generateHtmlTree(treeData, treeDiv);
+			html += generateHtmlTree(treeData, treeDiv, otherAttr);
 		}
 
 		html += "</table>";
 		return html;
 	}
 
-	function generateHtmlTree(treeNode, treeId){
+	function generateHtmlTree(treeNode, treeId, otherAttr){
 		var nodeId;
+		var isCheckbox = false;
 		var html = '';
+
+		//check for other attribute
+		if (isSet(otherAttr)){
+			if (otherAttr.indexOf('checkbox') > -1){
+				isCheckbox = true;
+			}
+		}
 
 		// Generate node for directories
 		for (var dir in treeNode.childDirs){
@@ -185,10 +190,18 @@ define(function (require, exports, module) {
 			nodeId = treeId + '-dir' + dir;
 
 			html += '<tr data-depth="' + treeNode.level + '" class="collapse collapsable level' + treeNode.level + '">';
-			html += '<td treeNode type="dir-node" data-depth="' + treeNode.level + '"><span class="toggle"></span>' + currNode.name + '</td>';
+
+			html += '<td treeNode type="dir-node" data-depth="' + treeNode.level + '"><span class="toggle"></span>';
+
+			if (isCheckbox){
+				html += '<input type="checkbox"/>';
+			}
+
+			html += currNode.name + '</td>';
+
 			html += '</tr>';
 
-			html += generateHtmlTree(currNode, treeId);
+			html += generateHtmlTree(currNode, treeId, otherAttr);
 		}
 
 		// Generate node for files
@@ -196,7 +209,16 @@ define(function (require, exports, module) {
 			nodeId = treeId + '-file' + file;
 
 			html += '<tr data-depth="' + treeNode.level + '" class="collapse level' + treeNode.level + '">';
-			html += '<td treeNode type="file-node" data-depth="' + treeNode.level + '">' + treeNode.childFiles[file] + '</td>';
+
+			html += '<td treeNode type="file-node" data-depth="' + treeNode.level + '">';
+
+			if (isCheckbox){
+				html += '<input type="checkbox"/>';
+			}
+
+			html += treeNode.childFiles[file] + '</td>';
+
+
 			html += '</tr>';
 		}
 

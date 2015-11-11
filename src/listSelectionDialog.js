@@ -43,18 +43,14 @@ define(function (require, exports){
 		var $this = $('#list-table', this.$dialog);
 		var id    = $this.attr("id");
 
-		var tableHtml = osftpCommon.generateHtmlTreeTable(inputList, id);
-
-		console.log(tableHtml);
-
+		var tableHtml = osftpCommon.generateHtmlTreeTable(inputList, id, 'checkbox');
 		$this.html(tableHtml, 'list-table');
 
 		//Format the html output
 		$("*[treeNode]", this.$dialog).each(function(){
 			var $this = $(this),
 				type  = $this.attr("type"),
-				level = $this.attr("data-depth"),
-				text  = $this.text();
+				level = $this.attr("data-depth");
 
 			var padSize = LEVEL_LEFT_PADDING * Number(level);
 
@@ -66,10 +62,11 @@ define(function (require, exports){
 				padSize += Number(toggleSize.replace('px','')) + Number(togglePad.replace('px',''));
 				$this.css("padding-left", padSize.toString() + "px");
 			}
-		})
+		});
 
 		//Reset toggle listeners
 		resetTreeToggle("#list-table-tree", this.$dialog);
+		resetTreeCheckbox("#list-table-tree", this.$dialog);
 		collapseAllTree("#list-table-tree", this.$dialog);
 
 	};
@@ -113,6 +110,36 @@ define(function (require, exports){
 			}
 			return children;
 
+		});
+	}
+
+	function resetTreeCheckbox(treeId, $dialog){
+		$(treeId, $dialog).on('click', 'input:checkbox', function () {
+			// Get all <tr>'s of the greater depth
+			var findChildren = function (tr) {
+				var depth = tr.data('depth');
+				return tr.nextUntil($('tr').filter(function () {
+					return $(this).data('depth') <= depth;
+				}));
+			};
+
+			var el = $(this);
+			var tr = el.closest('tr'); //Get <tr> parent of toggle button
+			var children = findChildren(tr);
+
+			console.log(el);
+			console.log(tr);
+			console.log(children);
+
+			var parentCheckStatus = el.is(':checked');
+			console.log(parentCheckStatus);
+
+			children.each(function(){
+				var $child = $(this);
+				$child.find("input:checkbox").prop("checked", parentCheckStatus);
+			});
+
+			return children;
 		});
 	}
 
