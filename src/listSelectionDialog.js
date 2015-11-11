@@ -8,8 +8,6 @@ define(function (require, exports){
 	// debug
 	var tree         = require("./tree");
 
-	var LEVEL_LEFT_PADDING = 20;
-
 	exports.newDialog = newDialog;
 	exports.testDialog = testDialog;
 
@@ -52,7 +50,8 @@ define(function (require, exports){
 				type  = $this.attr("type"),
 				level = $this.attr("data-depth");
 
-			var padSize = LEVEL_LEFT_PADDING * Number(level);
+			var basePadding = $("#list-selection-dialog .level1").css('padding-left');
+			var padSize = Number(basePadding.replace('px','')) * Number(level);
 
 			if (type === 'dir-node'){
 				$this.css("padding-left", padSize.toString() + "px");
@@ -127,12 +126,7 @@ define(function (require, exports){
 			var tr = el.closest('tr'); //Get <tr> parent of toggle button
 			var children = findChildren(tr);
 
-			console.log(el);
-			console.log(tr);
-			console.log(children);
-
 			var parentCheckStatus = el.is(':checked');
-			console.log(parentCheckStatus);
 
 			children.each(function(){
 				var $child = $(this);
@@ -150,7 +144,6 @@ define(function (require, exports){
 	function collapseAllTree(treeId, $dialog){
 		$(treeId + " tr", $dialog).each(function(){
 			var $tr = $(this);
-			console.log($tr);
 			if ($tr.hasClass('collapse')){
 				$tr.find(".toggle").click();
 			}

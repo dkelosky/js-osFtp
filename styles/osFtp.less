@@ -12,7 +12,7 @@
     }
 	.modal-scroll-list {
 		height: 300px;
-		overflow: auto
+		overflow: auto;
 	}
     .nav-tabs {
         border-bottom: 1px solid @bc-panel-separator;
@@ -58,18 +58,36 @@
 
 #list-selection-dialog {
 
+	td {
+		height: 15px;
+		padding: 3px;
+	}
+
+	.level1 {
+		padding-left: 20px;
+	}
+
+	.modal-scroll-list {
+		height: 300px;
+		overflow: auto;
+	}
+
 	.collapse .toggle {
 		background: url("../images/minus.gif");
 		background-repeat: no-repeat;
+		background-position: bottom;
 	}
 	.expand .toggle {
 		background: url("../images/plus.gif");
 		background-repeat: no-repeat;
+		background-position: bottom;
 	}
+
 	.toggle {
 		height: 13px;
-		width: 13px;
+		width:  13px;
 		display: inline-block;
-		padding-right: 5px;
+		padding-right: 10px;
+		vertical-align: middle;
 	}
 }
