@@ -8,6 +8,8 @@ define(function (require, exports){
 	// debug
 	var tree         = require("./tree");
 
+	var LEVEL_LEFT_PADDING = 20;
+
 	exports.newDialog = newDialog;
 	exports.testDialog = testDialog;
 
@@ -47,9 +49,34 @@ define(function (require, exports){
 
 		$this.html(tableHtml, 'list-table');
 
+		//Format the html output
+		$("*[treeNode]", this.$dialog).each(function(){
+			var $this = $(this),
+				type  = $this.attr("type"),
+				level = $this.attr("data-depth"),
+				text  = $this.text();
+
+			var padSize = LEVEL_LEFT_PADDING * Number(level);
+
+			if (type === 'dir-node'){
+				$this.css("padding-left", padSize.toString() + "px");
+			} else if (type === 'file-node'){
+				var toggleSize = $("#list-selection-dialog .toggle").css('width');
+				var togglePad  = $("#list-selection-dialog .toggle").css('padding-right');
+				padSize += Number(toggleSize.replace('px','')) + Number(togglePad.replace('px',''));
+				$this.css("padding-left", padSize.toString() + "px");
+			}
+		})
+
 		//Reset toggle listeners
 		resetTreeToggle("#list-table-tree", this.$dialog);
+		collapseAllTree("#list-table-tree", this.$dialog);
+
 	};
+
+	/*
+	 *
+	 */
 
 	function resetTreeToggle(treeId, $dialog){
 		$(treeId, $dialog).on('click', '.toggle', function () {
@@ -88,6 +115,30 @@ define(function (require, exports){
 
 		});
 	}
+
+	/*
+	 *
+	 */
+
+	function collapseAllTree(treeId, $dialog){
+		$(treeId + " tr", $dialog).each(function(){
+			var $tr = $(this);
+			console.log($tr);
+			if ($tr.hasClass('collapse')){
+				$tr.find(".toggle").click();
+			}
+		});
+	}
+
+	function expandAllTree(treeId, $dialog){
+		$(treeId + " tr", $dialog).each(function(){
+			var $tr = $(this);
+			if ($tr.hasClass('expand')){
+				$tr.find(".toggle").click();
+			}
+		});
+	}
+
 
 	function newDialog(inputList){
 		return new ListSelectionDialog(inputList);

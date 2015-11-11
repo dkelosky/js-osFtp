@@ -165,7 +165,7 @@ define(function (require, exports, module) {
 		var cellId;
 		var tableId = treeDiv + '-tree';
 
-		var html = '<table id="' + tableId + '" class="tree">';
+		var html = '<table id="' + tableId + '" class="table table-striped table-bordered">';
 
 		if (isSet(treeData)){
 			html += generateHtmlTree(treeData, treeDiv);
@@ -185,7 +185,7 @@ define(function (require, exports, module) {
 			nodeId = treeId + '-dir' + dir;
 
 			html += '<tr data-depth="' + treeNode.level + '" class="collapse collapsable level' + treeNode.level + '">';
-			html += '<td><span class="toggle"></span>' + currNode.name + '</td>';
+			html += '<td treeNode type="dir-node" data-depth="' + treeNode.level + '"><span class="toggle"></span>' + currNode.name + '</td>';
 			html += '</tr>';
 
 			html += generateHtmlTree(currNode, treeId);
@@ -196,7 +196,7 @@ define(function (require, exports, module) {
 			nodeId = treeId + '-file' + file;
 
 			html += '<tr data-depth="' + treeNode.level + '" class="collapse level' + treeNode.level + '">';
-			html += '<td>' + treeNode.childFiles[file] + '</td>';
+			html += '<td treeNode type="file-node" data-depth="' + treeNode.level + '">' + treeNode.childFiles[file] + '</td>';
 			html += '</tr>';
 		}
 
