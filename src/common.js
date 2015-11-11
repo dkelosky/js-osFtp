@@ -9,23 +9,48 @@ define(function (require, exports, module) {
 	 */
 	exports.isSet = isSet;
 	exports.getSelectedFiles = getSelectedFiles;
+	exports.getProjectFiles = getProjectFiles;
 	exports.generateHtmlTable = generateHtmlTable;
 	exports.extractTableData = extractTableData;
 
-
+	exports.generateHtmlTreeTable = generateHtmlTreeTable;
 	/**
-	 * Determines whether or not a variable exists, is null, or contains no data
-	 * @param   {String} variable Any variable type
-	 * @returns {Boolean}  Returns true if the variable is defined
+	 * Check if a variable is undefined or null
+	 *
+	 * @param   {*}  variable The variable to check
+	 *
+	 * @returns {Boolean} true if the element is defined and not null
+	 *                    false if the element is undefined or null
 	 */
 	function isSet(variable) {
+		if (typeof variable == "undefined") {
+			return false;
+		} else if (variable == null) {
+			return false;
+		} else if (typeof variable === "string") {
+			return variable != "";
+		} else if (typeof variable === "number") {
+			return variable != 0;
+		} else if (typeof variable === "object") {
+			//Split arrays and objects
+			if (typeof variable.length === "undefined") {
+				//We are now dealing with an object
+				var foundData = false;
+				for (var x in variable) {
+					if (typeof variable[x] !== "undefined" && variable[x] != null) {
+						foundData = true;
+						break;
+					}
+				}
+				return foundData;
+			} else {
+				//We are now processing an array
+				if (variable.length >= 1) return true;
+				else return false;
+			}
+		}
 
-		//if there is no problem with this variable, return true
-		if (variable != 'undefined' && variable != null && variable != '' && variable != [])
-			return true;
-
-		//otherwise return false
-		return false;
+		return true;
 	}
 
 	/**
@@ -93,33 +118,158 @@ define(function (require, exports, module) {
 		return returnList;
 	}
 
-	//
+	/**
+	 * Return list of all files in the current project
+	 * @returns {Array[File]} return array of selected file with the following info:
+	 *      File.rootDir      : Root directory of the current open folder
+	 *      File.name         : file name
+	 *      File.fullDir      : Full directory of the file
+	 *      File.fullPath     : Full path of the file
+	 *      File.relativeDir  : Directory relative to root directory
+	 *      File.relativePath : File path relative to root directory
+	 */
 
+	function getProjectFiles() {
+		console.log('getProjectFiles');
+
+		var returnList = [];
+
+		var rootDir = Project.getProjectRoot().fullPath;
+
+		Project.getAllFiles(function (File, number) {
+
+			var object = {
+				rootDir: rootDir,
+				name: File.name,
+				fullDir: File.parentPath,
+				fullPath: File.fullPath,
+				relativeDir: FileUtils.getRelativeFilename(rootDir, File.parentPath),
+				relativePath: FileUtils.getRelativeFilename(rootDir, File.fullPath)
+			};
+
+			returnList.push(object);
+		});
+
+
+		return returnList;
+	}
+
+	/**
+	 * generate HTML Tree table
+	 */
+
+	function generateHtmlTreeTable(treeData, treeDiv, otherAttr){
+		console.log("generateHtmlTreeTable");
+
+		var isCheckbox = false;
+		var cellId;
+		var tableId = treeDiv + '-tree';
+
+		var html = '<table id="' + tableId + '" class="tree">';
+
+		if (isSet(treeData)){
+			html += generateHtmlTree(treeData, treeDiv);
+		}
+
+		html += "</table>";
+		return html;
+	}
+
+	function generateHtmlTree(treeNode, treeId){
+		var nodeId;
+		var html = '';
+
+		// Generate node for directories
+		for (var dir in treeNode.childDirs){
+			var currNode = treeNode.childDirs[dir];
+			nodeId = treeId + '-dir' + dir;
+
+			html += '<tr data-depth="' + treeNode.level + '" class="collapse collapsable level' + treeNode.level + '">';
+			html += '<td><span class="toggle"></span>' + currNode.name + '</td>';
+			html += '</tr>';
+
+			html += generateHtmlTree(currNode, treeId);
+		}
+
+		// Generate node for files
+		for (var file in treeNode.childFiles){
+			nodeId = treeId + '-file' + file;
+
+			html += '<tr data-depth="' + treeNode.level + '" class="collapse level' + treeNode.level + '">';
+			html += '<td>' + treeNode.childFiles[file] + '</td>';
+			html += '</tr>';
+		}
+
+		return html;
+	}
+
+	/**
+	 * generate HTML Table
+	 * @returns html string of the table
+	 */
 
 	function generateHtmlTable(data, tableDiv, otherAttr) {
 		console.log(data);
-
+		var isCheckbox = false;
+		var cellId;
 		var tableId = tableDiv + '-table';
 
 		var html = '<table id="' + tableId + '" class="table table-striped table-bordered" >';
 
+		//check for other attribute
+		if (isSet(otherAttr)){
+			if (otherAttr.indexOf('checkbox') > -1){
+				isCheckbox = true;
+			}
+		}
+
 		if (isSet(data)) {
-			for (var i = 0; i < data.tableData.length; i++) {
-				var rowData = data.tableData[i];
+			if ($.isArray(data)) {
+				for (var row in data) {
+					var rowData = data[row];
 
-				html += '<tr id="row' + i + '">';
+					html += '<tr id="row' + row + '">';
 
-				if ($.isArray(rowData)) {
-					for (var j = 0; j < rowData.length; j++) {
-						var cellId = tableDiv + '-row' + i + '-col' + j;
-						html += '<td id="' + cellId + '">' + rowData[j] + '</td>';
+					if (isCheckbox){
+						cellId = tableDiv + '-row' + row + '-checkbox';
+						html += '<td id="' + cellId + '">' + '<input type="checkbox"/>' + '</td>';
 					}
-				} else {
-					var cellId = tableDiv + '-row' + i + '-col1';
-					html += '<td id="' + cellId + '">' + rowData + '</td>';
-				}
 
-				html += '</tr>';
+					if ($.isArray(rowData)) {
+						for (var col in rowData) {
+							cellId = tableDiv + '-row' + row + '-col' + col;
+							html += '<td id="' + cellId + '">' + rowData[col] + '</td>';
+						}
+					} else {
+						cellId = tableDiv + '-row' + row + '-col1';
+						html += '<td id="' + cellId + '">' + rowData + '</td>';
+					}
+
+					html += '</tr>';
+				}
+			} else if (data.hasOwnProperty('tableData')) {
+				for (var i = 0; i < data.tableData.length; i++) {
+					var rowData = data.tableData[i];
+
+					html += '<tr id="row' + i + '">';
+
+					if (isCheckbox){
+						cellId = tableDiv + '-row' + row + '-checkbox';
+						html += '<td id="' + cellId + '"' + '<input type="checkbox"/>' + '</td>';
+					}
+
+					if ($.isArray(rowData)) {
+						for (var j = 0; j < rowData.length; j++) {
+							cellId = tableDiv + '-row' + i + '-col' + j;
+							html += '<td id="' + cellId + '">' + rowData[j] + '</td>';
+						}
+					} else {
+						cellId = tableDiv + '-row' + i + '-col1';
+						html += '<td id="' + cellId + '">' + rowData + '</td>';
+					}
+
+					html += '</tr>';
+				}
 			}
 		}
 

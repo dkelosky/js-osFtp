@@ -17,6 +17,7 @@ define(function (require, exports) {
 	var DEFAULT_VERSION = '0.0.0';
 
 	var OBJECT_FTP_SITE_ID = 'FTP_SITE_OBJECT';
+	var OBJECT_DIR_TREE_ID = 'DIR_TREE_OBJECT';
 
 	var ESCAPE_KEY = 27;
 

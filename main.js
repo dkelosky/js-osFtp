@@ -52,6 +52,7 @@ define(function (require, exports, module) {
 	var osFtpStrings = require('strings');
 	var osFtpSitesManager = require('src/sitesManager');
 
+	var listSelectionDialog = require('src/listSelectionDialog');
 
 	/**
 	 * Perform initialization
@@ -63,6 +64,9 @@ define(function (require, exports, module) {
 	//register settings command and add it to the menu.
 	CommandManager.register(osFtpStrings.COMMAND_PRODUCT_SETTINGS_LABEL, osFtpGlobals.COMMAND_PROD_SETTINGS_ID, osFtpSettingsDialog.show);
 	Menus.getMenu(Menus.AppMenuBar.FILE_MENU).addMenuItem(osFtpGlobals.COMMAND_PROD_SETTINGS_ID, '', Menus.AFTER, Commands.FILE_PROJECT_SETTINGS);
+
+	CommandManager.register('testing dialog', 'testing-dialog', listSelectionDialog.testDialog);
+	Menus.getMenu(Menus.AppMenuBar.FILE_MENU).addMenuItem('testing-dialog', '', Menus.AFTER, Commands.FILE_PROJECT_SETTINGS);
 
 
 	/**
@@ -95,6 +99,5 @@ define(function (require, exports, module) {
 		//add the status indicator
 		osFtpStatus.addStatusIndicator();
 	}
-
 
 });
