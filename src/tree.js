@@ -17,6 +17,9 @@ define (function (require, exports){
 		this.childFiles = [];
 	}
 
+	/**
+	 *
+	 **/
 	DirNode.prototype.addChildDir = function(dirName){
 		if (!osFtpCommon.isSet(this.childDirs[dirName])){
 			var newChild = new DirNode(dirName);
@@ -29,6 +32,9 @@ define (function (require, exports){
 		}
 	};
 
+	/**
+	 *
+	 **/
 	DirNode.prototype.addChildFiles = function(fileName){
 		// Validate imput
 		var key = fileName.split(' ').join('_');
@@ -36,8 +42,12 @@ define (function (require, exports){
 		this.childFiles[key] = fileName;
 	};
 
+	/**
+	 *
+	 **/
+
 	DirNode.prototype.addRelativePath = function(filePath){
-		console.log('addRelativePath(' + filePath + ')');
+		console.log('DirNode.addRelativePath(' + filePath + ')');
 		if (typeof filePath !== 'string'){
 			return false;
 		}
@@ -61,12 +71,20 @@ define (function (require, exports){
 
 	};
 
+	/**
+	 * generate new Tree function
+	 */
+
 	function newFileTree(rootDir){
 		var newTree = new DirNode(rootDir);
 		newTree.type = osFtpGlobals.OBJECT_DIR_TREE_ID;
 
 		return newTree;
 	}
+
+	/**
+	 * debugPrint function
+	 **/
 
 	function debugPrint(dirNode){
 		if (osFtpCommon.isSet(dirNode)){

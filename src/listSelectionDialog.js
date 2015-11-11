@@ -8,40 +8,68 @@ define(function (require, exports){
 	// debug
 	var tree         = require("./tree");
 
-	exports.newDialog = newDialog;
+	exports.newDialog  = newDialog;
 	exports.testDialog = testDialog;
 
-	function ListSelectionDialog(inputList){
+	/**
+	 *
+	 **/
+
+	function ListSelectionDialog(inputList, listTitle){
 		this.dialogTemplate = require("text!templates/list-selection-dialog.html");
 		this.inputList = inputList;
+		this.listTitle = listTitle;
+
+		console.log(this.listTitle);
+
+		this.treeData = tree.newFileTree('ListSelectionDialog');
+
+		for (var i in inputList){
+			this.treeData.addRelativePath(inputList[i]);
+		}
 	}
 
+	/**
+	 *
+	 **/
+
+
 	ListSelectionDialog.prototype.show = function(){
+		console.log('ListSelectionDialog.show()');
 		if (!osftpCommon.isSet(this.dialog)){
 			var compiledTemplate = Mustache.render(this.dialogTemplate, Strings);
 
 			this.dialog = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
 			this.$dialog = this.dialog.getElement();
 
-			this.updateTableData(this.inputList);
+			this.setTableTitle(this.listTitle);
 
-			this.dialog.done(function(buttonId){
+			this.refreshTableData();
 
-			});
 		} else {
 			alert("dialog is already shown");
 		}
 	};
 
-	ListSelectionDialog.prototype.updateTableTitle = function(inputStr){
+	/**
+	 *
+	 **/
+
+	ListSelectionDialog.prototype.setTableTitle = function(inputStr){
+		console.log('ListSelectionDialog.setTableTitle('+inputStr+')');
 		$('#list-label', this.$dialog).text(inputStr);
 	};
 
-	ListSelectionDialog.prototype.updateTableData = function(inputList){
+	/**
+	 *
+	 **/
+
+	ListSelectionDialog.prototype.refreshTableData = function(){
+		console.log('ListSelectionDialog.refreshTableData()');
 		var $this = $('#list-table', this.$dialog);
 		var id    = $this.attr("id");
 
-		var tableHtml = osftpCommon.generateHtmlTreeTable(inputList, id, 'checkbox');
+		var tableHtml = osftpCommon.generateHtmlTreeTable(this.treeData, id, 'checkbox');
 		$this.html(tableHtml, 'list-table');
 
 		//Format the html output
@@ -66,10 +94,32 @@ define(function (require, exports){
 		//Reset toggle listeners
 		resetTreeToggle("#list-table-tree", this.$dialog);
 		resetTreeCheckbox("#list-table-tree", this.$dialog);
-		collapseAllTree("#list-table-tree", this.$dialog);
-
 	};
 
+	/**
+	 *
+	 **/
+
+	ListSelectionDialog.prototype.collapseAll = function(){
+		collapseAllTree("#list-table-tree", this.$dialog);
+	};
+
+	/**
+	 *
+	 **/
+
+	ListSelectionDialog.prototype.expandAll = function(){
+		expandAllTree("#list-table-tree", this.$dialog);
+	};
+
+	/**
+	 *
+	 **/
+
+	ListSelectionDialog.prototype.getSelectedList = function(){
+
+		return 0;
+	};
 	/*
 	 *
 	 */
@@ -138,7 +188,7 @@ define(function (require, exports){
 	}
 
 	/*
-	 *
+	 * Collapse the entire tree
 	 */
 
 	function collapseAllTree(treeId, $dialog){
@@ -150,6 +200,10 @@ define(function (require, exports){
 		});
 	}
 
+	/*
+	 * Expand the entire tree
+	 */
+
 	function expandAllTree(treeId, $dialog){
 		$(treeId + " tr", $dialog).each(function(){
 			var $tr = $(this);
@@ -160,27 +214,32 @@ define(function (require, exports){
 	}
 
 
-	function newDialog(inputList){
-		return new ListSelectionDialog(inputList);
+	function newDialog(inputList, listTitle){
+		return new ListSelectionDialog(inputList, listTitle);
 	}
+
+
+	/**
+	 *  Testing function for dialog
+	 */
+
 
 	function testDialog(){
 
 		var inputList = [];
 		var testingList = osftpCommon.getProjectFiles();
 
-		var newTree = tree.newFileTree(testingList[0].rootDir);
-
 		for (var i in testingList){
 			inputList.push(testingList[i].relativePath);
-			newTree.addRelativePath(testingList[i].relativePath);
 		}
 
-		var dialog1 = newDialog(newTree);
+		var dialog1 = newDialog(inputList, testingList[0].rootDir);
 		dialog1.show();
-		dialog1.updateTableTitle(testingList[0].rootDir);
+		dialog1.collapseAll();
 
-		tree.debugPrint(newTree);
+		dialog1.dialog.done(function(){
+			console.log('dialog is closed');
+		});
 
 	}
 });

@@ -48,6 +48,14 @@ define(function (require, exports) {
 	}
 
 	/**
+	 * Handler function for upload the entire project to site.
+	 */
+	function handlerUploadProject(site){
+
+
+	}
+
+	/**
 	 * Handler for editting an added site
 	 */
 	function handleEditSite() {
