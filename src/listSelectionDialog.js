@@ -133,6 +133,21 @@ define(function (require, exports){
 
 		return returnList;
 	};
+
+	/**
+	 *
+	 **/
+
+	ListSelectionDialog.prototype.checkAll = function(){
+		console.log('ListSelectionDialog.checkAll()');
+
+		$('input:checkbox', this.$dialog).each(function(){
+			$(this).prop('checked', true);
+		});
+
+	};
+
+
 	/*
 	 *
 	 */
