@@ -264,6 +264,9 @@ define(function (require, exports){
 		if (testingList.length > 0){
 			var dialog1 = newDialog(inputList, testingList[0].rootDir);
 		}
+		else {
+			var dialog1 = newDialog(inputList);
+		}
 		dialog1.show();
 		dialog1.collapseAll();
 		dialog1.checkAll();
