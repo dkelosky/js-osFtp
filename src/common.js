@@ -209,13 +209,7 @@ define(function (require, exports, module) {
 		// Generate node for files
 		for (var file in treeNode.childFiles){
 			nodeId = treeId + '-file' + file;
-			var relativePath = treeNode.name  + '/' + treeNode.childFiles[file];
-
-			var currNode = treeNode;
-			while(isSet(currNode.parent)){
-				currNode = currNode.parent;
-				relativePath = currNode.name + '/' + relativePath;
-			}
+			var relativePath = treeNode.getRelativeDir() + '/' + treeNode.childFiles[file];
 
 			html += '<tr data-depth="' + treeNode.level + '" class="collapse level' + treeNode.level + '">';
 

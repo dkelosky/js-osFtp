@@ -72,6 +72,25 @@ define (function (require, exports){
 	};
 
 	/**
+	 *
+	 */
+	DirNode.prototype.getRelativeDir = function(){
+		console.log('DirNode.getRelativeDir()');
+
+		var currNode   = this;
+		var returnPath = currNode.name;
+
+		while (osFtpCommon.isSet(currNode.parent)){
+			currNode = currNode.parent;
+			if (currNode.name.length > 0){
+				returnPath = currNode.name + '/' + returnPath;
+			}
+		}
+
+		return returnPath;
+	}
+
+	/**
 	 * generate new Tree function
 	 */
 

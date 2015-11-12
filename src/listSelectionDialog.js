@@ -266,10 +266,13 @@ define(function (require, exports){
 		}
 		dialog1.show();
 		dialog1.collapseAll();
+		dialog1.checkAll();
 
-		dialog1.dialog.done(function(){
-			var seletedList = dialog1.getSelectedList();
-			console.log(seletedList);
+		dialog1.dialog.done(function(buttonId){
+			if (buttonId == 'ok'){
+				var seletedList = dialog1.getSelectedList();
+				console.log(seletedList);
+			}
 			console.log('dialog is closed');
 		});
 
