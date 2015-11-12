@@ -261,7 +261,9 @@ define(function (require, exports){
 			inputList.push(testingList[i].relativePath);
 		}
 
-		var dialog1 = newDialog(inputList, testingList[0].rootDir);
+		if (testingList.length > 0){
+			var dialog1 = newDialog(inputList, testingList[0].rootDir);
+		}
 		dialog1.show();
 		dialog1.collapseAll();
 
