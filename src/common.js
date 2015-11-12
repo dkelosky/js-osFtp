@@ -159,7 +159,7 @@ define(function (require, exports, module) {
 	 */
 
 	function generateHtmlTreeTable(treeData, treeDiv, otherAttr){
-		console.log("generateHtmlTreeTable");
+		console.log("generateHtmlTreeTable()");
 		var tableId = treeDiv + '-tree';
 
 		var html = '<table id="' + tableId + '" class="table table-striped table-bordered">';
@@ -173,6 +173,8 @@ define(function (require, exports, module) {
 	}
 
 	function generateHtmlTree(treeNode, treeId, otherAttr){
+		console.log('generateHtmlTree()');
+
 		var nodeId;
 		var isCheckbox = false;
 		var html = '';
@@ -207,6 +209,13 @@ define(function (require, exports, module) {
 		// Generate node for files
 		for (var file in treeNode.childFiles){
 			nodeId = treeId + '-file' + file;
+			var relativePath = treeNode.name  + '/' + treeNode.childFiles[file];
+
+			var currNode = treeNode;
+			while(isSet(currNode.parent)){
+				currNode = currNode.parent;
+				relativePath = currNode.name + '/' + relativePath;
+			}
 
 			html += '<tr data-depth="' + treeNode.level + '" class="collapse level' + treeNode.level + '">';
 
@@ -216,9 +225,9 @@ define(function (require, exports, module) {
 				html += '<input type="checkbox"/>';
 			}
 
-			html += treeNode.childFiles[file] + '</td>';
-
-
+			html += treeNode.childFiles[file];
+			html += '<input type="hidden" value="' + relativePath + '"/>';
+			html += '</td>';
 			html += '</tr>';
 		}
 

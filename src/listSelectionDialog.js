@@ -117,8 +117,21 @@ define(function (require, exports){
 	 **/
 
 	ListSelectionDialog.prototype.getSelectedList = function(){
+		console.log('ListSelectionDialog.getSelectedList()');
+		var returnList = [];
 
-		return 0;
+		$('input:checked', this.$dialog).each(function(){
+			var $tr = $(this).closest('tr');
+			var treeNode = $tr.find("[treeNode]");
+			var type = treeNode.attr('type');
+
+			if (type === 'file-node'){
+				var selectedItem = treeNode.find('input[type=hidden]').val();
+				returnList.push(selectedItem);
+			}
+		});
+
+		return returnList;
 	};
 	/*
 	 *
@@ -238,6 +251,8 @@ define(function (require, exports){
 		dialog1.collapseAll();
 
 		dialog1.dialog.done(function(){
+			var seletedList = dialog1.getSelectedList();
+			console.log(seletedList);
 			console.log('dialog is closed');
 		});
 

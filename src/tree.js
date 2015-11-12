@@ -11,7 +11,7 @@ define (function (require, exports){
 
 	function DirNode(name){
 		this.parent     = null;
-		this.name       = name;
+		this.name       = name || '';
 		this.level      = 0;
 		this.childDirs  = [];
 		this.childFiles = [];
@@ -76,8 +76,9 @@ define (function (require, exports){
 	 */
 
 	function newFileTree(rootDir){
-		var newTree = new DirNode(rootDir);
+		var newTree = new DirNode();
 		newTree.type = osFtpGlobals.OBJECT_DIR_TREE_ID;
+		newTree.rootDir = rootDir;
 
 		return newTree;
 	}
