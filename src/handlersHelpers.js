@@ -21,6 +21,7 @@ define(function (require, exports) {
 	var osFtpSitesManager = require('src/sitesManager');
 	var osFtpGlobals = require('src/globals');
 	var osFtpDomain  = require('src/domain');
+	var osFtpSelectDialog = require('src/listSelectionDialog');
 
 	/**
 	 * Global variables
@@ -151,6 +152,41 @@ define(function (require, exports) {
 	function uploadDirectory(site, fileList) {
 
 		//show dialog
+		var dlgInputList = [];
+		var rootDir = "Selected directory is Empty";
+		if (fileList.length > 0){
+			rootDir = fileList[0].rootDir;
+			for (var file in fileList){
+				dlgInputList.push(fileList[file].relativePath);
+			}
+		}
+
+		var selectDialog = osFtpSelectDialog.newDialog(dlgInputList, rootDir);
+		selectDialog.show();
+		selectDialog.collapseAll();
+		selectDialog.checkAll();
+
+		selectDialog.dialog.done(function(buttonId){
+			if (buttonId === 'ok'){
+				//log that we are saving this site
+				console.log('Dialog closed with save');
+
+				var selectedList = selectDialog.getSelectedList();
+				fileList = [];
+				for (var index in selectedList){
+					var obj = osFtpCommon.relativePathToFile(selectedList[index], rootDir);
+					fileList.push(obj);
+				}
+
+				console.log(fileList);
+				//build our ftp script
+				var ftpScript = osFtpScripts.generateUploadScript(fileList, site);
+
+				//invoke script
+				invokeFtpScript(ftpScript);
+			}
+		});
+/*
 		var confirmDialog = osFtpDialog.showConfirmDirectoryUpload(site);
 
 		//listen for escape key
@@ -187,6 +223,7 @@ define(function (require, exports) {
 			console.log('Dialog modal is dismissed');
 
 		});
+*/
 
 	}
 

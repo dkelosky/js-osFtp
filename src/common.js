@@ -12,6 +12,7 @@ define(function (require, exports, module) {
 	exports.getProjectFiles = getProjectFiles;
 	exports.generateHtmlTable = generateHtmlTable;
 	exports.extractTableData = extractTableData;
+	exports.relativePathToFile = relativePathToFile;
 
 	exports.generateHtmlTreeTable = generateHtmlTreeTable;
 	/**
@@ -153,6 +154,20 @@ define(function (require, exports, module) {
 
 		return returnList;
 	}
+
+	function relativePathToFile(inputPath, inputRoot){
+		var returnObj = {
+				rootDir : inputRoot,
+				name    : FileUtils.getBaseName(inputPath),
+				fullDir : inputRoot + FileUtils.getDirectoryPath(inputPath),
+				fullPath: inputRoot + inputPath,
+				relativeDir : FileUtils.getDirectoryPath(inputPath),
+				relativePath : inputPath
+		};
+
+		return returnObj
+	}
+
 
 	/**
 	 * generate HTML Tree table
