@@ -9,8 +9,9 @@ define (function (require, exports){
 	exports.debugPrint  = debugPrint;
 
 
-	function DirNode(name){
+	function TreeNode(name){
 		this.parent     = null;
+		this.type       = osFtpGlobals.TREE_TYPE_ROOT;
 		this.name       = name || '';
 		this.level      = 0;
 		this.childDirs  = [];
@@ -20,22 +21,23 @@ define (function (require, exports){
 	/**
 	 *
 	 **/
-	DirNode.prototype.addChildDir = function(dirName){
+	TreeNode.prototype.addChildDir = function(dirName){
 		if (!osFtpCommon.isSet(this.childDirs[dirName])){
-			var newChild = new DirNode(dirName);
-			newChild.parent = this;
-			newChild.level  = this.level + 1;
+			var newNode = new TreeNode(dirName);
+			newNode.parent = this;
+			newNode.type   = osFtpGlobals.TREE_TYPE_DIR;
+			newNode.level  = this.level + 1;
 
-			this.childDirs[dirName] = newChild;
+			this.childDirs[dirName] = newNode;
 
-			console.log(newChild);
+			console.log(newNode);
 		}
 	};
 
 	/**
 	 *
 	 **/
-	DirNode.prototype.addChildFiles = function(fileName){
+	TreeNode.prototype.addChildFiles = function(fileName){
 		// Validate imput
 		var key = fileName.split(' ').join('_');
 
@@ -46,8 +48,8 @@ define (function (require, exports){
 	 *
 	 **/
 
-	DirNode.prototype.addRelativePath = function(filePath){
-		console.log('DirNode.addRelativePath(' + filePath + ')');
+	TreeNode.prototype.addRelativePath = function(filePath){
+		console.log('TreeNode.addRelativePath(' + filePath + ')');
 		if (typeof filePath !== 'string'){
 			return false;
 		}
@@ -74,8 +76,8 @@ define (function (require, exports){
 	/**
 	 *
 	 */
-	DirNode.prototype.getRelativeDir = function(){
-		console.log('DirNode.getRelativeDir()');
+	TreeNode.prototype.getRelativeDir = function(){
+		console.log('TreeNode.getRelativeDir()');
 
 		var currNode   = this;
 		var returnPath = currNode.name;
@@ -95,7 +97,7 @@ define (function (require, exports){
 	 */
 
 	function newFileTree(rootDir){
-		var newTree = new DirNode();
+		var newTree = new TreeNode();
 		newTree.type = osFtpGlobals.OBJECT_DIR_TREE_ID;
 		newTree.rootDir = rootDir;
 
@@ -106,19 +108,19 @@ define (function (require, exports){
 	 * debugPrint function
 	 **/
 
-	function debugPrint(dirNode){
-		if (osFtpCommon.isSet(dirNode)){
-			console.log('level: ' + dirNode.level);
-			console.log('name: ' + dirNode.name);
-			console.log('parent: ' + dirNode.parent);
+	function debugPrint(TreeNode){
+		if (osFtpCommon.isSet(TreeNode)){
+			console.log('level: ' + TreeNode.level);
+			console.log('name: ' + TreeNode.name);
+			console.log('parent: ' + TreeNode.parent);
 
-			for (var child in dirNode.childFiles){
-				console.log('childFile ' + child + ': ' + dirNode.childFiles[child]);
+			for (var child in TreeNode.childFiles){
+				console.log('childFile ' + child + ': ' + TreeNode.childFiles[child]);
 			}
 
-			for (var childDir in dirNode.childDirs){
-				console.log('childDir ' + childDir + ': ' + dirNode.childDirs[childDir]);
-				debugPrint(dirNode.childDirs[childDir]);
+			for (var childDir in TreeNode.childDirs){
+				console.log('childDir ' + childDir + ': ' + TreeNode.childDirs[childDir]);
+				debugPrint(TreeNode.childDirs[childDir]);
 			}
 		}
 	}
