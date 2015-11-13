@@ -72,7 +72,7 @@ Otherwise, F12 will should the complete log of FTP script statements that have b
 You will receive a confirmation prompt if attempting to upload an entire directory.  You can use this prompt to de-select 
 files from the FTP.
 
-![alt text][uploadDirectory]
+![alt text][directoryUpload]
 
 ---
 
@@ -104,5 +104,6 @@ Add file extensions to control FTP as ASCII or binary.  See File->OS FTP Setting
 [newFtpSite]: https://github.com/dkelosky/js-osFtp/blob/master/images/newFtpSite.PNG "New Ftp Site..."
 [addFtpSite]: https://github.com/dkelosky/js-osFtp/blob/master/images/addFtpSite.PNG "Add Ftp Site"
 [runSite]: https://github.com/dkelosky/js-osFtp/blob/master/images/runSite.PNG "Run Site"
-[directoryUpload]: https://github.com/dkelosky/js-osFtp/blob/master/images/directoryUpload.PNG "Settings"
+[settings]: https://github.com/dkelosky/js-osFtp/blob/master/images/settings.PNG "Settings"
+[directoryUpload]: https://github.com/dkelosky/js-osFtp/blob/master/images/directoryUpload.PNG "Directory Upload"
 [status]: https://github.com/dkelosky/js-osFtp/blob/master/images/status.PNG "Status"
