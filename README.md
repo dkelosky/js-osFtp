@@ -22,7 +22,6 @@ To install using Git:
 
 ### Limitations
 * Only basic error checking is performed.  Verify your first FTP for a newly defined site.
-* Permissions cannot be altered (e.g. no accommodations for chmod).
 * Retrieval from a remote site is not yet implemented.
 * FTP to a remote Windows machine is not supported
 * FTP from Linux is not supported
@@ -54,7 +53,18 @@ a script file in the extension directory and executes the script:
 
 ![alt text][runSite]
 
-You will receive a confirmation prompt if attempting  to upload an entire directory.
+You can observe the status by the "OS FTP" status bar notification area.  
+* White text means no FTP is in progress
+* Orange text means FTP is in progress.
+* Green text means FTP has completed without any known errors.
+* Red text means FTP has completed with errors.  You should also see an error dialog presented to you.
+
+![alt text][status]
+
+You will receive a confirmation prompt if attempting to upload an entire directory.  You can use this prompt to de-select 
+files from the FTP.
+
+![alt text][uploadDirectory]
 
 ---
 
@@ -86,4 +96,5 @@ Add file extensions to control FTP as ASCII or binary.  See File->OS FTP Setting
 [newFtpSite]: https://github.com/dkelosky/js-osFtp/blob/master/images/newFtpSite.PNG "New Ftp Site..."
 [addFtpSite]: https://github.com/dkelosky/js-osFtp/blob/master/images/addFtpSite.PNG "Add Ftp Site"
 [runSite]: https://github.com/dkelosky/js-osFtp/blob/master/images/runSite.PNG "Run Site"
-[settings]: https://github.com/dkelosky/js-osFtp/blob/master/images/settings.PNG "Settings"
+[directoryUpload]: https://github.com/dkelosky/js-osFtp/blob/master/images/directoryUpload.PNG "Settings"
+[status]: https://github.com/dkelosky/js-osFtp/blob/master/images/status.PNG "Settings"
