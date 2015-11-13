@@ -68,4 +68,8 @@ define(function (require, exports) {
 
 	exports.STATUS_VISIBLE_TIME = STATUS_VISIBLE_TIME;
 
+	exports.TREE_TYPE_ROOT = 'root';
+	exports.TREE_TYPE_DIR  = 'directory';
+	exports.TREE_TYPE_FILE = 'file';
+
 });

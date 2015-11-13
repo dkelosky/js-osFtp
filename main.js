@@ -65,9 +65,10 @@ define(function (require, exports, module) {
 	CommandManager.register(osFtpStrings.COMMAND_PRODUCT_SETTINGS_LABEL, osFtpGlobals.COMMAND_PROD_SETTINGS_ID, osFtpSettingsDialog.show);
 	Menus.getMenu(Menus.AppMenuBar.FILE_MENU).addMenuItem(osFtpGlobals.COMMAND_PROD_SETTINGS_ID, '', Menus.AFTER, Commands.FILE_PROJECT_SETTINGS);
 
+	/*  Because DAN IS TOO LAZY TO DO THIS
 	CommandManager.register('testing dialog', 'testing-dialog', listSelectionDialog.testDialog);
 	Menus.getMenu(Menus.AppMenuBar.FILE_MENU).addMenuItem('testing-dialog', '', Menus.AFTER, Commands.FILE_PROJECT_SETTINGS);
-
+	*/
 
 	/**
 	 * Initialization complete
