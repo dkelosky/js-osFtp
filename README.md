@@ -31,6 +31,8 @@ To install using Git:
 
 Right click a file in the Working file set or Project set and 'New Ftp Site...'
 
+### Create a Site
+
 ![alt text][newFtpSite]
 
 Fill in the dialog:
@@ -48,16 +50,22 @@ The dialog input field descriptions  are:
 | Password    | Password                                                                                                  |
 | Server Type | Option remote server OS used in conjunction with "Set permission" to attempt CHMOD against files.         |
 
+### FTP to a Created Site
+
 Right click a file in the Working file set or Project set and select the site you added.  This builds
 a script file in the extension directory and executes the script:
 
 ![alt text][runSite]
+
+### View Status
 
 You can observe the status by the "OS FTP" status bar notification area.  
 * White text means no FTP is in progress
 * Orange text means FTP is in progress.
 * Green text means FTP has completed without any known errors.
 * Red text means FTP has completed with errors.  You should also see an error dialog presented to you.
+
+Otherwise, F12 will should the complete log of FTP script statements that have been executed. 
 
 ![alt text][status]
 
@@ -97,4 +105,4 @@ Add file extensions to control FTP as ASCII or binary.  See File->OS FTP Setting
 [addFtpSite]: https://github.com/dkelosky/js-osFtp/blob/master/images/addFtpSite.PNG "Add Ftp Site"
 [runSite]: https://github.com/dkelosky/js-osFtp/blob/master/images/runSite.PNG "Run Site"
 [directoryUpload]: https://github.com/dkelosky/js-osFtp/blob/master/images/directoryUpload.PNG "Settings"
-[status]: https://github.com/dkelosky/js-osFtp/blob/master/images/status.PNG "Settings"
+[status]: https://github.com/dkelosky/js-osFtp/blob/master/images/status.PNG "Status"
