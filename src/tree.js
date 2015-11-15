@@ -8,10 +8,11 @@ define (function (require, exports){
 	exports.newFileTree = newFileTree;
 	exports.debugPrint  = debugPrint;
 
+	var nodeId = 0;
 
 	function TreeNode(name){
 		this.parent     = null;
-		this.type       = osFtpGlobals.TREE_TYPE_ROOT;
+		this.id         = newNodeId();
 		this.name       = name || '';
 		this.level      = 0;
 		this.childDirs  = [];
@@ -29,6 +30,7 @@ define (function (require, exports){
 			newNode.level  = this.level + 1;
 
 			this.childDirs[dirName] = newNode;
+			this.registerTreeNode(newNode);
 
 			console.log(newNode);
 		}
@@ -90,7 +92,39 @@ define (function (require, exports){
 		}
 
 		return returnPath;
-	}
+	};
+
+	/**
+	 *
+	 **/
+	TreeNode.prototype.getRootNode = function(){
+		var currNode = this;
+
+		if(this.type != osFtpGlobals.TREE_TYPE_ROOT){
+			currNode = this.parent;
+		}
+
+		return currNode;
+	};
+
+	/**
+	 *
+	 **/
+	TreeNode.prototype.getNodeById = function(id){
+		var rootNode = this.getRootNode();
+		var retNode = rootNode.nodeInventory[id];
+
+		return retNode;
+	};
+
+	/**
+	 *
+	 **/
+	TreeNode.prototype.registerTreeNode = function(newNode){
+		var rootNode = this.getRootNode();
+		rootNode.nodeInventory[newNode.id] = newNode;
+	};
+
 
 	/**
 	 * generate new Tree function
@@ -98,8 +132,12 @@ define (function (require, exports){
 
 	function newFileTree(rootDir){
 		var newTree = new TreeNode();
-		newTree.type = osFtpGlobals.OBJECT_DIR_TREE_ID;
+		newTree.objType = osFtpGlobals.OBJECT_DIR_TREE_ID;
+		newTree.type = osFtpGlobals.TREE_TYPE_ROOT;
 		newTree.rootDir = rootDir;
+
+		newTree.nodeInventory = [];
+		newTree.registerTreeNode(newTree);
 
 		return newTree;
 	}
@@ -123,6 +161,13 @@ define (function (require, exports){
 				debugPrint(TreeNode.childDirs[childDir]);
 			}
 		}
+	}
+
+	function newNodeId(){
+		var returnId = nodeId;
+		nodeId++;
+
+		return returnId;
 	}
 
 
