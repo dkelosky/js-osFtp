@@ -100,8 +100,8 @@ define (function (require, exports){
 	TreeNode.prototype.getRootNode = function(){
 		var currNode = this;
 
-		if(this.type != osFtpGlobals.TREE_TYPE_ROOT){
-			currNode = this.parent;
+		while(currNode.type !== osFtpGlobals.TREE_TYPE_ROOT){
+			currNode = currNode.parent;
 		}
 
 		return currNode;
@@ -159,6 +159,7 @@ define (function (require, exports){
 
 	function registerTreeNode(node){
 		var rootNode = node.getRootNode();
+		console.log(rootNode);
 		rootNode.nodeInventory[node.id] = node;
 	}
 
