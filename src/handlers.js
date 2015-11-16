@@ -19,6 +19,7 @@ define(function (require, exports) {
 	var osFtpDomain = require('src/domain');
 	var osFtpGlobals = require('src/globals');
 	var osFtpHandlersHelpers = require('src/handlersHelpers');
+	var osFtpPackage = require('src/package');
 	var osFtpScripts = require('src/scripts');
 	var osFtpStrings = require('strings');
 	var osFtpSitesManager = require('src/sitesManager');
@@ -108,8 +109,17 @@ define(function (require, exports) {
 			var sitesArr = osFtpSitesManager.getSitesArray();
 
 			//if edit site index was set
-			if (osFtpCommon.isSet(selectedSiteIndex))
-				CommandManager.execute(osFtpGlobals.COMMAND_NEW_SITE_ID, sitesArr[selectedSiteIndex]);
+			if (osFtpCommon.isSet(selectedSiteIndex)) {
+
+				osFtpPackage.getPackage(function(packageJson) {
+
+					var newId = packageJson.name + osFtpGlobals.COMMAND_NEW_SITE_ID;
+
+					//register command and add a context menu to create a site
+					CommandManager.execute(newId, sitesArr[selectedSiteIndex]);
+
+				});
+			}
 
 		});
 

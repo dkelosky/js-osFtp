@@ -79,8 +79,15 @@ define(function (require, exports) {
 		console.log('remove(' + site.name + ')');
 
 		//remove site from context menu
-		var cmdId = site.getCommandId();
-		osFtpMenu.removeFromContextMenus(cmdId);
+		osFtpPackage.getPackage(function(packageJson, cmdId, cmdLabel) {
+
+			var newCmdId = packageJson.name + cmdId;
+
+			//register command and add a context menu to create a site
+			osFtpMenu.removeFromContextMenus(newCmdId);
+
+		}, site.getCommandId());
+
 
 		if (osFtpSitesManager.getSitesArray().length == 0){
 			disableEditSite();
@@ -118,8 +125,16 @@ define(function (require, exports) {
 		//log this call
 		console.log('disableEditSite();');
 
-		//remove from the menu
-		osFtpMenu.removeFromContextMenus(osFtpGlobals.COMMAND_EDIT_SITE_ID);
+		osFtpPackage.getPackage(function(packageJson) {
+
+			var editId = packageJson.name + osFtpGlobals.COMMAND_EDIT_SITE_ID;
+
+			//remove from the menu
+			osFtpMenu.removeFromContextMenus(editId);
+
+		});
+
+
 
 	}
 
