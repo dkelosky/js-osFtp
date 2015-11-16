@@ -11,10 +11,10 @@ define(function (require, exports) {
 	 */
 
 	var osFtpCommon = require('src/common');
-	var osFtpSite = require('src/site');
 	var osFtpGlobals = require('src/globals');
 	var osFtpHandlersHelpers = require('src/handlersHelpers');
-	var Preferences = require('src/preferences');
+	var osFtpPreferences = require('src/preferences');
+	var osFtpSite = require('src/site');
 
 	exports.init = init;
 	exports.registerSite = registerSite;
@@ -25,7 +25,7 @@ define(function (require, exports) {
 	exports.newSite = newSite;
 	exports.validateSite = validateSite;
 
-	var PREF_SITES_MANAGER = 'sites-manager-';
+	var PREF_SITES_MANAGER = '.sites-manager-';
 	var sitesManager;
 
 	function init() {
@@ -34,7 +34,7 @@ define(function (require, exports) {
 
 		sitesManager = {};
 
-		var objString = Preferences.get(PREF_SITES_MANAGER) || [];
+		var objString = osFtpPreferences.get(PREF_SITES_MANAGER) || [];
 
 
 		if (osFtpCommon.isSet(objString)) {
@@ -58,8 +58,8 @@ define(function (require, exports) {
 			osFtpHandlersHelpers.addSite(newSite);
 
 			// Update preferences
-			Preferences.set(PREF_SITES_MANAGER, JSON.stringify(sitesManager));
-			Preferences.save();
+			osFtpPreferences.set(PREF_SITES_MANAGER, JSON.stringify(sitesManager));
+			osFtpPreferences.save();
 
 			returnStatus = true;
 
@@ -80,8 +80,8 @@ define(function (require, exports) {
 
 			osFtpHandlersHelpers.removeSite(site);
 
-			Preferences.set(PREF_SITES_MANAGER, JSON.stringify(sitesManager));
-			Preferences.save();
+			osFtpPreferences.set(PREF_SITES_MANAGER, JSON.stringify(sitesManager));
+			osFtpPreferences.save();
 		}
 
 		return returnStatus;

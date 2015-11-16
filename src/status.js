@@ -24,7 +24,7 @@ define(function (require, exports) {
 	/**
 	 * Adds the status indicator to the bottom bar
 	 */
-	function addStatusIndicator() {
+	function addStatusIndicator(packageJson) {
 
 		//build status indicator
 		var statusIndicatorHtml = $('<div id="' +
@@ -35,7 +35,7 @@ define(function (require, exports) {
 
 		//add to bar
 		StatusBar.addIndicator(
-			osFtpGlobals.STATUS_INDICATOR_ID, //unique id
+			packageJson.name + osFtpGlobals.STATUS_INDICATOR_ID, //unique id
 			statusIndicatorHtml, //html
 			true, //show the indicator
 			'', //class style

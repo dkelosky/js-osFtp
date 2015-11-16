@@ -5,9 +5,11 @@ define(function (require, exports, module) {
 	/**
 	 * Bracket modules
 	 */
+	var CommandManager = brackets.getModule('command/CommandManager');
 	var ExtensionUtils = brackets.getModule('utils/ExtensionUtils');
 	var File = brackets.getModule('file/FileUtils');
 	var NodeDomain = brackets.getModule('utils/NodeDomain');
+	var PreferencesManager = brackets.getModule('preferences/PreferencesManager');
 	var StatusBar = brackets.getModule('widgets/StatusBar');
 
 
@@ -19,14 +21,16 @@ define(function (require, exports, module) {
 	var osFtpDialog = require('src/dialog');
     var osFtpFailDialog = require('text!templates/ftpFailureDialog.html');
 	var osFtpGlobals = require('src/globals');
+    var osNewVersionDialog = require('text!templates/newVersionDialog.html');
+	var osFtpPackage = require('src/package');
 	var osFtpStrings = require('strings');
-	var osFtpUpdate = require('src/update');
 
 
 	/**
 	 * Global variables
 	 */
 	var busy = false;
+	var osFtpPackageJson;
 
 
 	/**
@@ -45,9 +49,8 @@ define(function (require, exports, module) {
 		//log input
 		console.log('runFtpCommand(' + file + ');');
 
-		//call common wrapper to invoke node functions
-		osFtpUpdate.validateNodeState(invokeNode, file);
-
+		//get package information
+		osFtpPackage.getPackage(validateNode, file);
 	}
 
 
@@ -60,8 +63,75 @@ define(function (require, exports, module) {
 		//log input
 		console.log('runFtpCommandStdin(' + file + ', ...);');
 
-		//call common wrapper to invoke node functions
-		osFtpUpdate.validateNodeState(invokeNode, file, data);
+		//get package information
+		osFtpPackage.getPackage(validateNode, file, data);
+
+	}
+
+	/**
+	 * Callback function that will read the current package version and force a restart if needed.
+	 * @param {Object}   packageJson [[Description]]
+	 * @param {[[Type]]} file        [[Description]]
+	 * @param {[[Type]]} data        [[Description]]
+	 */
+	function validateNode(packageJson, file, data) {
+
+		//log this call
+		console.log('validateNode();');
+
+		//set global
+		osFtpPackageJson = packageJson;
+
+		//local vars
+		var osFtpPreferences;
+		var osFtpVersion;
+
+		//get preferences
+		osFtpPreferences = PreferencesManager.getExtensionPrefs(osFtpPackageJson.name + osFtpGlobals.PREF);
+
+		//get saved preferences
+		osFtpVersion = osFtpPreferences.get(osFtpPackageJson.name + osFtpGlobals.PREF_VERSION) || osFtpGlobals.DEFAULT_VERSION;
+
+		//log the current version
+		console.log('Saved extension version number is - ' + osFtpVersion);
+		console.log('Current extension version number is - ' + osFtpPackageJson.version);
+
+		//if the saved version is equal to the current version initialize
+		if (osFtpVersion == packageJson.version) {
+
+			//invoke node
+			invokeNode(file, data);
+
+		}
+
+
+		//prepare for a restart
+		else {
+
+			//set in preferences
+			osFtpPreferences.set(osFtpPackageJson.name + osFtpGlobals.PREF_VERSION, osFtpPackageJson.version);
+
+			//save
+			osFtpPreferences.save(osFtpPackageJson.name + osFtpGlobals.PREF);
+
+			//substitute values in our html
+			var dialogHtml = Mustache.render(osNewVersionDialog, osFtpStrings);
+
+			//show dialog
+			var newVersionDialog = osFtpDialog.showCommonDialog(osFtpStrings.DIALOG_TITLE_NEW_VERSION, dialogHtml);
+
+			//listen for dialog done
+			newVersionDialog.done(function () {
+
+				//log that the modal is gone
+				console.log('Dialog modal is dismissed');
+
+				//restart Brackets
+				CommandManager.execute(osFtpGlobals.COMMAND_RESTART_ID);
+
+			});
+
+		}
 
 	}
 
@@ -74,7 +144,7 @@ define(function (require, exports, module) {
 	function invokeNode(file, data) {
 
 		//log input
-		console.log('doFtpStdin(' + file + ', ...);');
+		console.log('invokeNode(' + file + ', ...);');
 
 		var nodeExec;
 
@@ -228,7 +298,7 @@ define(function (require, exports, module) {
 		StatusBar.showIndicators();
 
 		//alter status bar color
-		StatusBar.updateIndicator(osFtpGlobals.STATUS_INDICATOR_ID, true, 'osftp-status-busy');
+		StatusBar.updateIndicator(osFtpPackageJson.name + osFtpGlobals.STATUS_INDICATOR_ID, true, 'osftp-status-busy');
 
 	}
 
@@ -239,7 +309,7 @@ define(function (require, exports, module) {
 	function showDone() {
 
 		//alter status bar color
-		StatusBar.updateIndicator(osFtpGlobals.STATUS_INDICATOR_ID, true, 'osftp-status-done');
+		StatusBar.updateIndicator(osFtpPackageJson.name + osFtpGlobals.STATUS_INDICATOR_ID, true, 'osftp-status-done');
 
 	}
 
@@ -250,7 +320,7 @@ define(function (require, exports, module) {
 	function showError() {
 
 		//alter status bar color
-		StatusBar.updateIndicator(osFtpGlobals.STATUS_INDICATOR_ID, true, 'osftp-status-error');
+		StatusBar.updateIndicator(osFtpPackageJson.name + osFtpGlobals.STATUS_INDICATOR_ID, true, 'osftp-status-error');
 
 	}
 
@@ -273,7 +343,7 @@ define(function (require, exports, module) {
 				console.log('Status clear');
 
 				//alter status bar color
-				StatusBar.updateIndicator(osFtpGlobals.STATUS_INDICATOR_ID, true, '');
+				StatusBar.updateIndicator(osFtpPackageJson.name + osFtpGlobals.STATUS_INDICATOR_ID, true, '');
 
 			},
 

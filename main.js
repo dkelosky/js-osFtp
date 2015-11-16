@@ -47,12 +47,11 @@ define(function (require, exports, module) {
 	var osFtpGlobals = require('src/globals');
 	var osFtpHandlers = require('src/handlers');
 	var osFtpMenu = require('src/menu');
+	var osFtpPackage = require('src/package');
 	var osFtpSettingsDialog = require('src/settingsDialog');
 	var osFtpStatus = require('src/status');
 	var osFtpStrings = require('strings');
 	var osFtpSitesManager = require('src/sitesManager');
-
-	var listSelectionDialog = require('src/listSelectionDialog');
 
 	/**
 	 * Perform initialization
@@ -61,22 +60,13 @@ define(function (require, exports, module) {
 	//load style sheets
 	ExtensionUtils.loadStyleSheet(module, 'styles/osFtp.less');
 
-	//register settings command and add it to the menu.
-	CommandManager.register(osFtpStrings.COMMAND_PRODUCT_SETTINGS_LABEL, osFtpGlobals.COMMAND_PROD_SETTINGS_ID, osFtpSettingsDialog.show);
-	Menus.getMenu(Menus.AppMenuBar.FILE_MENU).addMenuItem(osFtpGlobals.COMMAND_PROD_SETTINGS_ID, '', Menus.AFTER, Commands.FILE_PROJECT_SETTINGS);
-
-	/*  Because DAN IS TOO LAZY TO DO THIS
-	CommandManager.register('testing dialog', 'testing-dialog', listSelectionDialog.testDialog);
-	Menus.getMenu(Menus.AppMenuBar.FILE_MENU).addMenuItem('testing-dialog', '', Menus.AFTER, Commands.FILE_PROJECT_SETTINGS);
-	*/
-
 	/**
 	 * Initialization complete
 	 */
 	AppInit.appReady(function () {
 
 		//perform initialization
-		mainInit();
+		osFtpPackage.getPackage(mainInit);
 
 	});
 
@@ -84,21 +74,28 @@ define(function (require, exports, module) {
 	/**
 	 * Perform initializations
 	 */
-	function mainInit() {
+	function mainInit(packageJson) {
+
+		var runId = packageJson.name + osFtpGlobals.COMMAND_RUN_SCRIPT_ID;
+		var newId = packageJson.name + osFtpGlobals.COMMAND_NEW_SITE_ID;
+
+		//register settings command and add it to the menu.
+		CommandManager.register(osFtpStrings.COMMAND_PRODUCT_SETTINGS_LABEL, packageJson.name + osFtpGlobals.COMMAND_PROD_SETTINGS_ID, osFtpSettingsDialog.show);
+		Menus.getMenu(Menus.AppMenuBar.FILE_MENU).addMenuItem(packageJson.name + osFtpGlobals.COMMAND_PROD_SETTINGS_ID, '', Menus.AFTER, Commands.FILE_PROJECT_SETTINGS);
 
 		//register command and add context menu to run a script
-		CommandManager.register(osFtpStrings.COMMAND_RUN_SCRIPT_LABEL, osFtpGlobals.COMMAND_RUN_SCRIPT_ID, osFtpHandlers.handleRunScript);
-		osFtpMenu.addToContextMenus(osFtpGlobals.COMMAND_RUN_SCRIPT_ID, true);
+		CommandManager.register(osFtpStrings.COMMAND_RUN_SCRIPT_LABEL, runId, osFtpHandlers.handleRunScript);
+		osFtpMenu.addToContextMenus(runId, true);
 
 		//register command and add a context menu to create a site
-		CommandManager.register(osFtpStrings.COMMAND_NEW_SITE_LABEL, osFtpGlobals.COMMAND_NEW_SITE_ID, osFtpHandlers.handleNewOrEditSite);
-		osFtpMenu.addToContextMenus(osFtpGlobals.COMMAND_NEW_SITE_ID, false);
+		CommandManager.register(osFtpStrings.COMMAND_NEW_SITE_LABEL, newId, osFtpHandlers.handleNewOrEditSite);
+		osFtpMenu.addToContextMenus(newId, false);
 
 		//Sites Manager Init
 		osFtpSitesManager.init();
 
 		//add the status indicator
-		osFtpStatus.addStatusIndicator();
+		osFtpStatus.addStatusIndicator(packageJson);
 	}
 
 });

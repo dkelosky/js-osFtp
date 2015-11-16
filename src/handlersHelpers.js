@@ -14,29 +14,29 @@ define(function (require, exports) {
 	 */
 	var osFtpCommon = require('src/common');
 	var osFtpDialog = require('src/dialog');
+	var osFtpDomain  = require('src/domain');
 	var osFtpHandlers = require('src/handlers');
+	var osFtpGlobals = require('src/globals');
 	var osFtpMenu = require('src/menu');
+	var osFtpPackage = require('src/package');
 	var osFtpScripts = require('src/scripts');
 	var osFtpStrings = require('strings');
-	var osFtpSitesManager = require('src/sitesManager');
-	var osFtpGlobals = require('src/globals');
-	var osFtpDomain  = require('src/domain');
 	var osFtpSelectDialog = require('src/listSelectionDialog');
+	var osFtpSitesManager = require('src/sitesManager');
 
 	/**
 	 * Global variables
 	 */
 	var osFtpPreferences;
 
+
 	/**
 	 * Exported functions
 	 */
-
 	exports.addSite    = addSite;
 	exports.removeSite = removeSite;
 	exports.enableEditSite = enableEditSite;
 	exports.disableEditSite = disableEditSite;
-	exports.disableGetFromSite = disableGetFromSite;
 	exports.invokeFtpScript = invokeFtpScript;
 	exports.uploadDirectory = uploadDirectory;
 	exports.handleCancel = handleCancel;
@@ -58,12 +58,16 @@ define(function (require, exports) {
 			enableEditSite();
 		}
 
-		var cmdId    = site.getCommandId();
-		var cmdLabel = site.getCommandLabel();
+		osFtpPackage.getPackage(function(packageJson, cmdId, cmdLabel) {
 
-		//register command and add a context menu to create a site
-		CommandManager.register(cmdLabel, cmdId, osFtpHandlers.handleRunSite);
-		osFtpMenu.addToContextMenus(cmdId, false, osFtpGlobals.COMMAND_EDIT_SITE_ID, false);
+			var newCmdId = packageJson.name + cmdId;
+			var editId = packageJson.name + osFtpGlobals.COMMAND_EDIT_SITE_ID;
+
+			//register command and add a context menu to create a site
+			CommandManager.register(cmdLabel, newCmdId, osFtpHandlers.handleRunSite);
+			osFtpMenu.addToContextMenus(newCmdId, false, editId, false);
+
+		}, site.getCommandId(), site.getCommandLabel());
 	}
 
 	/**
@@ -92,22 +96,16 @@ define(function (require, exports) {
 		//log this call
 		console.log('enableEditSite();');
 
-		//register command and add a context menu to create a site
-		CommandManager.register(osFtpStrings.COMMAND_EDIT_SITE_LABEL, osFtpGlobals.COMMAND_EDIT_SITE_ID, osFtpHandlers.handleEditSite);
-		osFtpMenu.addToContextMenus(osFtpGlobals.COMMAND_EDIT_SITE_ID, false, osFtpGlobals.COMMAND_NEW_SITE_ID, false);
-	}
+		osFtpPackage.getPackage(function(packageJson) {
 
+			var editId = packageJson.name + osFtpGlobals.COMMAND_EDIT_SITE_ID;
+			var newId = packageJson.name + osFtpGlobals.COMMAND_NEW_SITE_ID;
 
-	/**
-	 * Disables the get command for sites (cannot deregister the command)
-	 */
-	function disableGetFromSite() {
+			//register command and add a context menu to create a site
+			CommandManager.register(osFtpStrings.COMMAND_EDIT_SITE_LABEL, editId, osFtpHandlers.handleEditSite);
+			osFtpMenu.addToContextMenus(editId, false, newId, false);
 
-		//log this call
-		console.log('disableGetFromSite();');
-
-		//remove from the menu
-		osFtpMenu.removeFromContextMenus(osFtpGlobals.COMMAND_GET_FROM_SITE_ID);
+		});
 
 	}
 
