@@ -3,6 +3,15 @@ define(function (require, exports, module) {
 
 
 	/**
+	 * Global variables
+	 */
+	var osFtpBusy = false;
+	var osFtpPackageJson;
+	var osFtpDomainName = 'osFtp';
+	var osFtpDomainMessage = osFtpDomainName + '-' + 'msg';
+
+
+	/**
 	 * Bracket modules
 	 */
 	var CommandManager = brackets.getModule('command/CommandManager');
@@ -17,20 +26,13 @@ define(function (require, exports, module) {
 	 * Extension modules
 	 */
 	var osFtpCommon = require('src/common');
-	var osFtpDomain = new NodeDomain('ftp', ExtensionUtils.getModulePath(module, '../node/FtpDomain'));
+	var osFtpDomain = new NodeDomain(osFtpDomainName, ExtensionUtils.getModulePath(module, '../node/FtpDomain'));
 	var osFtpDialog = require('src/dialog');
     var osFtpFailDialog = require('text!templates/ftpFailureDialog.html');
 	var osFtpGlobals = require('src/globals');
     var osNewVersionDialog = require('text!templates/newVersionDialog.html');
 	var osFtpPackage = require('src/package');
 	var osFtpStrings = require('strings');
-
-
-	/**
-	 * Global variables
-	 */
-	var busy = false;
-	var osFtpPackageJson;
 
 
 	/**
@@ -70,9 +72,9 @@ define(function (require, exports, module) {
 
 	/**
 	 * Callback function that will read the current package version and force a restart if needed.
-	 * @param {Object}   packageJson [[Description]]
-	 * @param {[[Type]]} file        [[Description]]
-	 * @param {[[Type]]} data        [[Description]]
+	 * @param {Object}   packageJson package.json object
+	 * @param {String} file        script file
+	 * @param {String} data        data contained in the file
 	 */
 	function validateNode(packageJson, file, data) {
 
@@ -149,7 +151,7 @@ define(function (require, exports, module) {
 		var nodeExec;
 
 		//if we're already processing an FTP script
-		if (busy) {
+		if (osFtpBusy) {
 
 			//log that we're currently busy
 			console.log('FTP script process already executing');
@@ -194,7 +196,7 @@ define(function (require, exports, module) {
 			});
 
 			//set listener for process end
-			osFtpDomain.on('ftpMsg', function (event, response) {
+			osFtpDomain.on(osFtpDomainMessage, function (event, response) {
 
 				//log event
 				console.log('osFtpDomain.on(' + response.success + ', ' + response.message + ');');
@@ -291,7 +293,7 @@ define(function (require, exports, module) {
 		console.log('showBusy()');
 
 		//indicate that we're busy
-		busy = true;
+		osFtpBusy = true;
 
 		//make sure status bar is showing
 		StatusBar.show();
@@ -334,7 +336,7 @@ define(function (require, exports, module) {
 		console.log('clearStatus();');
 
 		//indcate that we're free
-		busy = false;
+		osFtpBusy = false;
 
 		//set a timer
 		setTimeout(function() {
