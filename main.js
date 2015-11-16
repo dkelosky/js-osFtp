@@ -37,8 +37,9 @@ define(function (require, exports, module) {
 	var AppInit = brackets.getModule('utils/AppInit');
 	var CommandManager = brackets.getModule('command/CommandManager');
 	var Commands = brackets.getModule('command/Commands');
-	var Menus = brackets.getModule('command/Menus');
 	var ExtensionUtils = brackets.getModule('utils/ExtensionUtils');
+	var Menus = brackets.getModule('command/Menus');
+	var PreferencesManager = brackets.getModule('preferences/PreferencesManager');
 
 
 	/**
@@ -79,6 +80,16 @@ define(function (require, exports, module) {
 
 		var runId = packageJson.name + osFtpGlobals.COMMAND_RUN_SCRIPT_ID;
 		var newId = packageJson.name + osFtpGlobals.COMMAND_NEW_SITE_ID;
+		var osFtpPreferences;
+
+		//get preferences
+		osFtpPreferences = PreferencesManager.getExtensionPrefs(packageJson.name + osFtpGlobals.PREF);
+
+		//set in preferences
+		osFtpPreferences.set(packageJson.name + osFtpGlobals.PREF_VERSION, packageJson.version);
+
+		//save
+		osFtpPreferences.save(packageJson.name + osFtpGlobals.PREF);
 
 		//register settings command and add it to the menu.
 		CommandManager.register(osFtpStrings.COMMAND_PRODUCT_SETTINGS_LABEL, packageJson.name + osFtpGlobals.COMMAND_PROD_SETTINGS_ID, osFtpSettingsDialog.show);
