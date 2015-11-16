@@ -110,16 +110,14 @@ define(function (require, exports){
 		console.log('ListSelectionDialog.getSelectedList()');
 		var returnList = [];
 
-		$('input:checked', this.$dialog).each(function(){
-			var $tr = $(this).closest('tr');
-			var treeNode = $tr.find("[treeNode]");
-			var type = treeNode.attr('type');
+		var children = this.treeData.getChildren();
+		for (var index in children){
+			var child = children[index];
 
-			if (type === 'file-node'){
-				var selectedItem = treeNode.find('input[type=hidden]').val();
-				returnList.push(selectedItem);
+			if (child.type === osFtpGlobals.TREE_TYPE_FILE && child.isSelected){
+			   returnList.push(child.relativePath);
 			}
-		});
+		}
 
 		return returnList;
 	};
