@@ -10,6 +10,10 @@
     .modal-body {
         min-height: 410px; // this needs to be set to a height that'll prevent the dialog to change size when tabs are being switched.
     }
+	.modal-scroll-list {
+		height: 300px;
+		overflow: auto;
+	}
     .nav-tabs {
         border-bottom: 1px solid @bc-panel-separator;
 
@@ -50,4 +54,40 @@
     .advanced-features-setting {
         color: @red-text;
     }
+}
+
+#list-selection-dialog {
+
+	td {
+		height: 15px;
+		padding: 3px;
+	}
+
+	.level1 {
+		padding-left: 20px;
+	}
+
+	.modal-scroll-list {
+		height: 300px;
+		overflow: auto;
+	}
+
+	.collapse .toggle {
+		background: url("../images/minus.gif");
+		background-repeat: no-repeat;
+		background-position: bottom;
+	}
+	.expand .toggle {
+		background: url("../images/plus.gif");
+		background-repeat: no-repeat;
+		background-position: bottom;
+	}
+
+	.toggle {
+		height: 13px;
+		width:  13px;
+		display: inline-block;
+		padding-right: 10px;
+		vertical-align: middle;
+	}
 }

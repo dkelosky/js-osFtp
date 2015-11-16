@@ -29,19 +29,21 @@ define(function(require, exports) {
    * @param {Boolean}  before         Indicator of whether or not a menu divider should be added before or after
    */
   function addToContextMenus(id, addMenuDivider, afterId, before) {
+	 console.log('addToContextMenus(' + id + ')');
 
-    //function vars
-    var contextMenu;
+    /**
+     * Add to working set
+     */
 
     //get menu item for working set
-    contextMenu = Menus.getContextMenu(Menus.ContextMenuIds.WORKING_SET_CONTEXT_MENU);
+    var workingSetContextMenu = Menus.getContextMenu(Menus.ContextMenuIds.WORKING_SET_CONTEXT_MENU);
 
     //add menu divider if requested
     if (addMenuDivider)
-      contextMenu.addMenuDivider();
+      workingSetContextMenu.addMenuDivider();
 
     //add menu item for working set
-    addContextMenuItem(contextMenu, id, afterId, before);
+    addContextMenuItem(workingSetContextMenu, id, afterId, before);
 
 
     /**
@@ -49,14 +51,14 @@ define(function(require, exports) {
      */
 
     //get menu item for project set
-    contextMenu = Menus.getContextMenu(Menus.ContextMenuIds.PROJECT_MENU);
+    var projectSetContextMenu = Menus.getContextMenu(Menus.ContextMenuIds.PROJECT_MENU);
 
     //add menu divider if requested
     if (addMenuDivider)
-      contextMenu.addMenuDivider();
+      projectSetContextMenu.addMenuDivider();
 
     //add menu item for project set
-    addContextMenuItem(contextMenu, id, afterId, before);
+    addContextMenuItem(projectSetContextMenu, id, afterId, before);
 
   }
 
@@ -68,6 +70,7 @@ define(function(require, exports) {
    * @param {Boolean} before      Indicator of whether or not a menu divider should be added before or after
    */
   function addContextMenuItem(contextMenu, id, afterId, before) {
+	console.log('addContextMenuItem(' + contextMenu + ', ' + id + ')');
 
     //assume position is after
     var position = Menus.AFTER;

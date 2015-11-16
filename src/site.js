@@ -2,72 +2,81 @@
  *  Sites Manager
  */
 
-define(function(require, exports) {
+define(function (require, exports) {
 	'use strict';
 
 	var osFtpGlobals = require('src/globals');
 	var osFtpStrings = require('strings');
 
-	exports.Site         = Site;
-	exports.validateSite = validateSite;
+	exports.Site = Site;
+	exports.revise = revise;
 
-
-	function Site(name, hostAddr, rootDir, userName, password){
-		this.objId    = osFtpGlobals.OBJECT_FTP_SITE_ID;
-		this.name     = name;
+	function Site(name, hostAddr, rootDir, userName, password) {
+		this.objId = osFtpGlobals.OBJECT_FTP_SITE_ID;
+		this.name = name;
 		this.hostAddr = hostAddr;
-		this.rootDir  = rootDir;
+		this.rootDir = rootDir;
 		this.userName = userName;
 		this.password = password;
-		this.chmodStr = 'undefined';
+		this.chmodStr = undefined;
 	}
 
-	Site.prototype.setChmodStr = function(newMode){
+	Site.prototype.getName = function () {
+		return this.name;
+	};
+
+	Site.prototype.getHostAddr = function () {
+		return this.hostAddr;
+	};
+
+	Site.prototype.getRootDir = function () {
+		return this.rootDir;
+	};
+
+	Site.prototype.getUserName = function () {
+		return this.userName;
+	};
+
+	Site.prototype.getPassword = function () {
+		return this.password;
+	};
+
+	Site.prototype.setChmodStr = function (newMode) {
 		this.chmodStr = newMode;
-	}
+	};
 
-	Site.prototype.getChmodStr = function(){
+	Site.prototype.getChmodStr = function () {
 		return this.chmodStr;
-	}
+	};
 
-	Site.prototype.getCommandId = function(){
+	Site.prototype.getCommandId = function () {
 		return osFtpGlobals.COMMAND_RUN_SITE_BASE_ID + this.name;
 	};
 
-	Site.prototype.getCommandLabel = function(){
+	Site.prototype.getCommandLabel = function () {
 		return osFtpStrings.COMMAND_RUN_SITE_BASE_LABEL + this.name;
 	};
 
-	Site.prototype.debugPrint = function(){
+	Site.prototype.debugPrint = function () {
 		console.log("objId: " + this.objId);
 		console.log("name:  " + this.name);
 		console.log("hostAddr: " + this.hostAddr);
 		console.log("rootDir:  " + this.rootDir);
 		console.log("userName: " + this.userName);
-		console.log("password: " + this.password);
+		console.log("password: " + '**********');
 		console.log("chmodStr: " + this.chmodStr);
+	};
 
+	function revise(object) {
+		var newSite = new Site(object.name,
+			object.hostAddr,
+			object.rootDir,
+			object.userName,
+			object.password);
+
+		newSite.setChmodStr(object.chmodStr);
+
+		return newSite;
 	}
-
-	function validateSite(inputSite){
-
-		// Check if inputSite is an object
-		if (typeof inputSite !== 'object'){
-			return false;
-		}
-
-		// Check if object have objId property
-		if (!inputSite.hasOwnProperty("objId")){
-			return false;
-		}
-
-		// Check if the object ID is correct
-		if (inputSite.objId !== osFtpGlobals.OBJECT_FTP_SITE_ID){
-			return false;
-		}
-
-		return true;
-	}
-
 
 });

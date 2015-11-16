@@ -7,7 +7,6 @@ define(function (require, exports) {
 	 */
 	var CommandManager = brackets.getModule('command/CommandManager');
 	var Dialog = brackets.getModule('widgets/Dialogs');
-	var PreferencesManager = brackets.getModule('preferences/PreferencesManager');
 
 
 	/**
@@ -15,72 +14,35 @@ define(function (require, exports) {
 	 */
 	var osFtpCommon = require('src/common');
 	var osFtpDialog = require('src/dialog');
+	var osFtpDomain  = require('src/domain');
 	var osFtpHandlers = require('src/handlers');
+	var osFtpGlobals = require('src/globals');
 	var osFtpMenu = require('src/menu');
+	var osFtpPackage = require('src/package');
 	var osFtpScripts = require('src/scripts');
 	var osFtpStrings = require('strings');
+	var osFtpSelectDialog = require('src/listSelectionDialog');
 	var osFtpSitesManager = require('src/sitesManager');
-
 
 	/**
 	 * Global variables
 	 */
-	var osFtpDomain;
-	var osFtpGlobals;
 	var osFtpPreferences;
 
 
 	/**
 	 * Exported functions
 	 */
-
-	exports.updateSiteList = updateSiteList;
-	exports.addSite = addSite;
-	exports.enableGetFromSite = enableGetFromSite;
+	exports.addSite    = addSite;
+	exports.removeSite = removeSite;
 	exports.enableEditSite = enableEditSite;
 	exports.disableEditSite = disableEditSite;
-	exports.disableGetFromSite = disableGetFromSite;
-	exports.handlersHelpersInit = handlersHelpersInit;
 	exports.invokeFtpScript = invokeFtpScript;
 	exports.uploadDirectory = uploadDirectory;
 	exports.handleCancel = handleCancel;
 	exports.handleEscape = handleEscape;
 	exports.disableListeners = disableListeners;
-	exports.isValidInput = isValidInput;
 	exports.setAndSavePref = setAndSavePref;
-
-	function updateSiteList(){
-		console.log('updateSiteList()');
-		var sitesCmdArr = [];
-
-		// Get all of the current commands
-		var cmdArr = CommandManager.getAll();
-
-		// Filter out only Sites commands
-
-		// Get the list of current monitor sites
-		var sitesArr = osFtpSitesManager.getSitesArray();
-
-		if (siteArr.length > 0){
-			enableEditSite();
-		} else {
-			disableEditSite();
-		}
-
-
-		for (var i in sitesArr){
-			if (cmdArr.indexOf(sitesArr[i].getCommandId()) === -1)
-			{
-				addSite(sitesArr[i]);
-			}
-		}
-
-
-
-
-
-
-	}
 
 
 	/**
@@ -92,29 +54,37 @@ define(function (require, exports) {
 		//log this call
 		console.log('addSite(' + site.name + ');');
 
-		//setup labels
-		var COMMAND_RUN_SITE_LABEL = osFtpStrings.COMMAND_RUN_SITE_BASE_LABEL + site.name;
-		var COMMAND_RUN_SITE_ID = osFtpGlobals.COMMAND_RUN_SITE_BASE_ID + site.name;
+		if (osFtpSitesManager.getSitesArray().length > 0){
+			enableEditSite();
+		}
 
-		//register command and add a context menu to create a site
-		CommandManager.register(COMMAND_RUN_SITE_LABEL, COMMAND_RUN_SITE_ID, osFtpHandlers.handleRunSite);
-		osFtpMenu.addToContextMenus(COMMAND_RUN_SITE_ID, false, osFtpGlobals.COMMAND_GET_FROM_SITE_ID, false);
+		osFtpPackage.getPackage(function(packageJson, cmdId, cmdLabel) {
 
+			var newCmdId = packageJson.name + cmdId;
+			var editId = packageJson.name + osFtpGlobals.COMMAND_EDIT_SITE_ID;
+
+			//register command and add a context menu to create a site
+			CommandManager.register(cmdLabel, newCmdId, osFtpHandlers.handleRunSite);
+			osFtpMenu.addToContextMenus(newCmdId, false, editId, false);
+
+		}, site.getCommandId(), site.getCommandLabel());
 	}
 
-
 	/**
-	 * Enables the get command for an added site
+	 * Remove a site from menu
+	 *
 	 */
-	function enableGetFromSite() {
 
-		//log this call
-		console.log('enableGetFromSite();');
+	function removeSite(site) {
+		console.log('remove(' + site.name + ')');
 
-		//register command and add a context menu to create a site
-		CommandManager.register(osFtpStrings.COMMAND_GET_FROM_SITE_LABEL, osFtpGlobals.COMMAND_GET_FROM_SITE_ID, osFtpHandlers.handleGetFromSite);
-		osFtpMenu.addToContextMenus(osFtpGlobals.COMMAND_GET_FROM_SITE_ID, false, osFtpGlobals.COMMAND_NEW_SITE_ID, false);
+		//remove site from context menu
+		var cmdId = site.getCommandId();
+		osFtpMenu.removeFromContextMenus(cmdId);
 
+		if (osFtpSitesManager.getSitesArray().length == 0){
+			disableEditSite();
+		}
 	}
 
 
@@ -126,23 +96,16 @@ define(function (require, exports) {
 		//log this call
 		console.log('enableEditSite();');
 
-		//register command and add a context menu to create a site
-		CommandManager.register(osFtpStrings.COMMAND_EDIT_SITE_LABEL, osFtpGlobals.COMMAND_EDIT_SITE_ID, osFtpHandlers.handleEditSite);
-		osFtpMenu.addToContextMenus(osFtpGlobals.COMMAND_EDIT_SITE_ID, false, osFtpGlobals.COMMAND_NEW_SITE_ID, false);
+		osFtpPackage.getPackage(function(packageJson) {
 
-	}
+			var editId = packageJson.name + osFtpGlobals.COMMAND_EDIT_SITE_ID;
+			var newId = packageJson.name + osFtpGlobals.COMMAND_NEW_SITE_ID;
 
+			//register command and add a context menu to create a site
+			CommandManager.register(osFtpStrings.COMMAND_EDIT_SITE_LABEL, editId, osFtpHandlers.handleEditSite);
+			osFtpMenu.addToContextMenus(editId, false, newId, false);
 
-	/**
-	 * Disables the get command for sites (cannot deregister the command)
-	 */
-	function disableGetFromSite() {
-
-		//log this call
-		console.log('disableGetFromSite();');
-
-		//remove from the menu
-		osFtpMenu.removeFromContextMenus(osFtpGlobals.COMMAND_GET_FROM_SITE_ID);
+		});
 
 	}
 
@@ -157,45 +120,6 @@ define(function (require, exports) {
 
 		//remove from the menu
 		osFtpMenu.removeFromContextMenus(osFtpGlobals.COMMAND_EDIT_SITE_ID);
-
-	}
-
-
-	/**
-	 * Initialize
-	 */
-	function handlersHelpersInit(globals, domain) {
-
-		//log this
-		console.log('handlersHelpersInit(globals)');
-
-		//get globals
-		osFtpGlobals = globals;
-		osFtpDomain = domain;
-
-		//get preferences
-		osFtpPreferences = PreferencesManager.getExtensionPrefs(osFtpGlobals.PREF);
-
-		//get saved preferences
-		osFtpGlobals.sites = osFtpPreferences.get(osFtpGlobals.PREF_SITES) || [];
-
-		//enable extra options if we have at least one site
-		if (osFtpGlobals.sites.length > 0) {
-
-			//add getting from a site
-			enableGetFromSite();
-
-			//add editing of site
-			enableEditSite();
-
-		}
-
-		//add back saved sites
-		osFtpGlobals.sites.forEach(function (site) {
-			addSite(site);
-
-		});
-
 
 	}
 
@@ -226,6 +150,41 @@ define(function (require, exports) {
 	function uploadDirectory(site, fileList) {
 
 		//show dialog
+		var dlgInputList = [];
+		var rootDir = "Selected directory is Empty";
+		if (fileList.length > 0){
+			rootDir = fileList[0].rootDir;
+			for (var file in fileList){
+				dlgInputList.push(fileList[file].relativePath);
+			}
+		}
+
+		var selectDialog = osFtpSelectDialog.newDialog(dlgInputList, rootDir);
+		selectDialog.show();
+		selectDialog.collapseAll();
+		selectDialog.checkAll();
+
+		selectDialog.dialog.done(function(buttonId){
+			if (buttonId === 'ok'){
+				//log that we are saving this site
+				console.log('Dialog closed with save');
+
+				var selectedList = selectDialog.getSelectedList();
+				fileList = [];
+				for (var index in selectedList){
+					var obj = osFtpCommon.relativePathToFile(selectedList[index], rootDir);
+					fileList.push(obj);
+				}
+
+				console.log(fileList);
+				//build our ftp script
+				var ftpScript = osFtpScripts.generateUploadScript(fileList, site);
+
+				//invoke script
+				invokeFtpScript(ftpScript);
+			}
+		});
+/*
 		var confirmDialog = osFtpDialog.showConfirmDirectoryUpload(site);
 
 		//listen for escape key
@@ -262,6 +221,7 @@ define(function (require, exports) {
 			console.log('Dialog modal is dismissed');
 
 		});
+*/
 
 	}
 
@@ -332,123 +292,6 @@ define(function (require, exports) {
 		$('button[data-button-id="' + Dialog.DIALOG_BTN_CANCEL + '"').off('click');
 
 	}
-
-
-
-	/**
-	 * Validates and issues error messages for user input
-	 * @param   {Object}  site The inputted site
-	 * @returns {Boolean} Returns whether or not this site input is valid
-	 */
-	function isValidInput(site, bypassName, errorContainer) {
-
-		var isValid = true;
-		var validateResponses = [];
-
-		var errorHtml = '';
-
-		//collect validation of each field
-		if (!bypassName)
-			validateResponses.push(validateSiteName(site.name));
-
-		validateResponses.push(validateHostName(site.host));
-
-		//process all responses
-		validateResponses.forEach(function (validateResponse) {
-
-			//if there is one failure
-			if (!validateResponse.isValid) {
-
-				//mark this input as invalud
-				isValid = false;
-
-				errorHtml += '<p class="osftp-status-error">';
-				errorHtml += validateResponse.msg;
-				errorHtml += '</p>';
-			}
-
-		});
-
-		//show error area
-		$('#' + errorContainer).html(errorHtml);
-
-		//show error area
-		$('#' + errorContainer).show();
-
-		//return indicator
-		return isValid;
-	}
-
-
-	/**
-	 * Validates the site name field
-	 * @param   {String} name Name of the site
-	 * @returns {Object} Contains a boolean indicator and error message if invalid
-	 */
-	function validateSiteName(name) {
-
-		//assume valid
-		var validateResponse = {
-			isValid: true,
-			msg: ''
-		};
-
-
-		//verify at minimum a host is set
-		if (!osFtpCommon.isSet(name)) {
-
-			//this is required
-			validateResponse.isValid = false;
-			validateResponse.msg = osFtpStrings.DIALOG_ERROR_SITE_INVALID;
-		} else {
-
-			//locate the site object based on site name
-			osFtpGlobals.sites.forEach(function (site) {
-
-				//if we match on name this is an error
-				if (site.name == name) {
-
-					//site already exists
-					validateResponse.isValid = false;
-					validateResponse.msg = osFtpStrings.DIALOG_ERROR_SITE_EXISTS;
-
-				}
-
-			});
-		}
-
-		//return object
-		return validateResponse;
-
-	}
-
-
-	/**
-	 * Validates the site host field
-	 * @param   {String} host Host for the site
-	 * @returns {Object} Contains a boolean indicator and error message if invalid
-	 */
-	function validateHostName(host) {
-
-		//assume valid
-		var validateResponse = {
-			isValid: true,
-			msg: ''
-		};
-
-		//verify at minimum a host is set
-		if (!osFtpCommon.isSet(host)) {
-
-			//this is required
-			validateResponse.isValid = false;
-			validateResponse.msg = osFtpStrings.DIALOG_ERROR_HOST_INVALID;
-		}
-
-		//return object
-		return validateResponse;
-
-	}
-
 
 
 	/**

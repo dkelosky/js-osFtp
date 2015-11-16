@@ -22,7 +22,6 @@ To install using Git:
 
 ### Limitations
 * Only basic error checking is performed.  Verify your first FTP for a newly defined site.
-* Permissions cannot be altered (e.g. no accommodations for chmod).
 * Retrieval from a remote site is not yet implemented.
 * FTP to a remote Windows machine is not supported
 * FTP from Linux is not supported
@@ -32,6 +31,8 @@ To install using Git:
 
 Right click a file in the Working file set or Project set and 'New Ftp Site...'
 
+### Create a Site
+
 ![alt text][newFtpSite]
 
 Fill in the dialog:
@@ -40,20 +41,38 @@ Fill in the dialog:
 
 The dialog input field descriptions  are:
 
-| Input     | Description                                                                                               |
-| --------- | --------------------------------------------------------------------------------------------------------- |
-| Site Name | name for the site                                                                                         |
-| Host      | host name, to specify a port use a space between hostname and port without quotes (e.g. `hostname port`)  |
-| Root      | Remote directory to ftp to                                                                                |
-| User      | User name                                                                                                 |
-| Password  | Password                                                                                                  |
+| Input       | Description                                                                                               |
+| ----------- | --------------------------------------------------------------------------------------------------------- |
+| Site Name   | name for the site                                                                                         |
+| Host        | host name, to specify a port use a space between hostname and port without quotes (e.g. `hostname port`)  |
+| Root        | Remote directory to ftp to                                                                                |
+| User        | User name                                                                                                 |
+| Password    | Password                                                                                                  |
+| Server Type | Option remote server OS used in conjunction with "Set permission" to attempt CHMOD against files.         |
+
+### FTP to a Created Site
 
 Right click a file in the Working file set or Project set and select the site you added.  This builds
 a script file in the extension directory and executes the script:
 
 ![alt text][runSite]
 
-You will receive a confirmation prompt if attempting  to upload an entire directory.
+### View Status
+
+You can observe the status by the "OS FTP" status bar notification area.  
+* White text means no FTP is in progress
+* Orange text means FTP is in progress.
+* Green text means FTP has completed without any known errors.
+* Red text means FTP has completed with errors.  You should also see an error dialog presented to you.
+
+Otherwise, F12 will should the complete log of FTP script statements that have been executed. 
+
+![alt text][status]
+
+You will receive a confirmation prompt if attempting to upload an entire directory.  You can use this prompt to de-select 
+files from the FTP.
+
+![alt text][directoryUpload]
 
 ---
 
@@ -86,3 +105,5 @@ Add file extensions to control FTP as ASCII or binary.  See File->OS FTP Setting
 [addFtpSite]: https://github.com/dkelosky/js-osFtp/blob/master/images/addFtpSite.PNG "Add Ftp Site"
 [runSite]: https://github.com/dkelosky/js-osFtp/blob/master/images/runSite.PNG "Run Site"
 [settings]: https://github.com/dkelosky/js-osFtp/blob/master/images/settings.PNG "Settings"
+[directoryUpload]: https://github.com/dkelosky/js-osFtp/blob/master/images/directoryUpload.PNG "Directory Upload"
+[status]: https://github.com/dkelosky/js-osFtp/blob/master/images/status.PNG "Status"

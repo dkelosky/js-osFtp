@@ -1,13 +1,13 @@
 {
-    "name": "there_are_two_authors.js_os_ftp",
-    "title": "js-osFtp - Operating System FTP Client Wrapper",
+    "name": "lee-and-dan.osftp",
+    "title": "OS FTP - Operating System FTP Client Wrapper",
     "description": "This Brackets extension uses native OS FTP clients to perform FTP. You can even FTP to a mainframe!",
     "homepage": "https://github.com/dkelosky/js-osFtp",
-    "version": "1.0.0",
-    "author": "<dkelosky@gmail.com> <ldl5007@gmail.com>",
+    "version": "1.2.2",
+    "author": "Dan <dkelosky@gmail.com> & Lee <ldl5007@gmail.com>",
     "license": "MIT",
     "engines": {
         "brackets": ">=0.24.0"
     },
-    "i18n": [ "en"]
+    "i18n": ["en"]
 }

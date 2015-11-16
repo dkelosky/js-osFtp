@@ -32,6 +32,8 @@ maxerr: 50, node: true */
 	 * Global variables
 	 */
 	var globalDomainManager;
+	var osFtpDomainName = 'osFtp';
+	var osFtpDomainMessage = osFtpDomainName + '-' + 'msg';
 
 	/**
 	 * We won't catch all errors but can some of the sever ones.  the only garunteed way to know if there is an error
@@ -55,10 +57,10 @@ maxerr: 50, node: true */
 		//save reference to domain manager
 		globalDomainManager = domainManager;
 
-		if (!domainManager.hasDomain('ftp')) {
+		if (!domainManager.hasDomain(osFtpDomainName)) {
 
 			//Bracket's doc makes me wonder - WHY?!
-			domainManager.registerDomain('ftp', {
+			domainManager.registerDomain(osFtpDomainName, {
 				major: 0,
 				minor: 1
 			});
@@ -68,7 +70,7 @@ maxerr: 50, node: true */
 		 * The last three parameters of each domainManager are documentation for api usage
 		 */
 		domainManager.registerCommand(
-			'ftp', // domain name
+			osFtpDomainName, // domain name
 			'doFtp', // command name
 			doFtp, // command handler function
 			false, // this command is synchronous in Node
@@ -88,7 +90,7 @@ maxerr: 50, node: true */
 		 * The last three parameters of each domainManager are documentation for api usage
 		 */
 		domainManager.registerCommand(
-			'ftp',
+			osFtpDomainName,
 			'doFtpStdin',
 			doFtpStdin,
 			false,
@@ -109,8 +111,8 @@ maxerr: 50, node: true */
 		);
 
 		domainManager.registerEvent(
-			'ftp', //domain name
-			'ftpMsg', //event name
+			osFtpDomainName, //domain name
+			osFtpDomainMessage, //event name
       		[{
 				name: 'response',
 				type: 'Object',
@@ -232,7 +234,7 @@ maxerr: 50, node: true */
 		};
 
 		//send event that the process completed
-		globalDomainManager.emitEvent('ftp', 'ftpMsg', response);
+		globalDomainManager.emitEvent(osFtpDomainName, osFtpDomainMessage, response);
 	}
 
 
@@ -331,7 +333,7 @@ maxerr: 50, node: true */
 						console.error('Fatal script error encountered on -' + subOutput);
 
 						//append failures until we die
-						response = subOutput;
+						response += (subOutput + '  ');
 
 						//log this failure
 						isFailure = true;

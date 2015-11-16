@@ -1,4 +1,4 @@
-define(function (require, exports, module) {
+define(function (require, exports) {
 	'use strict';
 
 
@@ -11,13 +11,19 @@ define(function (require, exports, module) {
 	/**
 	 * Extension modules
 	 */
-	var osFtpCommon = require('src/common');
-	var Preferences = require("src/preferences");
+	var osFtpCommon  = require('src/common');
+	var osFtpDialog = require('src/dialog');
+	var osFtpPreferences  = require('src/preferences');
+	var osFtpSitesManager = require('src/sitesManager');
+	var osProjectFailDialog = require('text!templates/projectFailureDialog.html');
+	var osFtpStrings = require('strings');
+
 
 	/**
 	 * Exported functions
 	 */
 	exports.generateUploadScript = generateUploadScript;
+
 
 	/**
 	 * Build an FTP script based on the list files that was choosen and the site selected
@@ -26,29 +32,43 @@ define(function (require, exports, module) {
 	 * @returns {String}              Completed FTP script if input is valid
 	 *                                Empty string when input in invalid.
 	 */
-
 	function generateUploadScript(listFile, site) {
-		console.log("getneratUploadScript");
+
+		//log this call
+		console.log('getnerateUploadScript();');
+
+		var dialogHtml;
 
 		// validating inputs
-		if (listFile == undefined) {
+		if (!osFtpCommon.isSet(listFile)) {
+
+			//log this project error
 			console.error('listFile is undefinded');
-			return ''
+
+			//substitute values in our html
+			dialogHtml = Mustache.render(osProjectFailDialog, osFtpStrings);
+
+			//show error dialog
+			osFtpDialog.showCommonDialog(osFtpStrings.DIALOG_TITLE_PROJECT_FAIL, dialogHtml);
+
+			return '';
 		}
-		if (site == undefined) {
-			console.error('site is undefinded');
-			return ''
+		if (!osFtpSitesManager.validateSite(site)) {
+			console.error('site is invalid');
+			return '';
 		}
 
 		var returnScriptString = '';
 		var localRootDir = '';
-		var newScript = [];
-		var mkdirList = [];
-		var putBinList = [];
+		var newScript    = [];
+		var mkdirList    = [];
+		var putBinList   = [];
 		var putAsciiList = [];
+		var isChmodSet   = false;
+		var CHMOD_CMD;
 
 		for (var i = 0; i < listFile.length; i++) {
-			if (localRootDir == '') {
+			if (!osFtpCommon.isSet(localRootDir)) {
 				localRootDir = FileUtils.stripTrailingSlash(listFile[i].rootDir);
 			}
 
@@ -61,17 +81,22 @@ define(function (require, exports, module) {
 			}
 		}
 
+		if (osFtpCommon.isSet(site.getChmodStr())){
+			CHMOD_CMD = 'QUOTE SITE CHMOD ' + site.getChmodStr() + ' ';
+			isChmodSet = true;
+		}
+
 		//---------------------------------------------------------------------
 		// Start generating the FTP script
 		//---------------------------------------------------------------------
 
 		// Generate logon command:
-		newScript.push('OPEN ' + site.host);
+		newScript.push('OPEN ' + site.getHostAddr());
 		newScript.push('USER');
-		newScript.push(site.user);
-		newScript.push(site.pass);
+		newScript.push(site.getUserName());
+		newScript.push(site.getPassword());
 
-		newScript.push('CD  ' + site.root);
+		newScript.push('CD  ' + site.getRootDir());
 		newScript.push('LCD ' + localRootDir);
 
 
@@ -83,15 +108,27 @@ define(function (require, exports, module) {
 		// Generate put ASCII commands
 		newScript.push('ASCII');
 		for (var i = 0; i < putAsciiList.length; i++) {
-			newScript.push('PUT ' + '"' + FileUtils.convertToNativePath(putAsciiList[i]) + '"' +
-				' ' + FileUtils.convertWindowsPathToUnixPath(putAsciiList[i]).split(' ').join('_'));
+			var fromFile = FileUtils.convertToNativePath(putAsciiList[i]);
+			var toFile   = FileUtils.convertWindowsPathToUnixPath(putAsciiList[i]).split(' ').join('_');
+
+			newScript.push('PUT ' + '"' + fromFile + '"' + ' ' + toFile);
+
+			if (isChmodSet){
+				newScript.push(CHMOD_CMD + toFile);
+			}
 		}
 
 		// Generate put Binary commands
 		newScript.push('BIN');
 		for (var i = 0; i < putBinList.length; i++) {
-			newScript.push('PUT ' + '"' + FileUtils.convertToNativePath(putBinList[i]) + '"' +
-				' ' + FileUtils.convertWindowsPathToUnixPath(putBinList[i]).split(' ').join('_'));
+			var fromFile = FileUtils.convertToNativePath(putBinList[i]);
+			var toFile   = FileUtils.convertWindowsPathToUnixPath(putBinList[i]).split(' ').join('_');
+
+			newScript.push('PUT ' + '"' + fromFile + '"' + ' ' + toFile);
+
+			if (isChmodSet){
+				newScript.push(CHMOD_CMD + toFile);
+			}
 		}
 
 		// End of script
@@ -119,10 +156,10 @@ define(function (require, exports, module) {
 
 		console.log(listNode);
 
-		var tempDir = ''
+		var tempDir = '';
 		for (var i = 0; i < listNode.length; i++) {
-			if (listNode[i] != '') {
-				if (tempDir == '') {
+			if (osFtpCommon.isSet(listNode[i])) {
+				if (!osFtpCommon.isSet(tempDir)) {
 					tempDir = listNode[i];
 				} else {
 					tempDir = tempDir + '/' + listNode[i];
@@ -149,8 +186,8 @@ define(function (require, exports, module) {
 		var returnStatus = false;
 
 		// Getting list from preferences
-		var asciiFileList = JSON.parse(Preferences.get('transferAsAsciiTable')).tableData;
-		var noExtAsAscii  = Preferences.get('treatFileWithoutExtentionAsAscii');
+		var asciiFileList = JSON.parse(osFtpPreferences.get('transferAsAsciiTable')).tableData;
+		var noExtAsAscii  = osFtpPreferences.get('treatFileWithoutExtentionAsAscii');
 
 		console.log(asciiFileList);
 
