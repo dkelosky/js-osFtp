@@ -22,12 +22,12 @@ define(function (require, exports) {
 		{
 			className: Dialog.DIALOG_BTN_CLASS_LEFT,
 			id: Dialog.DIALOG_BTN_CANCEL,
-			text: osFtpStrings.DIALOG_CANCEL
+			text: osFtpStrings.BUTTON_CANCEL
     },
 		{
 			className: Dialog.DIALOG_BTN_CLASS_PRIMARY,
 			id: Dialog.DIALOG_BTN_OK,
-			text: osFtpStrings.DIALOG_OK
+			text: osFtpStrings.BUTTON_OK
     }
   ];
 
@@ -140,7 +140,7 @@ define(function (require, exports) {
 			var deleteButton = {
 				className: Dialog.DIALOG_BTN_CLASS_NORMAL,
 				id: Dialog.DIALOG_BTN_DONTSAVE,
-				text: osFtpStrings.DIALOG_DELETE
+				text: osFtpStrings.BUTTON_REMOVE
 			};
 
 			//adjust title
