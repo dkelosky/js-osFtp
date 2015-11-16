@@ -4,6 +4,7 @@ define(function (require, exports){
 	var Dialogs      = brackets.getModule("widgets/Dialogs");
 	var Strings      = require("../strings");
 	var osftpCommon  = require("./common");
+	var osFtpGlobals = require('./globals');
 
 	// debug
 	var tree         = require("./tree");
@@ -25,7 +26,7 @@ define(function (require, exports){
 		this.treeData = tree.newFileTree('ListSelectionDialog');
 
 		for (var i in inputList){
-			this.treeData.addRelativePath(inputList[i]);
+			this.treeData.addRelativePath(inputList[i], true);
 		}
 	}
 
@@ -44,7 +45,7 @@ define(function (require, exports){
 
 			this.setTableTitle(this.listTitle);
 
-			this.refreshTableData();
+			this.refreshTableData(this.treeData);
 
 		} else {
 			alert("dialog is already shown");
@@ -64,36 +65,25 @@ define(function (require, exports){
 	 *
 	 **/
 
-	ListSelectionDialog.prototype.refreshTableData = function(){
+	ListSelectionDialog.prototype.refreshTableData = function(treeNode){
 		console.log('ListSelectionDialog.refreshTableData()');
 		var $this = $('#list-table', this.$dialog);
 		var id    = $this.attr("id");
 
-		var tableHtml = osftpCommon.generateHtmlTreeTable(this.treeData, id, 'checkbox');
-		$this.html(tableHtml, 'list-table');
+		if (treeNode.type === osFtpGlobals.TREE_TYPE_ROOT){
+			var tableHtml = tree.generateHtmlTreeContainer(treeNode, id);
+			console.log(treeNode.htmlId);
+			$this.html(tableHtml, treeNode.divId);
 
-		//Format the html output
-		$("*[treeNode]", this.$dialog).each(function(){
-			var $this = $(this),
-				type  = $this.attr("type"),
-				level = $this.attr("data-depth");
+			var nodeHtml = tree.generateHtmlTreeNode(treeNode);
+			$("#" + treeNode.htmlId, this.$dialog).html(nodeHtml);
+		}
 
-			var basePadding = $("#list-selection-dialog .level1").css('padding-left');
-			var padSize = Number(basePadding.replace('px','')) * Number(level);
-
-			if (type === 'dir-node'){
-				$this.css("padding-left", padSize.toString() + "px");
-			} else if (type === 'file-node'){
-				var toggleSize = $("#list-selection-dialog .toggle").css('width');
-				var togglePad  = $("#list-selection-dialog .toggle").css('padding-right');
-				padSize += Number(toggleSize.replace('px','')) + Number(togglePad.replace('px',''));
-				$this.css("padding-left", padSize.toString() + "px");
-			}
-		});
+		formatTreeNode(treeNode, this.$dialog);
 
 		//Reset toggle listeners
-		resetTreeToggle("#list-table-tree", this.$dialog);
-		resetTreeCheckbox("#list-table-tree", this.$dialog);
+		resetTreeToggle(treeNode, this.$dialog);
+		resetTreeCheckbox(treeNode, this.$dialog);
 	};
 
 	/**
@@ -147,13 +137,50 @@ define(function (require, exports){
 
 	};
 
+	/**
+	 *
+	 **/
+	function setDialogStatus(status, $dialog){
+		console.log('change status to ' + status);
+		$('#dialog-status', $dialog).text(status);
+	}
+
+
+	/**
+	 *
+	 **/
+	function formatTreeNode(treeNode, $dialog){
+		$("*[treeNode]", $dialog).each(function(){
+			var $this = $(this),
+				type  = $this.attr("type"),
+				level = $this.attr("data-depth");
+
+			var padSize = 0;
+
+			var basePadding = $("#list-selection-dialog .level1").css('padding-left');
+			if (osftpCommon.isSet(basePadding)){
+				padSize = Number(basePadding.replace('px','')) * Number(level);
+			}
+
+			if (type === 'dir-node'){
+				$this.css("padding-left", padSize.toString() + "px");
+			} else if (type === 'file-node'){
+				var toggleSize = $("#list-selection-dialog .toggle").css('width');
+				var togglePad  = $("#list-selection-dialog .toggle").css('padding-right');
+				padSize += Number(toggleSize.replace('px','')) + Number(togglePad.replace('px',''));
+				$this.css("padding-left", padSize.toString() + "px");
+			}
+		});
+	}
 
 	/*
 	 *
 	 */
 
-	function resetTreeToggle(treeId, $dialog){
-		$(treeId, $dialog).on('click', '.toggle', function () {
+	function resetTreeToggle(treeNode, $dialog){
+		$("#" + treeNode.htmlId, $dialog).on('click', '.toggle', function () {
+			setDialogStatus(Strings.STATUS_LOADING, $dialog);
+
 			// Get all <tr>'s of the greater depth
 			var findChildren = function (tr) {
 				var depth = tr.data('depth');
@@ -164,6 +191,7 @@ define(function (require, exports){
 
 			var el = $(this);
 			var tr = el.closest('tr'); //Get <tr> parent of toggle button
+			var trId = tr.attr('id');
 			var children = findChildren(tr);
 
 			//Remove already collapsed nodes from children so that we don't
@@ -183,35 +211,42 @@ define(function (require, exports){
 				children.hide();
 			} else {
 				tr.removeClass('expand').addClass('collapse');
-				children.show();
+				// if the html is not generated then will have to generate and append to the list
+				var node = treeNode.getNodeByHtmlId(trId);
+				if (node.isNodeHtmlGenerated()){
+					children.show();
+				} else {
+					var nodeHtml = tree.generateHtmlTreeNode(node);
+					tr.after(nodeHtml);
+					formatTreeNode(node, $dialog);
+				}
 			}
-			return children;
 
+			setDialogStatus('', $dialog);
+
+			return children;
 		});
 	}
 
-	function resetTreeCheckbox(treeId, $dialog){
-		$(treeId, $dialog).on('click', 'input:checkbox', function () {
+	function resetTreeCheckbox(treeNode, $dialog){
+		$("#" + treeNode.htmlId, $dialog).on('click', 'input:checkbox', function () {
 			// Get all <tr>'s of the greater depth
-			var findChildren = function (tr) {
-				var depth = tr.data('depth');
-				return tr.nextUntil($('tr').filter(function () {
-					return $(this).data('depth') <= depth;
-				}));
-			};
-
 			var el = $(this);
 			var tr = el.closest('tr'); //Get <tr> parent of toggle button
-			var children = findChildren(tr);
+			var trId = tr.attr('id');
 
-			var parentCheckStatus = el.is(':checked');
+			var checked = el.is(':checked');
 
-			children.each(function(){
-				var $child = $(this);
-				$child.find("input:checkbox").prop("checked", parentCheckStatus);
-			});
+			var node = treeNode.getNodeByHtmlId(trId);
+			var children = node.getChildren();
+			for (var index in children){
+				var child = children[index];
 
-			return children;
+				child.isSelected = checked;
+				if (child.hasOwnProperty('htmlId')){
+					$('#' + child.htmlId + ' input:checkbox', $dialog).prop('checked', checked);
+				}
+			}
 		});
 	}
 
@@ -255,6 +290,7 @@ define(function (require, exports){
 	function testDialog(){
 
 		var inputList = [];
+		var dialog1;
 		var testingList = osftpCommon.getProjectFiles();
 
 		for (var i in testingList){
@@ -262,10 +298,10 @@ define(function (require, exports){
 		}
 
 		if (testingList.length > 0){
-			var dialog1 = newDialog(inputList, testingList[0].rootDir);
+			dialog1 = newDialog(inputList, testingList[0].rootDir);
 		}
 		else {
-			var dialog1 = newDialog(inputList);
+			dialog1 = newDialog(inputList);
 		}
 		dialog1.show();
 		dialog1.collapseAll();

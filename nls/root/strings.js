@@ -83,5 +83,6 @@ define({
 	FAILURE_FTP_PROCESS_IN_PROGRESS: 'FTP process is already in progress.  Please wait for process completion.',
 	FAILURE_FTP_RUN_DIRECTORY: 'You must select an individual file to run as an FTP script.  Directories are ineligbile.',
 	STATUS_FTP_INDICATOR: 'OS FTP',
-	STATUS_FTP_TOOLTIP: 'OS FTP Status'
+	STATUS_FTP_TOOLTIP: 'OS FTP Status',
+	STATUS_LOADING: 'Loading\u2026'
 });
