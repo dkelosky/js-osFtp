@@ -20,6 +20,7 @@
  * @TODO - report total number of files sent over FTP
  * @TODO - move menu items into the menu
  * @TODO - dynamically get/set domain name so that concurrent extensions can be run (dev and production version)
+ * @TODO - merge branches and update package
  *
  * You must update the version number appropriately for each new packaged files distributed in Brackets registry.
  *
