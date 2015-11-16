@@ -7,6 +7,9 @@ define (function (require, exports){
 
 	exports.newFileTree = newFileTree;
 	exports.debugPrint  = debugPrint;
+	exports.generateHtmlTreeContainer = generateHtmlTreeContainer;
+	exports.generateHtmlTreeNode      = generateHtmlTreeNode;
+
 
 	var nodeId = 0;
 
@@ -133,6 +136,79 @@ define (function (require, exports){
 
 		return newTree;
 	}
+
+
+	/**
+	 *
+	 **/
+
+	function generateHtmlTreeContainer(treeData, treeDiv){
+		console.log("generateHtmlTreeContainer()");
+		var tableId = treeDiv + '-tree';
+
+		var html = '<table id="' + tableId + '" class="table table-striped table-bordered">';
+		html += "</table>";
+		return html;
+	}
+
+	/**
+	 *
+	 **/
+
+	function generateHtmlTreeNode(treeNode, treeId, otherAttr){
+		console.log('generateHtmlTree()');
+
+		var nodeId;
+		var isCheckbox = false;
+		var html = '';
+
+		//check for other attribute
+		if (osFtpCommon.isSet(otherAttr)){
+			if (otherAttr.indexOf('checkbox') > -1){
+				isCheckbox = true;
+			}
+		}
+
+		// Generate node for directories
+		for (var dir in treeNode.childDirs){
+			var currNode = treeNode.childDirs[dir];
+			nodeId = treeId + '-dir' + dir;
+
+			html += '<tr data-depth="' + treeNode.level + '" class="collapse collapsable level' + treeNode.level + '">';
+
+			html += '<td treeNode type="dir-node" data-depth="' + treeNode.level + '"><span class="toggle"></span>';
+
+			if (isCheckbox){
+				html += '<input type="checkbox"/>';
+			}
+
+			html += currNode.name + '</td>';
+
+			html += '</tr>';
+		}
+
+		// Generate node for files
+		for (var file in treeNode.childFiles){
+			nodeId = treeId + '-file' + file;
+			var relativePath = treeNode.getRelativeDir() + '/' + treeNode.childFiles[file];
+
+			html += '<tr data-depth="' + treeNode.level + '" class="collapse level' + treeNode.level + '">';
+
+			html += '<td treeNode type="file-node" data-depth="' + treeNode.level + '">';
+
+			if (isCheckbox){
+				html += '<input type="checkbox"/>';
+			}
+
+			html += treeNode.childFiles[file];
+			html += '<input type="hidden" value="' + relativePath + '"/>';
+			html += '</td>';
+			html += '</tr>';
+		}
+
+		return html;
+	}
+
 
 	/**
 	 * debugPrint function
