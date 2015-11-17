@@ -69,6 +69,8 @@ Otherwise, F12 will should the complete log of FTP script statements that have b
 
 ![alt text][status]
 
+### Upload Selection
+
 You will receive a confirmation prompt if attempting to upload an entire directory.  You can use this prompt to de-select 
 files from the FTP.
 
