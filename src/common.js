@@ -14,7 +14,6 @@ define(function (require, exports, module) {
 	exports.extractTableData = extractTableData;
 	exports.relativePathToFile = relativePathToFile;
 
-	exports.generateHtmlTreeTable = generateHtmlTreeTable;
 	/**
 	 * Check if a variable is undefined or null
 	 *
@@ -26,19 +25,19 @@ define(function (require, exports, module) {
 	function isSet(variable) {
 		if (typeof variable == "undefined") {
 			return false;
-		} else if (variable == null) {
+		} else if (variable === null) {
 			return false;
 		} else if (typeof variable === "string") {
-			return variable != "";
+			return variable !== "";
 		} else if (typeof variable === "number") {
-			return variable != 0;
+			return variable !== 0;
 		} else if (typeof variable === "object") {
 			//Split arrays and objects
 			if (typeof variable.length === "undefined") {
 				//We are now dealing with an object
 				var foundData = false;
 				for (var x in variable) {
-					if (typeof variable[x] !== "undefined" && variable[x] != null) {
+					if (typeof variable[x] !== "undefined" && variable[x] !== null) {
 						foundData = true;
 						break;
 					}
@@ -165,82 +164,7 @@ define(function (require, exports, module) {
 				relativePath : inputPath
 		};
 
-		return returnObj
-	}
-
-
-	/**
-	 * generate HTML Tree table
-	 */
-
-	function generateHtmlTreeTable(treeData, treeDiv, otherAttr){
-		console.log("generateHtmlTreeTable()");
-		var tableId = treeDiv + '-tree';
-
-		var html = '<table id="' + tableId + '" class="table table-striped table-bordered">';
-
-		if (isSet(treeData)){
-			html += generateHtmlTree(treeData, treeDiv, otherAttr);
-		}
-
-		html += "</table>";
-		return html;
-	}
-
-	function generateHtmlTree(treeNode, treeId, otherAttr){
-		console.log('generateHtmlTree()');
-
-		var nodeId;
-		var isCheckbox = false;
-		var html = '';
-
-		//check for other attribute
-		if (isSet(otherAttr)){
-			if (otherAttr.indexOf('checkbox') > -1){
-				isCheckbox = true;
-			}
-		}
-
-		// Generate node for directories
-		for (var dir in treeNode.childDirs){
-			var currNode = treeNode.childDirs[dir];
-			nodeId = treeId + '-dir' + dir;
-
-			html += '<tr data-depth="' + treeNode.level + '" class="collapse collapsable level' + treeNode.level + '">';
-
-			html += '<td treeNode type="dir-node" data-depth="' + treeNode.level + '"><span class="toggle"></span>';
-
-			if (isCheckbox){
-				html += '<input type="checkbox"/>';
-			}
-
-			html += currNode.name + '</td>';
-
-			html += '</tr>';
-
-			html += generateHtmlTree(currNode, treeId, otherAttr);
-		}
-
-		// Generate node for files
-		for (var file in treeNode.childFiles){
-			nodeId = treeId + '-file' + file;
-			var relativePath = treeNode.getRelativeDir() + '/' + treeNode.childFiles[file];
-
-			html += '<tr data-depth="' + treeNode.level + '" class="collapse level' + treeNode.level + '">';
-
-			html += '<td treeNode type="file-node" data-depth="' + treeNode.level + '">';
-
-			if (isCheckbox){
-				html += '<input type="checkbox"/>';
-			}
-
-			html += treeNode.childFiles[file];
-			html += '<input type="hidden" value="' + relativePath + '"/>';
-			html += '</td>';
-			html += '</tr>';
-		}
-
-		return html;
+		return returnObj;
 	}
 
 	/**

@@ -13,7 +13,6 @@ define(function (require, exports) {
 	 * Extension modules
 	 */
 	var osFtpCommon = require('src/common');
-	var osFtpDialog = require('src/dialog');
 	var osFtpDomain  = require('src/domain');
 	var osFtpHandlers = require('src/handlers');
 	var osFtpGlobals = require('src/globals');
@@ -79,7 +78,7 @@ define(function (require, exports) {
 		console.log('remove(' + site.name + ')');
 
 		//remove site from context menu
-		osFtpPackage.getPackage(function(packageJson, cmdId, cmdLabel) {
+		osFtpPackage.getPackage(function(packageJson, cmdId) {
 
 			var newCmdId = packageJson.name + cmdId;
 
@@ -89,7 +88,7 @@ define(function (require, exports) {
 		}, site.getCommandId());
 
 
-		if (osFtpSitesManager.getSitesArray().length == 0){
+		if (osFtpSitesManager.getSitesArray().length === 0){
 			disableEditSite();
 		}
 	}
@@ -199,45 +198,6 @@ define(function (require, exports) {
 				invokeFtpScript(ftpScript);
 			}
 		});
-/*
-		var confirmDialog = osFtpDialog.showConfirmDirectoryUpload(site);
-
-		//listen for escape key
-		handleEscape(confirmDialog);
-
-		//handle cancel button
-		handleCancel(confirmDialog);
-
-		//listen for ok
-		$('button[data-button-id="' + Dialog.DIALOG_BTN_OK + '"').click(function () {
-
-			//log that we are saving this site
-			console.log('Dialog closed with save');
-
-			//turn off listeners
-			disableListeners();
-
-			//close the dialog
-			confirmDialog.close();
-
-			//build our ftp script
-			var ftpScript = osFtpScripts.generateUploadScript(fileList, site);
-
-			//invoke script
-			invokeFtpScript(ftpScript);
-
-		});
-
-
-		//listen for dialog done
-		confirmDialog.done(function () {
-
-			//log that the modal is gone
-			console.log('Dialog modal is dismissed');
-
-		});
-*/
-
 	}
 
 
