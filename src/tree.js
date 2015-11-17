@@ -27,7 +27,7 @@ define (function (require, exports){
 	 * Add child directory node to the current node
 	 **/
 	TreeNode.prototype.addChildDir = function(dirName, relativePath, isSelected){
-		if (!osFtpCommon.isSet(this.childDirs[dirName])){
+		if (this.getChildDirIndexByName(dirName) === -1){
 			var newNode = new TreeNode(dirName);
 			newNode.parent = this;
 			newNode.type   = osFtpGlobals.TREE_TYPE_DIR;
@@ -36,7 +36,7 @@ define (function (require, exports){
 			newNode.relativePath = relativePath;
 			newNode.isSelected = isSelected;
 
-			this.childDirs[dirName] = newNode;
+			this.childDirs.push(newNode);
 			registerTreeNode(newNode);
 
 			console.log(newNode);
@@ -48,20 +48,20 @@ define (function (require, exports){
 	 **/
 	TreeNode.prototype.addChildFiles = function(fileName, relativePath, isSelected){
 		// Validate imput
-		var key = fileName.split(' ').join('_');
+		if (this.getChildFileIndexByName(fileName) === -1){
+			var newNode = new TreeNode(fileName);
+			newNode.parent = this;
+			newNode.type   = osFtpGlobals.TREE_TYPE_FILE;
+			newNode.level  = this.level + 1;
 
-		var newNode = new TreeNode(fileName);
-		newNode.parent = this;
-		newNode.type   = osFtpGlobals.TREE_TYPE_FILE;
-		newNode.level  = this.level + 1;
+			newNode.relativePath = relativePath;
+			newNode.isSelected   = isSelected;
 
-		newNode.relativePath = relativePath;
-		newNode.isSelected   = isSelected;
+			this.childFiles.push(newNode);
+			registerTreeNode(newNode);
 
-		this.childFiles[key] = newNode;
-		registerTreeNode(newNode);
-
-		console.log(newNode);
+			console.log(newNode);
+		}
 	};
 
 	/**
@@ -81,6 +81,8 @@ define (function (require, exports){
 		var currPath = '';
 		var nodeName = '';
 
+		console.log(listDir);
+
 		// Loop through and build the tree
 		for (var i = 0; i < listDir.length - 1; i++){
 			nodeName = listDir[i];
@@ -91,7 +93,7 @@ define (function (require, exports){
 			}
 			currNode.addChildDir(nodeName, currPath, isSelected);
 
-			currNode = currNode.childDirs[nodeName];
+			currNode = currNode.childDirs[currNode.getChildDirIndexByName(nodeName)];
 		}
 
 		// The last element of the array is always the file.
@@ -111,6 +113,37 @@ define (function (require, exports){
 
 		return currNode;
 	};
+
+	/**
+	 *
+	 **/
+	TreeNode.prototype.getChildDirIndexByName = function (dirName){
+		var retIndex = -1;
+
+		for (var index in this.childDirs){
+			if (this.childDirs[index].name === dirName){
+				retIndex = index;
+			}
+		}
+
+		return retIndex;
+	};
+
+	/**
+	 *
+	 **/
+	TreeNode.prototype.getChildFileIndexByName = function (fileName){
+		var retIndex = -1;
+
+		for (var index in this.childFiles){
+			if (this.childFiles[index] === fileName){
+				retIndex = index;
+			}
+		}
+
+		return retIndex;
+	};
+
 
 	/**
 	 * Search and return the node that contain the input id
