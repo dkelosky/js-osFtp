@@ -24,7 +24,7 @@ define(function (require, exports) {
 	var osFtpStrings = require('strings');
 	var osFtpSitesManager = require('src/sitesManager');
 	var osFtpSiteDialog   = require('src/ftpSiteDialog');
-
+	var osFtpSelectDialog = require('src/listSelectionDialog');
 
 	/**
 	 * Exported functions
@@ -33,6 +33,7 @@ define(function (require, exports) {
 	exports.handleEditSite       = handleEditSite;
 	exports.handleRunScript      = handleRunScript;
 	exports.handleRunSite        = handleRunSite;
+	exports.handleUploadProject  = handleUploadProject;
 
 	/**
 	 * Handler function for when a new site is added or an existing site is updated
@@ -51,9 +52,60 @@ define(function (require, exports) {
 	/**
 	 * Handler function for upload the entire project to site.
 	 */
-	function handlerUploadProject(site){
+	function handleUploadProject(){
+		console.log('handleUploadProject()');
+
+		//radio button site name
+		var RADIO_SITE_NAME = 'site';
+
+		//show dialog
+		var selectDialog = osFtpDialog.showSiteSelectDialog(osFtpSitesManager.getSitesArray(), RADIO_SITE_NAME);
+
+		var selectedSiteIndex;
+
+		//listen for escape key
+		osFtpHandlersHelpers.handleEscape(selectDialog);
+
+		//handle cancel button
+		osFtpHandlersHelpers.handleCancel(selectDialog);
+
+		//listen for ok
+		$('button[data-button-id="' + Dialog.DIALOG_BTN_OK + '"').click(function () {
+
+			//get the site that was checked
+			selectedSiteIndex = $('input[name=' + RADIO_SITE_NAME + ']:checked').val();
+
+			//if no option was choosen
+			if (!osFtpCommon.isSet(selectedSiteIndex))
+				console.log('No site was selected');
+
+			//log that we are closing
+			console.log('Dialog closed with save');
+
+			//turn off listeners
+			osFtpHandlersHelpers.disableListeners();
+
+			//close the dialog
+			selectDialog.close();
+
+		});
 
 
+		//listen for dialog done
+		selectDialog.done(function () {
+			//log that the modal is gone
+			console.log('Dialog modal is dismissed');
+
+			var sitesArr = osFtpSitesManager.getSitesArray();
+			//if edit site index was set
+			if (osFtpCommon.isSet(selectedSiteIndex)) {
+				var site = sitesArr[selectedSiteIndex];
+				var listFiles = osFtpCommon.getProjectFiles();
+
+				osFtpHandlersHelpers.uploadDirectory(site, listFiles);
+			}
+
+		});
 	}
 
 	/**

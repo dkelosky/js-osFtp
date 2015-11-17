@@ -55,6 +55,7 @@ define(function (require, exports) {
 
 		if (osFtpSitesManager.getSitesArray().length > 0){
 			enableEditSite();
+			enableFtpProject();
 		}
 
 		osFtpPackage.getPackage(function(packageJson, cmdId, cmdLabel) {
@@ -110,9 +111,7 @@ define(function (require, exports) {
 			//register command and add a context menu to create a site
 			CommandManager.register(osFtpStrings.COMMAND_EDIT_SITE_LABEL, editId, osFtpHandlers.handleEditSite);
 			osFtpMenu.addToContextMenus(editId, false, newId, false);
-
 		});
-
 	}
 
 
@@ -120,7 +119,6 @@ define(function (require, exports) {
 	 * Disables the edit command for sites (cannot deregister the command)
 	 */
 	function disableEditSite() {
-
 		//log this call
 		console.log('disableEditSite();');
 
@@ -130,11 +128,38 @@ define(function (require, exports) {
 
 			//remove from the menu
 			osFtpMenu.removeFromContextMenus(editId);
-
 		});
+	}
 
+	/**
+     * Enable the FTP project command
+	 **/
+	function enableFtpProject(){
+		console.log('enableFtpProject()');
 
+		osFtpPackage.getPackage(function(packageJson) {
 
+			var editId    = packageJson.name + osFtpGlobals.COMMAND_EDIT_SITE_ID;
+			var ftpSiteId = packageJson.name + osFtpGlobals.COMMAND_FTP_PROJECT_ID;
+
+			//register command and add a context menu to create a site
+			CommandManager.register(osFtpStrings.COMMAND_FTP_PROJECT_LABEL, ftpSiteId, osFtpHandlers.handleUploadProject);
+			osFtpMenu.addToContextMenus(ftpSiteId, false, editId, false);
+		});
+	}
+
+	/**
+	 * Disable FTP project command
+	 **/
+	function disableFtpProject(){
+		console.log('disableFtpProject()');
+
+		osFtpPackage.getPackage(function(packageJson) {
+			var ftpProjectId = packageJson.name + osFtpGlobals.COMMAND_FTP_PROJECT_ID;
+
+			//remove from the menu
+			osFtpMenu.removeFromContextMenus(ftpProjectId);
+		});
 	}
 
 

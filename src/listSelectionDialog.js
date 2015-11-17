@@ -165,7 +165,11 @@ define(function (require, exports){
 			} else if (type === 'file-node'){
 				var toggleSize = $("#list-selection-dialog .toggle").css('width');
 				var togglePad  = $("#list-selection-dialog .toggle").css('padding-right');
-				padSize += Number(toggleSize.replace('px','')) + Number(togglePad.replace('px',''));
+
+				if (osftpCommon.isSet(toggleSize) && osftpCommon.isSet(togglePad)){
+					padSize += Number(toggleSize.replace('px','')) + Number(togglePad.replace('px',''));
+				}
+
 				$this.css("padding-left", padSize.toString() + "px");
 			}
 		});
@@ -294,6 +298,7 @@ define(function (require, exports){
 		for (var i in testingList){
 			inputList.push(testingList[i].relativePath);
 		}
+		inputList.push('node-v4.2.1/test/fixtures/keys/0-dns-cert.pem');
 
 		if (testingList.length > 0){
 			dialog1 = newDialog(inputList, testingList[0].rootDir);
