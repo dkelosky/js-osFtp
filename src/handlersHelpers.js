@@ -91,6 +91,7 @@ define(function (require, exports) {
 
 		if (osFtpSitesManager.getSitesArray().length === 0){
 			disableEditSite();
+			disableFtpProject();
 		}
 	}
 
