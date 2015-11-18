@@ -1,4 +1,4 @@
-define(function (require, exports, module) {
+define(function (require, exports) {
 	'use strict';
 
 	var Project = brackets.getModule('project/ProjectManager');
@@ -70,6 +70,7 @@ define(function (require, exports, module) {
 
 		var returnList = [];
 		var fileList = [];
+		var i;
 
 		// Get the root directory and selected item
 		var rootDir = Project.getProjectRoot().fullPath;
@@ -84,7 +85,7 @@ define(function (require, exports, module) {
 
 			// Loop through all file in root directory to locate file that contain
 			//   the selected directory.
-			var filesInDir = Project.getAllFiles(function (File, number) {
+			Project.getAllFiles(function (File) {
 				var currentFile = File.fullPath;
 				if (currentFile.indexOf(currentDir) > -1) {
 					fileList.push(File);
@@ -97,7 +98,7 @@ define(function (require, exports, module) {
 		}
 
 		// Format the return object
-		for (var i = 0; i < fileList.length; i++) {
+		for (i = 0; i < fileList.length; i++) {
 
 			var object = {
 				rootDir: rootDir,
@@ -111,7 +112,7 @@ define(function (require, exports, module) {
 			returnList.push(object);
 		}
 
-		for (var i = 0; i < returnList.length; i++) {
+		for (i = 0; i < returnList.length; i++) {
 			console.log(JSON.stringify(returnList[i]));
 		}
 
@@ -136,7 +137,7 @@ define(function (require, exports, module) {
 
 		var rootDir = Project.getProjectRoot().fullPath;
 
-		Project.getAllFiles(function (File, number) {
+		Project.getAllFiles(function (File) {
 
 			var object = {
 				rootDir: rootDir,
@@ -177,6 +178,8 @@ define(function (require, exports, module) {
 		var isCheckbox = false;
 		var cellId;
 		var tableId = tableDiv + '-table';
+		var row = 1;
+		var	rowData;
 
 		var html = '<table id="' + tableId + '" class="table table-striped table-bordered" >';
 
@@ -189,8 +192,8 @@ define(function (require, exports, module) {
 
 		if (isSet(data)) {
 			if ($.isArray(data)) {
-				for (var row in data) {
-					var rowData = data[row];
+				for (row in data) {
+					rowData = data[row];
 
 					html += '<tr id="row' + row + '">';
 
@@ -213,7 +216,7 @@ define(function (require, exports, module) {
 				}
 			} else if (data.hasOwnProperty('tableData')) {
 				for (var i = 0; i < data.tableData.length; i++) {
-					var rowData = data.tableData[i];
+					rowData = data.tableData[i];
 
 					html += '<tr id="row' + i + '">';
 
@@ -248,7 +251,7 @@ define(function (require, exports, module) {
 		};
 
 		console.log($table);
-		$table.find("tr").each(function (rowIndex, r) {
+		$table.find("tr").each(function () {
 			var rowData = [];
 			$(this).find("td").each(function (colIndex, c) {
 				rowData.push(c.textContent);
