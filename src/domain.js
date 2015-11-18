@@ -60,10 +60,10 @@ define(function (require, exports, module) {
 	 * Function wrapper to invoke our domain function
 	 * @param {string} scriptFile File to use as an ftp script file
 	 */
-	function runFtpCommandStdin(file, data) {
+	function runFtpCommandStdin(length, file, data) {
 
 		//log input
-		console.log('runFtpCommandStdin(' + file + ', ...);');
+		console.log('runFtpCommandStdin(' + length + ', ' + file + ', ...);');
 
 		//get package information
 		osFtpPackage.getPackage(validateNode, file, data);

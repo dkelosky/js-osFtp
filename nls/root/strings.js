@@ -41,6 +41,7 @@ define({
 	CHECKBOX_READ: 'Read',
 	CHECKBOX_WRITE: 'Write',
 	CHECKBOX_EXECUTE: 'Execute',
+	SELECTED_EMPTY: 'Selected directory is empty',
 	COMMAND_PRODUCT_SETTINGS_LABEL: 'OS FTP Setting\u2026',
 	COMMAND_RUN_SCRIPT_LABEL: 'Run as FTP Script',
 	COMMAND_GET_FROM_SITE_LABEL: 'Get from FTP Site\u2026',

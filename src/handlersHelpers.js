@@ -167,7 +167,7 @@ define(function (require, exports) {
 	 * [[Description]]
 	 * @param {Object} site Object representing the site to upload to
 	 */
-	function invokeFtpScript(ftpScript) {
+	function invokeFtpScript(ftpScript, length) {
 
 		//if the script is defined
 		if (osFtpCommon.isSet(ftpScript)) {
@@ -176,7 +176,7 @@ define(function (require, exports) {
 			var scriptFileName = osFtpGlobals.FTP_SCRIPT_FILE_NAME + osFtpGlobals.FTP_SCRIPT_FILE_EXTENSION;
 
 			//invoke node js to build and run our ftp script file
-			osFtpDomain.runFtpCommandStdin(scriptFileName, ftpScript);
+			osFtpDomain.runFtpCommandStdin(length, scriptFileName, ftpScript);
 
 		}
 	}
@@ -190,7 +190,7 @@ define(function (require, exports) {
 
 		//show dialog
 		var dlgInputList = [];
-		var rootDir = "Selected directory is Empty";
+		var rootDir = osFtpStrings.SELECTED_EMPTY;
 		if (fileList.length > 0){
 			rootDir = fileList[0].rootDir;
 			for (var file in fileList){
@@ -220,7 +220,7 @@ define(function (require, exports) {
 				var ftpScript = osFtpScripts.generateUploadScript(fileList, site);
 
 				//invoke script
-				invokeFtpScript(ftpScript);
+				invokeFtpScript(ftpScript, fileList.length);
 			}
 		});
 	}

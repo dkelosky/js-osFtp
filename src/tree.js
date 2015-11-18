@@ -221,7 +221,7 @@ define (function (require, exports){
 		}
 
 		return retCount;
-	}
+	};
 
 	/**
 	 *
@@ -237,7 +237,7 @@ define (function (require, exports){
 		}
 
 		return retCount;
-	}
+	};
 
 	/**
 	 * generate new Tree function
