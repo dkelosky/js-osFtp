@@ -87,7 +87,7 @@ define({
 	STATUS_FTP_INDICATOR: 'OS FTP',
 	STATUS_FTP_TOOLTIP: 'OS FTP Status',
 	UPLOAD: 'Upload',
-	OF: 'of',
+	UNKNOWN: 'Unknown script in use',
 	SELECTED: 'selected',
 	FILES: 'file(s)',
 	STATUS_LOADING: 'Loading\u2026'

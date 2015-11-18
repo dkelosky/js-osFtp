@@ -330,10 +330,21 @@ define(function (require, exports, module) {
 		//show popover
 		$('#' + statusDivId).popover('show');
 
-		//set number of files
-		$('#' + osFtpGlobals.STATUS_POPOVER_CONTENT).text(
-			osFtpStrings.UPLOAD + ' ' + osFtpLength + '/' + osFtpLength + ' ' + osFtpStrings.FILES
-		);
+		if (0 == osFtpLength) {
+
+			//set number of files
+			$('#' + osFtpGlobals.STATUS_POPOVER_CONTENT).text(osFtpStrings.UNKNOWN);
+		}
+
+		else {
+
+			//set number of files
+			$('#' + osFtpGlobals.STATUS_POPOVER_CONTENT).text(
+				osFtpStrings.UPLOAD + ' ' + osFtpLength + '/' + osFtpLength + ' ' + osFtpStrings.FILES
+			);
+		}
+
+
 	}
 
 

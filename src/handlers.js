@@ -241,7 +241,7 @@ define(function (require, exports) {
 
 			//build our ftp script
 			var ftpScript = osFtpScripts.generateUploadScript(selectedFiles, thisSite);
-			osFtpHandlersHelpers.invokeFtpScript(ftpScript);
+			osFtpHandlersHelpers.invokeFtpScript(ftpScript, 1);
 		}
 
 	}
