@@ -208,6 +208,38 @@ define (function (require, exports){
 	};
 
 	/**
+	 *
+	 **/
+	TreeNode.prototype.getTotalFilesCount = function(){
+		var listNode = this.getRootNode().nodeInventory;
+		var retCount = 0;
+
+		for (var index in listNode){
+			if (listNode[index].type === osFtpGlobals.TREE_TYPE_FILE){
+				retCount++;
+			}
+		}
+
+		return retCount;
+	}
+
+	/**
+	 *
+	 **/
+	TreeNode.prototype.getSelectedFileCount = function(){
+		var listNode = this.getRootNode().nodeInventory;
+		var retCount = 0;
+
+		for (var index in listNode){
+			if (listNode[index].type === osFtpGlobals.TREE_TYPE_FILE && listNode[index].isSelected){
+				retCount++;
+			}
+		}
+
+		return retCount;
+	}
+
+	/**
 	 * generate new Tree function
 	 */
 

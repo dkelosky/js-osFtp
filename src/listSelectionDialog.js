@@ -84,6 +84,8 @@ define(function (require, exports){
 		//Reset toggle listeners
 		resetTreeToggle(treeNode, this.$dialog);
 		resetTreeCheckbox(treeNode, this.$dialog);
+
+		updateSelectedFileCount(treeNode, this.$dialog);
 	};
 
 	/**
@@ -138,11 +140,14 @@ define(function (require, exports){
 	/**
 	 *
 	 **/
-	function setDialogStatus(status, $dialog){
-		console.log('change status to ' + status);
-		$('#dialog-status', $dialog).text(status);
-	}
+	function updateSelectedFileCount(treeNode, $dialog){
+		var selected = treeNode.getSelectedFileCount();
+		var total    = treeNode.getTotalFilesCount();
 
+		var dispText = selected + '/' + total + ' selected';
+		console.log(dispText);
+		$('#dialog-status', $dialog).text(dispText);
+	}
 
 	/**
 	 *
@@ -165,7 +170,11 @@ define(function (require, exports){
 			} else if (type === 'file-node'){
 				var toggleSize = $("#list-selection-dialog .toggle").css('width');
 				var togglePad  = $("#list-selection-dialog .toggle").css('padding-right');
-				padSize += Number(toggleSize.replace('px','')) + Number(togglePad.replace('px',''));
+
+				if (osftpCommon.isSet(toggleSize) && osftpCommon.isSet(togglePad)){
+					padSize += Number(toggleSize.replace('px','')) + Number(togglePad.replace('px',''));
+				}
+
 				$this.css("padding-left", padSize.toString() + "px");
 			}
 		});
@@ -177,7 +186,6 @@ define(function (require, exports){
 
 	function resetTreeToggle(treeNode, $dialog){
 		$("#" + treeNode.htmlId, $dialog).on('click', '.toggle', function () {
-			setDialogStatus(Strings.STATUS_LOADING, $dialog);
 
 			// Get all <tr>'s of the greater depth
 			var findChildren = function (tr) {
@@ -220,14 +228,13 @@ define(function (require, exports){
 				}
 			}
 
-			setDialogStatus('', $dialog);
-
 			return children;
 		});
 	}
 
 	function resetTreeCheckbox(treeNode, $dialog){
 		$("#" + treeNode.htmlId, $dialog).on('click', 'input:checkbox', function () {
+
 			// Get all <tr>'s of the greater depth
 			var el = $(this);
 			var tr = el.closest('tr'); //Get <tr> parent of toggle button
@@ -236,6 +243,8 @@ define(function (require, exports){
 			var checked = el.is(':checked');
 
 			var node = treeNode.getNodeByHtmlId(trId);
+			node.isSelected = checked;
+
 			var children = node.getChildren();
 			for (var index in children){
 				var child = children[index];
@@ -245,6 +254,8 @@ define(function (require, exports){
 					$('#' + child.htmlId + ' input:checkbox', $dialog).prop('checked', checked);
 				}
 			}
+
+			updateSelectedFileCount(treeNode, $dialog);
 		});
 	}
 
@@ -294,6 +305,7 @@ define(function (require, exports){
 		for (var i in testingList){
 			inputList.push(testingList[i].relativePath);
 		}
+		inputList.push('node-v4.2.1/test/fixtures/keys/0-dns-cert.pem');
 
 		if (testingList.length > 0){
 			dialog1 = newDialog(inputList, testingList[0].rootDir);

@@ -10,6 +10,7 @@ define(function (require, exports) {
 	var COMMAND_NEW_SITE_ID = '.osftp-new-site';
 	var COMMAND_RUN_SCRIPT_ID = '.osftp-run-script';
 	var COMMAND_RUN_SITE_BASE_ID = '.osftp-run-';
+	var COMMAND_FTP_PROJECT_ID = '.osftp-ftp-project';
 
 	var COMMAND_RESTART_ID = 'debug.refreshWindow';
 
@@ -42,6 +43,7 @@ define(function (require, exports) {
 	exports.COMMAND_NEW_SITE_ID = COMMAND_NEW_SITE_ID;
 	exports.COMMAND_RUN_SCRIPT_ID = COMMAND_RUN_SCRIPT_ID;
 	exports.COMMAND_RUN_SITE_BASE_ID = COMMAND_RUN_SITE_BASE_ID;
+	exports.COMMAND_FTP_PROJECT_ID = COMMAND_FTP_PROJECT_ID;
 
 	exports.COMMAND_RESTART_ID = COMMAND_RESTART_ID;
 
