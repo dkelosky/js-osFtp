@@ -144,7 +144,7 @@ define(function (require, exports){
 		var selected = treeNode.getSelectedFileCount();
 		var total    = treeNode.getTotalFilesCount();
 
-		var dispText = selected + '/' + total + ' selected';
+		var dispText = selected + '/' + total + ' ' + Strings.SELECTED;
 		console.log(dispText);
 		$('#dialog-status', $dialog).text(dispText);
 	}

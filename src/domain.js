@@ -292,6 +292,9 @@ define(function (require, exports, module) {
 		//log call
 		console.log('showBusy()');
 
+		var parsedName;
+		var statusDivId;
+
 		//indicate that we're busy
 		osFtpBusy = true;
 
@@ -299,8 +302,26 @@ define(function (require, exports, module) {
 		StatusBar.show();
 		StatusBar.showIndicators();
 
-		//alter status bar color
+		//alter status bar color through Brackets API
 		StatusBar.updateIndicator(osFtpPackageJson.name + osFtpGlobals.STATUS_INDICATOR_ID, true, 'osftp-status-busy');
+
+		/**
+		 * Brackets uses the ID you pass to the StatusBar object functions to generate an ID that is the parsed
+		 * package.json "name" where name is author.extension but only using the "author" part for the id, adding a
+		 * hyphen, and the ID passed into the API, so:
+		 *
+		 * author-ID
+		 */
+
+		//parse out the author nae
+		parsedName = osFtpPackageJson.name.split('.');
+		statusDivId = parsedName[0] + '-' + osFtpGlobals.STATUS_INDICATOR_HTML_ID;
+
+		//log what we used in case Brackets changes convention and we need to alter this
+		console.log('Updating status bar id: ' + statusDivId);
+
+		$('#' + statusDivId).popover('show');
+
 
 	}
 
@@ -335,6 +356,9 @@ define(function (require, exports, module) {
 		//log event
 		console.log('clearStatus();');
 
+		var parsedName;
+		var statusDivId;
+
 		//indcate that we're free
 		osFtpBusy = false;
 
@@ -346,6 +370,20 @@ define(function (require, exports, module) {
 
 				//alter status bar color
 				StatusBar.updateIndicator(osFtpPackageJson.name + osFtpGlobals.STATUS_INDICATOR_ID, true, '');
+
+				/**
+				 * Brackets uses the ID you pass to the StatusBar object functions to generate an ID that is the parsed
+				 * package.json "name" where name is author.extension but only using the "author" part for the id, adding a
+				 * hyphen, and the ID passed into the API, so:
+				 *
+				 * author-ID
+				 */
+
+				//parse out the author nae
+				parsedName = osFtpPackageJson.name.split('.');
+				statusDivId = parsedName[0] + '-' + osFtpGlobals.STATUS_INDICATOR_HTML_ID;
+
+				$('#' + statusDivId).popover('hide');
 
 			},
 

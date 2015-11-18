@@ -29,7 +29,7 @@ define(function (require, exports) {
 
 	var SETTINGS_PREF = '.setting-preferences';
 
-	var STATUS_INDICATOR_HTML_ID = 'status-indicator';
+	var STATUS_INDICATOR_HTML_ID = 'osftp-status-indicator';
 	var STATUS_INDICATOR_ID = '.status-indicator';
 
 	var STATUS_VISIBLE_TIME = 3 * 1000;

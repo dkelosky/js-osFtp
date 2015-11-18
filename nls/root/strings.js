@@ -85,5 +85,9 @@ define({
 	FAILURE_FTP_RUN_DIRECTORY: 'You must select an individual file to run as an FTP script.  Directories are ineligbile.',
 	STATUS_FTP_INDICATOR: 'OS FTP',
 	STATUS_FTP_TOOLTIP: 'OS FTP Status',
+	UPLOAD: 'Upload',
+	OF: 'of',
+	SELECTED: 'selected',
+	FILES: 'file(s)',
 	STATUS_LOADING: 'Loading\u2026'
 });

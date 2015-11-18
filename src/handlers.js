@@ -26,6 +26,7 @@ define(function (require, exports) {
 	var osFtpSiteDialog   = require('src/ftpSiteDialog');
 	var osFtpSelectDialog = require('src/listSelectionDialog');
 
+
 	/**
 	 * Exported functions
 	 */
