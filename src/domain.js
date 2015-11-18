@@ -9,6 +9,7 @@ define(function (require, exports, module) {
 	var osFtpPackageJson;
 	var osFtpDomainName = 'osFtp';
 	var osFtpDomainMessage = osFtpDomainName + '-' + 'msg';
+	var osFtpLength = 0;
 
 
 	/**
@@ -51,6 +52,9 @@ define(function (require, exports, module) {
 		//log input
 		console.log('runFtpCommand(' + file + ');');
 
+		//clear global length
+		osFtpLength = 0;
+
 		//get package information
 		osFtpPackage.getPackage(validateNode, file);
 	}
@@ -64,6 +68,9 @@ define(function (require, exports, module) {
 
 		//log input
 		console.log('runFtpCommandStdin(' + length + ', ' + file + ', ...);');
+
+		//save global length
+		osFtpLength = length;
 
 		//get package information
 		osFtpPackage.getPackage(validateNode, file, data);
@@ -320,9 +327,13 @@ define(function (require, exports, module) {
 		//log what we used in case Brackets changes convention and we need to alter this
 		console.log('Updating status bar id: ' + statusDivId);
 
+		//show popover
 		$('#' + statusDivId).popover('show');
 
-
+		//set number of files
+		$('#' + osFtpGlobals.STATUS_POPOVER_CONTENT).text(
+			osFtpStrings.UPLOAD + ' ' + osFtpLength + '/' + osFtpLength + ' ' + osFtpStrings.FILES
+		);
 	}
 
 
@@ -382,6 +393,11 @@ define(function (require, exports, module) {
 				//parse out the author nae
 				parsedName = osFtpPackageJson.name.split('.');
 				statusDivId = parsedName[0] + '-' + osFtpGlobals.STATUS_INDICATOR_HTML_ID;
+
+				//set number of files
+				$('#' + osFtpGlobals.STATUS_POPOVER_CONTENT).text(
+					osFtpStrings.UPLOAD + '  /  ' + osFtpStrings.FILES
+				);
 
 				$('#' + statusDivId).popover('hide');
 

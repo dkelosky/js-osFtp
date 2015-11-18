@@ -30,6 +30,7 @@ define(function (require, exports) {
 	var SETTINGS_PREF = '.setting-preferences';
 
 	var STATUS_INDICATOR_HTML_ID = 'osftp-status-indicator';
+	var STATUS_POPOVER_CONTENT = 'osftp-status-content';
 	var STATUS_INDICATOR_ID = '.status-indicator';
 
 	var STATUS_VISIBLE_TIME = 3 * 1000;
@@ -63,6 +64,7 @@ define(function (require, exports) {
 	exports.SETTINGS_PREF = SETTINGS_PREF;
 
 	exports.STATUS_INDICATOR_HTML_ID = STATUS_INDICATOR_HTML_ID;
+	exports.STATUS_POPOVER_CONTENT = STATUS_POPOVER_CONTENT;
 	exports.STATUS_INDICATOR_ID = STATUS_INDICATOR_ID;
 
 	exports.STATUS_VISIBLE_TIME = STATUS_VISIBLE_TIME;

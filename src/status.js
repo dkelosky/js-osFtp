@@ -38,6 +38,11 @@ define(function (require, exports) {
 	 */
 	function addStatusIndicator(packageJson) {
 
+		var popoverContent =
+			'<div id=\'' + osFtpGlobals.STATUS_POPOVER_CONTENT + '\'>' +
+			osFtpStrings.UPLOAD + '  /  ' + osFtpStrings.FILES +
+			'</div>';
+
 		//build status indicator
 		var statusIndicatorHtml =
 			$('<div id="' +
@@ -46,8 +51,9 @@ define(function (require, exports) {
 			'class="osftp-status" ' +
 			'data-container="body" ' +
 			'data-toggle="popover" ' +
+			'data-html="true" ' +
 			'data-placement="top" ' +
-			'data-content="test">' +
+			'data-content="' + popoverContent + '">' +
 			osFtpStrings.STATUS_FTP_INDICATOR +
 			'</div>');
 
