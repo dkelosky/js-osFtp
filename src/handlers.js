@@ -26,6 +26,7 @@ define(function (require, exports) {
 	var osFtpSiteDialog   = require('src/ftpSiteDialog');
 	var osFtpSelectDialog = require('src/listSelectionDialog');
 
+
 	/**
 	 * Exported functions
 	 */
@@ -240,7 +241,7 @@ define(function (require, exports) {
 
 			//build our ftp script
 			var ftpScript = osFtpScripts.generateUploadScript(selectedFiles, thisSite);
-			osFtpHandlersHelpers.invokeFtpScript(ftpScript);
+			osFtpHandlersHelpers.invokeFtpScript(ftpScript, 1);
 		}
 
 	}

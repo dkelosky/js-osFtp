@@ -41,6 +41,7 @@ define({
 	CHECKBOX_READ: 'Read',
 	CHECKBOX_WRITE: 'Write',
 	CHECKBOX_EXECUTE: 'Execute',
+	SELECTED_EMPTY: 'Selected directory is empty',
 	COMMAND_PRODUCT_SETTINGS_LABEL: 'OS FTP Setting\u2026',
 	COMMAND_RUN_SCRIPT_LABEL: 'Run as FTP Script',
 	COMMAND_GET_FROM_SITE_LABEL: 'Get from FTP Site\u2026',
@@ -85,5 +86,9 @@ define({
 	FAILURE_FTP_RUN_DIRECTORY: 'You must select an individual file to run as an FTP script.  Directories are ineligbile.',
 	STATUS_FTP_INDICATOR: 'OS FTP',
 	STATUS_FTP_TOOLTIP: 'OS FTP Status',
+	UPLOAD: 'Upload',
+	UNKNOWN: 'Unknown script in use',
+	SELECTED: 'selected',
+	FILES: 'file(s)',
 	STATUS_LOADING: 'Loading\u2026'
 });
