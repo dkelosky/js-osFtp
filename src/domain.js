@@ -9,6 +9,7 @@ define(function (require, exports, module) {
 	var osFtpPackageJson;
 	var osFtpDomainName = 'osFtp';
 	var osFtpDomainMessage = osFtpDomainName + '-' + 'msg';
+	var osFtpDomainData = osFtpDomainName + '-' + 'data';
 	var osFtpLength = 0;
 
 
@@ -156,6 +157,7 @@ define(function (require, exports, module) {
 		console.log('invokeNode(' + file + ', ...);');
 
 		var nodeExec;
+        var totalCount = 0;
 
 		//if we're already processing an FTP script
 		if (osFtpBusy) {
@@ -220,6 +222,26 @@ define(function (require, exports, module) {
 					nodeFail(response.message);
 
 			});
+
+			//set listener for PUT requests
+			osFtpDomain.on(osFtpDomainData, function (event, response) {
+
+				//log event
+				console.log('osFtpDomain.on(' + response.count + ');');
+
+                //update total count
+                totalCount += response.count;
+
+                //if we don't have a length, we're executing a users script
+                if (0 != osFtpLength) {
+
+                    //set number of files
+                    $('#' + osFtpGlobals.STATUS_POPOVER_CONTENT).text(
+                        osFtpStrings.UPLOAD + ' ' + totalCount + '/' + osFtpLength + ' ' + osFtpStrings.FILES
+                    );
+                }
+
+			});
 		}
 
 	}
@@ -234,7 +256,8 @@ define(function (require, exports, module) {
 		console.log('nodeDone()');
 
 		//disable listener
-		osFtpDomain.off('ftpMsg');
+		osFtpDomain.off(osFtpDomainMessage);
+		osFtpDomain.off(osFtpDomainData);
 
 		//show we're done
 		showDone();
@@ -256,7 +279,8 @@ define(function (require, exports, module) {
 		var dialogHtml;
 
 		//disable listener
-		osFtpDomain.off('ftpMsg');
+		osFtpDomain.off(osFtpDomainMessage);
+		osFtpDomain.off(osFtpDomainData);
 
 		//show we've had an error
 		showError();
@@ -330,17 +354,19 @@ define(function (require, exports, module) {
 		//show popover
 		$('#' + statusDivId).popover('show');
 
+        //if we don't have a length, we're executing a users script
 		if (0 == osFtpLength) {
 
 			//set number of files
 			$('#' + osFtpGlobals.STATUS_POPOVER_CONTENT).text(osFtpStrings.UNKNOWN);
 		}
 
+        //else start off
 		else {
 
 			//set number of files
 			$('#' + osFtpGlobals.STATUS_POPOVER_CONTENT).text(
-				osFtpStrings.UPLOAD + ' ' + osFtpLength + '/' + osFtpLength + ' ' + osFtpStrings.FILES
+				osFtpStrings.UPLOAD + ' ' + '0' + '/' + osFtpLength + ' ' + osFtpStrings.FILES
 			);
 		}
 
