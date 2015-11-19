@@ -363,7 +363,7 @@ maxerr: 50, node: true */
                 }
             });
 
-            //if stdout is at least as long as a failure message
+            //if stdout is at least as long as a message
             if (SCRIPT_PUT.length <= output.length) {
 
                 //get the current count

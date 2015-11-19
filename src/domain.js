@@ -256,7 +256,8 @@ define(function (require, exports, module) {
 		console.log('nodeDone()');
 
 		//disable listener
-		osFtpDomain.off('ftpMsg');
+		osFtpDomain.off(osFtpDomainMessage);
+		osFtpDomain.off(osFtpDomainData);
 
 		//show we're done
 		showDone();
@@ -278,7 +279,8 @@ define(function (require, exports, module) {
 		var dialogHtml;
 
 		//disable listener
-		osFtpDomain.off('ftpMsg');
+		osFtpDomain.off(osFtpDomainMessage);
+		osFtpDomain.off(osFtpDomainData);
 
 		//show we've had an error
 		showError();
