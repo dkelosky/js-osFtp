@@ -25,401 +25,436 @@
 maxerr: 50, node: true */
 
 (function () {
-	'use strict';
+    'use strict';
 
 
-	/**
-	 * Global variables
-	 */
-	var globalDomainManager;
-	var osFtpDomainName = 'osFtp';
-	var osFtpDomainMessage = osFtpDomainName + '-' + 'msg';
+    /**
+     * Global variables
+     */
+    var globalDomainManager;
+    var osFtpDomainName = 'osFtp';
+    var osFtpDomainMessage = osFtpDomainName + '-' + 'msg';
+    var osFtpDomainData = osFtpDomainName + '-' + 'data';
 
-	/**
-	 * We won't catch all errors but can some of the sever ones.  the only garunteed way to know if there is an error
-	 * in the ftp process is to analyze the console log on every ftp.
-	 */
-	var failureStrings = ['Unknown host', 'Not connected', 'Invalid command'];
-
-
-	/**
-	 * Exported functions
-	 */
-	exports.init = init;
+    /**
+     * We won't catch all errors but can some of the sever ones.  the only garunteed way to know if there is an error
+     * in the ftp process is to analyze the console log on every ftp.
+     */
+    var failureStrings = ['Unknown host', 'Not connected', 'Invalid command'];
+    var SCRIPT_PUT = 'PUT "';
 
 
-	/**
-	 * Initialize this domain
-	 * @param {Object} domainManager See Brackets documentation on the domainManger object
-	 */
-	function init(domainManager) {
+    /**
+     * Exported functions
+     */
+    exports.init = init;
 
-		//save reference to domain manager
-		globalDomainManager = domainManager;
 
-		if (!domainManager.hasDomain(osFtpDomainName)) {
+    /**
+     * Initialize this domain
+     * @param {Object} domainManager See Brackets documentation on the domainManger object
+     */
+    function init(domainManager) {
 
-			//Bracket's doc makes me wonder - WHY?!
-			domainManager.registerDomain(osFtpDomainName, {
-				major: 0,
-				minor: 1
-			});
-		}
+        //save reference to domain manager
+        globalDomainManager = domainManager;
 
-		/**
-		 * The last three parameters of each domainManager are documentation for api usage
-		 */
-		domainManager.registerCommand(
-			osFtpDomainName, // domain name
-			'doFtp', // command name
-			doFtp, // command handler function
-			false, // this command is synchronous in Node
-			'overal description goes here', [{
-				name: 'scriptFile', // parameters
-				type: 'string',
-				description: 'Fully qualified FTP script file to execute'
+        if (!domainManager.hasDomain(osFtpDomainName)) {
+
+            //Bracket's doc makes me wonder - WHY?!
+            domainManager.registerDomain(osFtpDomainName, {
+                major: 0,
+                minor: 1
+            });
+        }
+
+        /**
+         * The last three parameters of each domainManager are documentation for api usage
+         */
+        domainManager.registerCommand(
+            osFtpDomainName, // domain name
+            'doFtp', // command name
+            doFtp, // command handler function
+            false, // this command is synchronous in Node
+            'overal description goes here', [{
+                name: 'scriptFile', // parameters
+                type: 'string',
+                description: 'Fully qualified FTP script file to execute'
       			}], [{
-				name: 'output1', // return values
-				type: 'number',
-				description: 'output 1 desc goes here'
+                name: 'output1', // return values
+                type: 'number',
+                description: 'output 1 desc goes here'
       			}]
 
-		);
+        );
 
-		/**
-		 * The last three parameters of each domainManager are documentation for api usage
-		 */
-		domainManager.registerCommand(
-			osFtpDomainName,
-			'doFtpStdin',
-			doFtpStdin,
-			false,
-			'overal description goes here', [{
-					name: 'scriptFile',
-					type: 'string',
-					description: 'Fully qualified FTP script file to execute'
+        /**
+         * The last three parameters of each domainManager are documentation for api usage
+         */
+        domainManager.registerCommand(
+            osFtpDomainName,
+            'doFtpStdin',
+            doFtpStdin,
+            false,
+            'overal description goes here', [{
+                    name: 'scriptFile',
+                    type: 'string',
+                    description: 'Fully qualified FTP script file to execute'
       			},
-				{
-					name: 'scriptFile',
-					type: 'string',
-					description: 'Fully qualified FTP script file to execute'
+                {
+                    name: 'scriptFile',
+                    type: 'string',
+                    description: 'Fully qualified FTP script file to execute'
 				}], [{
-				name: 'output1',
-				type: 'number',
-				description: 'output 1 desc goes here'
+                name: 'output1',
+                type: 'number',
+                description: 'output 1 desc goes here'
       			}]
-		);
+        );
 
-		domainManager.registerEvent(
-			osFtpDomainName, //domain name
-			osFtpDomainMessage, //event name
+        //notifications for messages
+        domainManager.registerEvent(
+            osFtpDomainName, //domain name
+            osFtpDomainMessage, //event name
       		[{
-				name: 'response',
-				type: 'Object',
-				description: 'contains Boolean "failure" and String "message"'
+                name: 'response',
+                type: 'Object',
+                description: 'contains Boolean "failure" and String "message"'
 			}]
-		);
+        );
 
-	}
+        //notifications for data
+        domainManager.registerEvent(
+            osFtpDomainName, //domain name
+            osFtpDomainData, //event name
+      		[{
+                name: 'data',
+                type: 'Object',
+                description: 'contains success counter'
+			}]
+        );
 
-	/**
-	 * Command handler
-	 * @param {string} ftpScriptFile Fully qualified FTP script file to execute
-	 */
-	function doFtp(cwd, ftpScriptFile) {
+    }
 
-		//log entry
-		console.log('doFtp();');
+    /**
+     * Command handler
+     * @param {string} ftpScriptFile Fully qualified FTP script file to execute
+     */
+    function doFtp(cwd, ftpScriptFile) {
 
-		//log input script file
-		console.log('Input file specified was: ' + ftpScriptFile);
+        //log entry
+        console.log('doFtp();');
 
-		//run ftp with options to suppress auto login and to supply a script file
-		new RunProcess(cwd, 'ftp', ['-ins:' + ftpScriptFile], function(isFailure, response) {
+        //log input script file
+        console.log('Input file specified was: ' + ftpScriptFile);
 
-			//log complete
-			console.log('doFtp(); complete');
+        //run ftp with options to suppress auto login and to supply a script file
+        new RunProcess(cwd, 'ftp', ['-ins:' + ftpScriptFile], function (isFailure, response) {
 
-			//process the response
-			processResponse(isFailure, response);
+            //log complete
+            console.log('doFtp(); complete');
 
-		});
-	}
+            //process the response
+            processResponse(isFailure, response);
 
-
-
-	/**
-	 * Determine whether the response is positive or not and route message back to Brackets side of things
-	 * @param {Boolean} isFailure Indicates whether we think there was a likely failure
-	 * @param {String} message   General information to accompany our indicator
-	 */
-	function  processResponse(isFailure, message) {
-
-		//log this
-		console.log('processResponse(' + isFailure + ', ' + message + '');
-
-		//assume success
-		var isSucces = true;
-
-		//perform analysis - more in the future
-		if (isFailure) isSucces = false;
-
-		//send a response
-		issueResponse(isSucces, message);
-	}
+        });
+    }
 
 
-	/**
-	 * Command handler
-	 * @param {string} ftpScriptFile Fully qualified FTP script file to execute
-	 */
-	function doFtpStdin(cwd, file, data) {
 
-		//log entry
-		console.log('doFtpStdin();');
+    /**
+     * Determine whether the response is positive or not and route message back to Brackets side of things
+     * @param {Boolean} isFailure Indicates whether we think there was a likely failure
+     * @param {String} message   General information to accompany our indicator
+     */
+    function processResponse(isFailure, message) {
 
-		//orient to node file system
-		var fs = require('fs');
+        //log this
+        console.log('processResponse(' + isFailure + ', ' + message + '');
 
-		//get directory where we want to store the scripts
-		var scriptDirectory = getScriptsDirectory(cwd);
+        //assume success
+        var isSucces = true;
 
-		//create directory if it doesn't exist
-		if (!fs.existsSync(scriptDirectory))
-			fs.mkdirSync(scriptDirectory);
+        //perform analysis - more in the future
+        if (isFailure) isSucces = false;
 
-		//sychronously open file
-		console.log('Opening file - ' + scriptDirectory + file);
-		var newFile = fs.openSync(scriptDirectory + file, 'w');
-
-		//sychronously write file
-		console.log('Writing file data...');
-		fs.writeSync(newFile, data);
-
-		//sychronously write file
-		console.log('Closing file...');
-		fs.closeSync(newFile);
-
-		//run ftp with options to suppress auto login and to supply a script file
-		new RunProcess(cwd, 'ftp', ['-ins:' + scriptDirectory + file], function(isFailure, response) {
-
-			//log complete
-			console.log('doFtpStdin(); complete');
-
-			//sychronously delete file
-			console.log('Deleteing file...');
-			fs.unlinkSync(scriptDirectory + file);
-
-			//process the response
-			processResponse(isFailure, response);
-
-		});
-	}
+        //send a response
+        issueResponse(isSucces, message);
+    }
 
 
-	/**
-	 * [[Description]]
-	 * @param {Boolean} successIndicator Indicates whether or not the processed ended successfully
-	 * @param {String} msg              Message to accompany the indicator
-	 */
-	function issueResponse(successIndicator, msg) {
+    /**
+     * Command handler
+     * @param {string} ftpScriptFile Fully qualified FTP script file to execute
+     */
+    function doFtpStdin(cwd, file, data) {
 
-		//log this
-		console.log('issueResponse(' + successIndicator + ', ' + msg + ');');
+        //log entry
+        console.log('doFtpStdin();');
 
-		//no real error checking is done for now
-		var response = {
-			success: successIndicator,
-			message: msg
-		};
+        //orient to node file system
+        var fs = require('fs');
 
-		//send event that the process completed
-		globalDomainManager.emitEvent(osFtpDomainName, osFtpDomainMessage, response);
-	}
+        //get directory where we want to store the scripts
+        var scriptDirectory = getScriptsDirectory(cwd);
+
+        //create directory if it doesn't exist
+        if (!fs.existsSync(scriptDirectory))
+            fs.mkdirSync(scriptDirectory);
+
+        //sychronously open file
+        console.log('Opening file - ' + scriptDirectory + file);
+        var newFile = fs.openSync(scriptDirectory + file, 'w');
+
+        //sychronously write file
+        console.log('Writing file data...');
+        fs.writeSync(newFile, data);
+
+        //sychronously write file
+        console.log('Closing file...');
+        fs.closeSync(newFile);
+
+        //run ftp with options to suppress auto login and to supply a script file
+        new RunProcess(cwd, 'ftp', ['-ins:' + scriptDirectory + file], function (isFailure, response) {
+
+            //log complete
+            console.log('doFtpStdin(); complete');
+
+            //sychronously delete file
+            console.log('Deleteing file...');
+            fs.unlinkSync(scriptDirectory + file);
+
+            //process the response
+            processResponse(isFailure, response);
+
+        });
+    }
 
 
-	/**
-	 * Wrapper for spawning a child process
-	 * @param {String} cwd      Current working directory command
-	 * @param {String} cmd      Executable command
-	 * @param {String} args     Arguments for cmd executable
-	 * @param {Function} callBack Callback for function complete
-	 */
-	function RunProcess(cwd, cmd, args, callBack) {
+    /**
+     * [[Description]]
+     * @param {Boolean} successIndicator Indicates whether or not the processed ended successfully
+     * @param {String} msg              Message to accompany the indicator
+     */
+    function issueResponse(successIndicator, msg) {
 
-		//log our spawn
-		console.log('runProcess(' + cwd + ', ...);');
+        //log this
+        console.log('issueResponse(' + successIndicator + ', ' + msg + ');');
 
-		//initialize variables
-		var spawn = require('child_process').spawn;
-		var os = require('os');
+        //no real error checking is done for now
+        var response = {
+            success: successIndicator,
+            message: msg
+        };
 
-		var isWindows = (os.platform() == 'win32');
+        //send event that the process completed
+        globalDomainManager.emitEvent(osFtpDomainName, osFtpDomainMessage, response);
+    }
 
-		var newCwd = cwd;
 
-		//alter CWD if windows
-		if (isWindows) {
+    /**
+     * Wrapper for spawning a child process
+     * @param {String} cwd      Current working directory command
+     * @param {String} cmd      Executable command
+     * @param {String} args     Arguments for cmd executable
+     * @param {Function} callBack Callback for function complete
+     */
+    function RunProcess(cwd, cmd, args, callBack) {
 
-			//switch directory indicator
-			newCwd = cwd.replace(/\//g, '\\');
+        //log our spawn
+        console.log('runProcess(' + cwd + ', ...);');
 
-			//log new directory
-			console.log('New CWD is - ' + newCwd);
+        //initialize variables
+        var spawn = require('child_process').spawn;
+        var os = require('os');
 
-		}
+        var isWindows = (os.platform() == 'win32');
 
-		//build spawn options
-		var options = {
+        var newCwd = cwd;
 
-			cwd: newCwd,
+        //alter CWD if windows
+        if (isWindows) {
 
-			/**
-			 * 'pipe'             - pipe parent to child for stdio
-			 * 'ipc'              - ???
-			 * 'ignore'           - ???
-			 * 'Stream object'    - ttyl, file, socket, or pipe
-			 * 'Positive integer' - integer is file descriptor (fd) that is currently open
-			 * 'null,undefined'   - means use defaults ('pipe' for stdin, stdout, and stder, else 'ignore')
-			 */
-			stdio: [
+            //switch directory indicator
+            newCwd = cwd.replace(/\//g, '\\');
+
+            //log new directory
+            console.log('New CWD is - ' + newCwd);
+
+        }
+
+        //build spawn options
+        var options = {
+
+            cwd: newCwd,
+
+            /**
+             * 'pipe'             - pipe parent to child for stdio
+             * 'ipc'              - ???
+             * 'ignore'           - ???
+             * 'Stream object'    - ttyl, file, socket, or pipe
+             * 'Positive integer' - integer is file descriptor (fd) that is currently open
+             * 'null,undefined'   - means use defaults ('pipe' for stdin, stdout, and stder, else 'ignore')
+             */
+            stdio: [
 			'pipe', //'pipe' is an option          --- child.stdin is shorthand for stdio[0]
 			'pipe', //fs.openSync('out.txt', 'w'), //--- child.stdout is shorthand for stdio[1]
 			'pipe' //fs.openSync('err.txt', 'w')  --- child.stderr is shorthand for stdio[3]
 			]
-		};
+        };
 
-		//log our spawn
-		console.log('Spawning command: ' + cmd + ' ' + args);
+        //log our spawn
+        console.log('Spawning command: ' + cmd + ' ' + args);
 
-		//spawn
-		var child = spawn(cmd, args, options);
+        //spawn
+        var child = spawn(cmd, args, options);
 
-		//init response variable
-		var isFailure = false;
-		var response = '';
+        //init response variable
+        var isFailure = false;
+        var response = '';
+        var totalCount = 0;
 
-		//must end input
-		child.stdin.end();
+        //must end input
+        child.stdin.end();
 
-		//log if error data present
-		child.on('error', function (err) {
+        //log if error data present
+        child.on('error', function (err) {
 
-			//log error
-			console.log('Failed to start child process.' + err.message);
+            //log error
+            console.log('Failed to start child process.' + err.message);
 
-		});
+        });
 
-		//listen for data present
-		child.stdout.on('data', function (buffer) {
+        //listen for data present
+        child.stdout.on('data', function (buffer) {
 
-			//get output
-			var output = buffer.toString();
-			var subOutput = '';
+            //get output
+            var output = buffer.toString();
+            var subOutput = '';
+            var count = 0;
 
-			//check for fatal errors
-			failureStrings.forEach(function(failMessage){
+            //check for fatal errors
+            failureStrings.forEach(function (failMessage) {
 
-				//if stdoutput is at least as long as a failure message
-				if (failMessage.length <= output.length) {
+                //if stdoutput is at least as long as a failure message
+                if (failMessage.length <= output.length) {
 
-					//substring it for this failure message
-					subOutput = output.substring(0, failMessage.length);
+                    //substring it for this failure message
+                    subOutput = output.substring(0, failMessage.length);
 
-					//if we match on failure, log this failure response
-					if (failMessage == subOutput)  {
+                    //if we match on failure, log this failure response
+                    if (failMessage == subOutput) {
 
-						//console
-						console.error('Fatal script error encountered on -' + subOutput);
+                        //console
+                        console.error('Fatal script error encountered on -' + subOutput);
 
-						//append failures until we die
-						response += (subOutput + '  ');
+                        //append failures until we die
+                        response += (subOutput + '  ');
 
-						//log this failure
-						isFailure = true;
+                        //log this failure
+                        isFailure = true;
 
-						//this hurts me more than it hurts you... :(
-						child.kill();
+                        //this hurts me more than it hurts you... :(
+                        child.kill();
 
-						//log this
-						console.log('child.kill();');
-					}
-				}
-			});
+                        //log this
+                        console.log('child.kill();');
+                    }
+                }
+            });
 
-			//log output
-			console.log('stdout: ' + output);
+            //if stdout is at least as long as a failure message
+            if (SCRIPT_PUT.length <= output.length) {
 
-		});
+                //get the current count
+                count = (output.match(new RegExp(SCRIPT_PUT, 'g')) || []).length;
 
-		//listen for data present
-		child.stderr.on('data', function (buffer) {
+                //add to total
+                totalCount += count;
 
-			//get output
-			var output = buffer.toString();
+                //send event that the process completed
+                globalDomainManager.emitEvent(osFtpDomainName, osFtpDomainData, {
+                    count: count
+                });
 
-			//console
-			console.error('Fatal script error encountered on -' + output);
+            }
 
-			//append failures until we die
-			response = output;
+            //log output
+            console.log('stdout: ' + output);
 
-			//log this failure
-			isFailure = true;
+            //log current total
+            console.log('Current total is - ' + totalCount);
 
-			//this hurts me more than it hurts you... :(
-			child.kill();
+        });
 
-			//log this
-			console.log('child.kill();');
+        //listen for data present
+        child.stderr.on('data', function (buffer) {
 
-			//log output
-			console.log('stderr: ' + output);
+            //get output
+            var output = buffer.toString();
 
-		});
+            //console
+            console.error('Fatal script error encountered on -' + output);
 
-		//listen for end of data
-		child.stdout.on('end', function () {
+            //append failures until we die
+            response = output;
 
-			//log that we reached the end
-			console.log('child.stdout.on("end");');
+            //log this failure
+            isFailure = true;
 
-		});
+            //this hurts me more than it hurts you... :(
+            child.kill();
 
-		//listen for end of data
-		child.stderr.on('end', function () {
+            //log this
+            console.log('child.kill();');
 
-			//log that we reached the end
-			console.log('child.stderr.on("end");');
+            //log output
+            console.log('stderr: ' + output);
 
-		});
+        });
 
-		child.on('close', function (code) {
+        //listen for end of data
+        child.stdout.on('end', function () {
 
-			//log process end
-			console.log('Process exited with code ' + code);
+            //log that we reached the end
+            console.log('child.stdout.on("end");');
 
-			//invoke callback
-			callBack(isFailure, response);
+        });
 
-		});
+        //listen for end of data
+        child.stderr.on('end', function () {
 
-	}
+            //log that we reached the end
+            console.log('child.stderr.on("end");');
+
+        });
+
+        child.on('close', function (code) {
+
+            //log process end
+            console.log('Process exited with code ' + code);
+
+            //invoke callback
+            callBack(isFailure, response);
+
+        });
+
+    }
 
 
-	/**
-	 * Function to get the working directory for the script files
-	 * @returns {String} The directory where the scripts will go
-	 */
-	function getScriptsDirectory(directory) {
+    /**
+     * Function to get the working directory for the script files
+     * @returns {String} The directory where the scripts will go
+     */
+    function getScriptsDirectory(directory) {
 
-		var directories = directory.split('\/');
-		directories.pop();
-		directories.pop();
-		directories.push('scripts/');
-		return directories.join('\/');
+        var directories = directory.split('\/');
+        directories.pop();
+        directories.pop();
+        directories.push('scripts/');
+        return directories.join('\/');
 
-	}
+    }
 
 
 }());
