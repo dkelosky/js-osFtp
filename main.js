@@ -15,13 +15,9 @@
  * @TODO - encoding issues (i.e. ftp to unix and remove \r)?
  * @TODO - allow for FTP to a windows machine
  * @TODO - add support for ftp from Linux
- * @TODO - fix all JSHint
  * @TODO - allow for timeout / kill of long running FTP process
- * @TODO - report total number of files sent over FTP
  * @TODO - move menu items into the menu
  * @TODO - dynamically get/set domain name so that concurrent extensions can be run (dev and production version)
- * @TODO - merge branches and update package
- * @TODO - getModule for things already loaded via require???
  *
  * You must update the version number appropriately for each new packaged files distributed in Brackets registry.
  *
