@@ -116,7 +116,6 @@ define(function(require, exports) {
         assignActions();
 
         $("#osftp-settings-tabs a", $dialog).click(function(e) {
-			console.log($(this).tab("show"));
             e.preventDefault();
             $(this).tab("show");
         });
