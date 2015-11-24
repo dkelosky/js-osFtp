@@ -39,6 +39,11 @@ define(function (require, exports, module) {
 	var Menus = brackets.getModule('command/Menus');
 	var PreferencesManager = brackets.getModule('preferences/PreferencesManager');
 
+	/** testing code **/
+
+	var ProjectManager = brackets.getModule('project/ProjectManager');
+	var FileSystem     = brackets.getModule('filesystem/FileSystem');
+
 
 	/**
 	 * Extension modules
@@ -93,6 +98,12 @@ define(function (require, exports, module) {
 		CommandManager.register(osFtpStrings.COMMAND_PRODUCT_SETTINGS_LABEL, packageJson.name + osFtpGlobals.COMMAND_PROD_SETTINGS_ID, osFtpSettingsDialog.show);
 		Menus.getMenu(Menus.AppMenuBar.FILE_MENU).addMenuItem(packageJson.name + osFtpGlobals.COMMAND_PROD_SETTINGS_ID, '', Menus.AFTER, Commands.FILE_PROJECT_SETTINGS);
 
+		//register settings command and add it to the menu.
+		/*
+		CommandManager.register('testing', 'testing-cmd', testing);
+		Menus.getMenu(Menus.AppMenuBar.FILE_MENU).addMenuItem('testing-cmd', '', Menus.AFTER, Commands.FILE_PROJECT_SETTINGS);
+		*/
+
 		//register command and add context menu to run a script
 		CommandManager.register(osFtpStrings.COMMAND_RUN_SCRIPT_LABEL, runId, osFtpHandlers.handleRunScript);
 		osFtpMenu.addToContextMenus(runId, true);
@@ -106,6 +117,11 @@ define(function (require, exports, module) {
 
 		//add the status indicator
 		osFtpStatus.addStatusIndicator(packageJson);
+	}
+
+	/** Testing function **/
+	function testing(){
+		console.log('testing()');
 	}
 
 });

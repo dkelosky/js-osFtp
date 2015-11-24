@@ -30,6 +30,7 @@ define({
 	EXTENSION: 'OS FTP',
 	PRODUCT_SETTINGS: 'JS-OS FTP Settings\u2026',
 	TRANSFER_TYPE: 'Transfer Type',
+	DEBUG: 'Debug',
 	TREAT_TYPE_AS_ASCII_LABEL: 'Treat the following filetypes as ASCII files:',
 	TREAT_FILE_WIHTOUT_EXTENSION_AS_ASCII: 'Treat files without extension as ASCII file',
 	BUTTON_DEFAULTS: 'Restore Defaults',
@@ -90,5 +91,6 @@ define({
 	UNKNOWN: 'Unknown script in use',
 	SELECTED: 'selected',
 	FILES: 'file(s)',
-	STATUS_LOADING: 'Loading\u2026'
+	STATUS_LOADING: 'Loading\u2026',
+	DEBUG_MODE_SETTING: 'DEBUG Mode - Enable will result in lot of message being forward to console.  F12 to see console log.'
 });

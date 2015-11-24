@@ -115,17 +115,18 @@ define(function(require, exports) {
         setValues(Preferences.getAll());
         assignActions();
 
-        $("#osftp-setting-tabs a", $dialog).click(function(e) {
+        $("#osftp-settings-tabs a", $dialog).click(function(e) {
+			console.log($(this).tab("show"));
             e.preventDefault();
-            $(this).tab('show');
+            $(this).tab("show");
         });
     }
 
     function refreshTransferAsciiTable(){
         var tableDivId = "osftp-settings-transferAsAsciiTable";
         var html = osFtpCommon.generateHtmlTable(asciiTabledata, tableDivId);
-        $('#'+tableDivId).html(html);
-        $('#'+tableDivId).find("table tbody tr").click(function(){
+        $('#'+tableDivId, $dialog).html(html);
+        $('#'+tableDivId, $dialog).find("table tbody tr").click(function(){
             $("#osftp-settings-fileExtensionInput").val($(this).text());
         });
     }
