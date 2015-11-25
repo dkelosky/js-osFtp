@@ -4,6 +4,10 @@ define(function (require, exports) {
 	var Project = brackets.getModule('project/ProjectManager');
 	var FileUtils = brackets.getModule('file/FileUtils');
 
+	var Strings     = require('strings');
+	var Preferences = require('src/preferences');
+
+
 	/**
 	 * Exported functions
 	 */
@@ -13,6 +17,7 @@ define(function (require, exports) {
 	exports.generateHtmlTable = generateHtmlTable;
 	exports.extractTableData = extractTableData;
 	exports.relativePathToFile = relativePathToFile;
+	exports.consoleDebug       = consoleDebug;
 
 	/**
 	 * Check if a variable is undefined or null
@@ -266,5 +271,17 @@ define(function (require, exports) {
 
 		return object;
 	}
+
+	/**
+	 * Debug log function
+	 **/
+	function consoleDebug(msg) {
+		var debugOn     = Preferences.get("debugMode");
+		if (debugOn){
+			console.log(Strings.EXT_NAME + msg);
+		}
+
+	}
+
 
 });

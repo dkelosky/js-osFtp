@@ -92,5 +92,6 @@ define({
 	SELECTED: 'selected',
 	FILES: 'file(s)',
 	STATUS_LOADING: 'Loading\u2026',
-	DEBUG_MODE_SETTING: 'DEBUG Mode - Enable will result in lot of message being forward to console.  F12 to see console log.'
+	DEBUG_MODE_SETTING: 'DEBUG Mode - Enable will result in lot of message being forward to console.  F12 to see console log.',
+	EXT_NAME: '[OS FTP] '
 });
