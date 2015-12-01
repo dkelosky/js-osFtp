@@ -36,6 +36,14 @@ define(function (require, exports) {
 	}
 
 	function setValues(inputSite){
+        // Set server types list:
+		for (var i in SERVER_TYPES){
+			$("#osftp-ftp-site-serverType", $dialog)
+				.append($("<option></options>")
+				.attr("value", i.toString())
+				.text(SERVER_TYPES[i]));
+		}
+
 		// If input is a site then fill in the fields with info
 		if (SitesManager.validateSite(inputSite)){
 
@@ -45,10 +53,13 @@ define(function (require, exports) {
 			$("#osftp-ftp-site-userName", $dialog).val(inputSite.userName);
 			$("#osftp-ftp-site-password", $dialog).val(inputSite.password);
 
-			if (osftpCommon.isSet(inputSite.chmodStr)){
+			if (osftpCommon.isSet(inputSite.getChmodStr())){
 				setChmodMode(inputSite.chmodStr);
 				$('#toggle-chmod-option', $dialog).prop("checked",true);
 			}
+
+            // set remote OS
+            $('#osftp-ftp-site-serverType', $dialog).val(SERVER_TYPES.indexOf(inputSite.getRemoteOs()));
 
 			isEditMode = true;
 		} else {
@@ -61,14 +72,6 @@ define(function (require, exports) {
 			$(".dialog-title", $dialog).text(title);
 		} else {
 			$(".dialog-title", $dialog).text(Strings.DIALOG_TITLE_ADD_SITE);
-		}
-
-		// Set server types list:
-		for (var i in SERVER_TYPES){
-			$("#osftp-ftp-site-serverType", $dialog)
-				.append($("<option></options>")
-				.attr("value", i.toString())
-				.text(SERVER_TYPES[i]));
 		}
 
 		// Hide fields depend on the mode
@@ -97,6 +100,8 @@ define(function (require, exports) {
 		if ($('#toggle-chmod-option', $dialog).prop("checked")){
 			site.setChmodStr(getChmodModeString());
 		}
+
+        site.setRemoteOs($('#osftp-ftp-site-serverType option:selected', $dialog).text());
 
 		site.debugPrint();
 

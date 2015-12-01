@@ -19,6 +19,7 @@ define(function (require, exports) {
 		this.userName = userName;
 		this.password = password;
 		this.chmodStr = undefined;
+        this.remoteOs = undefined;
 	}
 
 	Site.prototype.getName = function () {
@@ -49,6 +50,14 @@ define(function (require, exports) {
 		return this.chmodStr;
 	};
 
+    Site.prototype.setRemoteOs = function (newOs) {
+        this.remoteOs = newOs;
+    };
+
+    Site.prototype.getRemoteOs = function () {
+        return this.remoteOs;
+    };
+
 	Site.prototype.getCommandId = function () {
 		return osFtpGlobals.COMMAND_RUN_SITE_BASE_ID + this.name;
 	};
@@ -65,6 +74,7 @@ define(function (require, exports) {
 		console.log("userName: " + this.userName);
 		console.log("password: " + '**********');
 		console.log("chmodStr: " + this.chmodStr);
+        console.log("remoteOs: " + this.remoteOs);
 	};
 
 	function revise(object) {
@@ -75,6 +85,7 @@ define(function (require, exports) {
 			object.password);
 
 		newSite.setChmodStr(object.chmodStr);
+        newSite.setRemoteOs(object.remoteOs);
 
 		return newSite;
 	}
