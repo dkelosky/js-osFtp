@@ -13,6 +13,7 @@ define(function (require, exports) {
 	var dialog,
 		$dialog;
 	var isEditMode;
+    var isChmodOpstionShow;
 
 	var SERVER_TYPES = ["zOS", "Windows", "Linux"];
 
@@ -60,6 +61,7 @@ define(function (require, exports) {
 
             // set remote OS
             $('#osftp-ftp-site-serverType', $dialog).val(SERVER_TYPES.indexOf(inputSite.getRemoteOs()));
+            updateServerType()
 
 			isEditMode = true;
 		} else {
@@ -144,6 +146,10 @@ define(function (require, exports) {
 			return false;
 		}
 
+        // Check if chmod option is showed if no then clear chmod checkbox.
+        if (!isChmodOpstionShow){
+            $('#toggle-chmod-option', $dialog).prop("checked", false);
+        }
 
 		return true;
 	}
@@ -152,6 +158,20 @@ define(function (require, exports) {
 		$("#osftp-ftp-site-inputErrorMessage").text(message);
 	}
 
+    function hideChmodOption(){
+        isChmodOpstionShow = false;
+        $('#osftp-ftp-input-chmod-option', $dialog).hide();
+
+        $("*[chmodOption]", $dialog).each(function(){
+            $(this).hide();
+		});
+    }
+
+    function showChmodOption(){
+        isChmodOpstionShow = true;
+        $('#osftp-ftp-input-chmod-option', $dialog).show();
+        updateChmodOption();
+    }
 
 	function updateChmodOption(){
 		$("*[chmodOption]", $dialog).each(function(){
@@ -163,12 +183,26 @@ define(function (require, exports) {
 		});
 	}
 
+    function updateServerType(){
+        console.log('serverType changed');
+        var serverType =  $('#osftp-ftp-site-serverType option:selected', $dialog).text();
+        if (serverType === 'Windows'){
+            hideChmodOption();
+        }
+        else{
+            showChmodOption();
+        }
+    }
 
 	function assignActions(){
 
 		$('#toggle-chmod-option', $dialog).change(function(){
 			updateChmodOption();
 		});
+
+        $('#osftp-ftp-site-serverType', $dialog).change(function(){
+            updateServerType();
+        })
 
 		$("input[type='checkbox']", $dialog).change(function(){
 			$("#osftp-ftp-site-chmodNumericValue", $dialog).val(getChmodModeString());
