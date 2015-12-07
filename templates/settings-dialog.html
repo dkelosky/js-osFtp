@@ -5,7 +5,8 @@
     <div class="modal-body">
 
         <ul class="nav nav-tabs" id="osftp-settings-tabs">
-            <li class="active"><a hrel="#osftp-settings-tab-transfer-type">{{TRANSFER_TYPE}}</a></li>
+            <li class="active"><a href="#osftp-settings-tab-transfer-type">{{TRANSFER_TYPE}}</a></li>
+			<li>               <a href="#osftp-settings-tab-debug">{{DEBUG}}</a></li>
         </ul>
 
         <div class="tab-content">
@@ -37,13 +38,26 @@
 						<br>
                         <div class="row-fluid">
 							<label for="osftp-setttings-treatFileWithoutExtensionAsAscii">
-								<input id="osftp-settings-treatFileWithoutExtensionAsAscii" type="checkbox" settingsProperty="treatFileWithoutExtentionAsAscii" /> {{TREAT_FILE_WIHTOUT_EXTENSION_AS_ASCII}}
+								<input id="osftp-settings-treatFileWithoutExtensionAsAscii" type="checkbox" settingsProperty="treatFileWithoutExtentionAsAscii" />
+								{{TREAT_FILE_WIHTOUT_EXTENSION_AS_ASCII}}
 							</label>
                         </div>
                     </div>
                 </div>
+				<!-- /transfer types -->
             </div>
-
+			<div class="tab-pane" id="osftp-settings-tab-debug">
+				<!-- #debug -->
+				<div class="row-fluid">
+					<div class="pull-right">
+						<label for="osftp-settings-debugMode">
+							<input id="osftp-settings-debugMode" type="checkbox" settingsProperty="debugMode" />
+							{{{DEBUG_MODE_SETTING}}}
+						</label>
+					</div>
+				</div>
+				<!-- /debug -->
+			</div>
         </div>
 
     </div>

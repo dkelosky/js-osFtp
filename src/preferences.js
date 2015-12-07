@@ -30,7 +30,11 @@ define(function(require, exports, module) {
         "transferAsAsciiTable": {
             "type": 'string',
             "value": '{"tableData":["asm","c","cpp","css","doc","docx","esp","html","git","gradle","java","js","json","less","md","out","pl","py","rb","temp","text","txt"]}'
-        }
+        },
+		"debugMode": {
+			"type": "boolean",
+			"value": false
+		}
     };
 
 
