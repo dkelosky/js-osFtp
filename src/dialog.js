@@ -91,8 +91,11 @@ define(function (require, exports) {
 
 		//add radio buttons for each site
 		sites.forEach(function (site, i) {
+            bodyHtml += '<div class=row-fluid>';
+            bodyHtml += '<label for=' + site.name + '>';
 			bodyHtml += '<input id="' + site.name + '" value="' + i + '" type="radio" name="' + radioSiteName + '"> ' + site.name;
-			bodyHtml += '<br>';
+            bodyHtml += '</label>';
+            bodyHtml += '</div>';
 		});
 
 		//term html tag

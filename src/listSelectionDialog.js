@@ -21,7 +21,7 @@ define(function (require, exports){
 		this.inputList = inputList;
 		this.listTitle = listTitle;
 
-		console.log(this.listTitle);
+		osftpCommon.consoleDebug(this.listTitle);
 
 		this.treeData = tree.newFileTree('ListSelectionDialog');
 
@@ -36,7 +36,7 @@ define(function (require, exports){
 
 
 	ListSelectionDialog.prototype.show = function(){
-		console.log('ListSelectionDialog.show()');
+		osftpCommon.consoleDebug('ListSelectionDialog.show()');
 		if (!osftpCommon.isSet(this.dialog)){
 			var compiledTemplate = Mustache.render(this.dialogTemplate, Strings);
 
@@ -57,7 +57,7 @@ define(function (require, exports){
 	 **/
 
 	ListSelectionDialog.prototype.setTableTitle = function(inputStr){
-		console.log('ListSelectionDialog.setTableTitle('+inputStr+')');
+		osftpCommon.consoleDebug('ListSelectionDialog.setTableTitle('+inputStr+')');
 		$('#list-label', this.$dialog).text(inputStr);
 	};
 
@@ -66,13 +66,13 @@ define(function (require, exports){
 	 **/
 
 	ListSelectionDialog.prototype.refreshTableData = function(treeNode){
-		console.log('ListSelectionDialog.refreshTableData()');
+		osftpCommon.consoleDebug('ListSelectionDialog.refreshTableData()');
 		var $this = $('#list-table', this.$dialog);
 		var id    = $this.attr("id");
 
 		if (treeNode.type === osFtpGlobals.TREE_TYPE_ROOT){
 			var tableHtml = tree.generateHtmlTreeContainer(treeNode, id);
-			console.log(treeNode.htmlId);
+			osftpCommon.consoleDebug(treeNode.htmlId);
 			$this.html(tableHtml, treeNode.divId);
 
 			var nodeHtml = tree.generateHtmlTreeNode(treeNode);
@@ -109,7 +109,7 @@ define(function (require, exports){
 	 **/
 
 	ListSelectionDialog.prototype.getSelectedList = function(){
-		console.log('ListSelectionDialog.getSelectedList()');
+		osftpCommon.consoleDebug('ListSelectionDialog.getSelectedList()');
 		var returnList = [];
 
 		var children = this.treeData.getChildren();
@@ -129,7 +129,7 @@ define(function (require, exports){
 	 **/
 
 	ListSelectionDialog.prototype.checkAll = function(){
-		console.log('ListSelectionDialog.checkAll()');
+		osftpCommon.consoleDebug('ListSelectionDialog.checkAll()');
 
 		$('input:checkbox', this.$dialog).each(function(){
 			$(this).prop('checked', true);
@@ -145,7 +145,7 @@ define(function (require, exports){
 		var total    = treeNode.getTotalFilesCount();
 
 		var dispText = selected + '/' + total + ' ' + Strings.SELECTED;
-		console.log(dispText);
+		osftpCommon.consoleDebug(dispText);
 		$('#dialog-status', $dialog).text(dispText);
 	}
 
@@ -320,9 +320,9 @@ define(function (require, exports){
 		dialog1.dialog.done(function(buttonId){
 			if (buttonId == 'ok'){
 				var seletedList = dialog1.getSelectedList();
-				console.log(seletedList);
+				osftpCommon.consoleDebug(seletedList);
 			}
-			console.log('dialog is closed');
+			osftpCommon.consoleDebug('dialog is closed');
 		});
 
 	}
