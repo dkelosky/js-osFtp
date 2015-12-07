@@ -71,7 +71,7 @@ define(function (require, exports) {
 
 	function getSelectedFiles() {
 
-		console.log('getSelectedFiles();');
+		consoleDebug('getSelectedFiles();');
 
 		var returnList = [];
 		var fileList = [];
@@ -118,7 +118,7 @@ define(function (require, exports) {
 		}
 
 		for (i = 0; i < returnList.length; i++) {
-			console.log(JSON.stringify(returnList[i]));
+			consoleDebug(JSON.stringify(returnList[i]));
 		}
 
 		return returnList;
@@ -136,7 +136,7 @@ define(function (require, exports) {
 	 */
 
 	function getProjectFiles() {
-		console.log('getProjectFiles');
+		consoleDebug('getProjectFiles()');
 
 		var returnList = [];
 
@@ -156,6 +156,9 @@ define(function (require, exports) {
 			returnList.push(object);
 		});
 
+        for (i = 0; i < returnList.length; i++) {
+			consoleDebug(JSON.stringify(returnList[i]));
+		}
 
 		return returnList;
 	}
@@ -179,7 +182,7 @@ define(function (require, exports) {
 	 */
 
 	function generateHtmlTable(data, tableDiv, otherAttr) {
-		console.log(data);
+		consoleDebug(data);
 		var isCheckbox = false;
 		var cellId;
 		var tableId = tableDiv + '-table';
@@ -255,7 +258,7 @@ define(function (require, exports) {
 			tableData: []
 		};
 
-		console.log($table);
+		consoleDebug($table);
 		$table.find("tr").each(function () {
 			var rowData = [];
 			$(this).find("td").each(function (colIndex, c) {
