@@ -281,7 +281,9 @@ define(function (require, exports) {
 	function consoleDebug(msg) {
 		var debugOn     = Preferences.get("debugMode");
 		if (debugOn){
-			console.log(Strings.EXT_NAME + msg);
+			var date = new Date();
+			var timeStr = '[' + date.toLocaleTimeString() + ']';
+			console.log(Strings.EXT_NAME + timeStr + ' '+ msg);
 		}
 
 	}
