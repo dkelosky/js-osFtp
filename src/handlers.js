@@ -7,7 +7,7 @@ define(function (require, exports) {
 	 */
 	var CommandManager = brackets.getModule('command/CommandManager');
 	var Dialog = brackets.getModule('widgets/Dialogs');
-	var File = brackets.getModule('file/FileUtils');
+	var FileUtils = brackets.getModule('file/FileUtils');
 	var Project = brackets.getModule('project/ProjectManager');
 
 
@@ -24,8 +24,6 @@ define(function (require, exports) {
 	var osFtpStrings = require('strings');
 	var osFtpSitesManager = require('src/sitesManager');
 	var osFtpSiteDialog   = require('src/ftpSiteDialog');
-	var osFtpSelectDialog = require('src/listSelectionDialog');
-
 
 	/**
 	 * Exported functions
@@ -41,7 +39,7 @@ define(function (require, exports) {
 	 * @param {Number} oldSiteIndex Index into sites array
 	 */
 	function handleNewOrEditSite(site){
-		console.log('handleNewOrEditSite()');
+		osFtpCommon.consoleDebug('handleNewOrEditSite()');
 		if (osFtpSitesManager.validateSite(site)){
 			osFtpSiteDialog.show(site);
 		} else {
@@ -54,7 +52,7 @@ define(function (require, exports) {
 	 * Handler function for upload the entire project to site.
 	 */
 	function handleUploadProject(){
-		console.log('handleUploadProject()');
+		osFtpCommon.consoleDebug('handleUploadProject()');
 
 		//radio button site name
 		var RADIO_SITE_NAME = 'site';
@@ -78,10 +76,10 @@ define(function (require, exports) {
 
 			//if no option was choosen
 			if (!osFtpCommon.isSet(selectedSiteIndex))
-				console.log('No site was selected');
+				osFtpCommon.consoleDebug('No site was selected');
 
 			//log that we are closing
-			console.log('Dialog closed with save');
+			osFtpCommon.consoleDebug('Dialog closed with save');
 
 			//turn off listeners
 			osFtpHandlersHelpers.disableListeners();
@@ -95,15 +93,16 @@ define(function (require, exports) {
 		//listen for dialog done
 		selectDialog.done(function () {
 			//log that the modal is gone
-			console.log('Dialog modal is dismissed');
+			osFtpCommon.consoleDebug('Dialog modal is dismissed');
 
 			var sitesArr = osFtpSitesManager.getSitesArray();
 			//if edit site index was set
 			if (osFtpCommon.isSet(selectedSiteIndex)) {
 				var site = sitesArr[selectedSiteIndex];
-				var listFiles = osFtpCommon.getProjectFiles();
 
-				osFtpHandlersHelpers.uploadDirectory(site, listFiles);
+				Project.getAllFiles().done(function(fileList){
+					osFtpHandlersHelpers.uploadDirectory(site, fileList);
+				});
 			}
 
 		});
@@ -115,7 +114,7 @@ define(function (require, exports) {
 	function handleEditSite() {
 
 		//log that we were called
-		console.log('handleEditSite()');
+		osFtpCommon.consoleDebug('handleEditSite()');
 
 		//radio button site name
 		var RADIO_SITE_NAME = 'site';
@@ -139,10 +138,10 @@ define(function (require, exports) {
 
 			//if no option was choosen
 			if (!osFtpCommon.isSet(selectedSiteIndex))
-				console.log('No site was selected');
+				osFtpCommon.consoleDebug('No site was selected');
 
 			//log that we are closing
-			console.log('Dialog closed with save');
+			osFtpCommon.consoleDebug('Dialog closed with save');
 
 			//turn off listeners
 			osFtpHandlersHelpers.disableListeners();
@@ -157,7 +156,7 @@ define(function (require, exports) {
 		selectDialog.done(function () {
 
 			//log that the modal is gone
-			console.log('Dialog modal is dismissed');
+			osFtpCommon.consoleDebug('Dialog modal is dismissed');
 
 			var sitesArr = osFtpSitesManager.getSitesArray();
 
@@ -185,16 +184,16 @@ define(function (require, exports) {
 	function handleRunScript() {
 
 		//log that we were called
-		console.log('handleRunScript();');
+		osFtpCommon.consoleDebug('handleRunScript();');
 
 		//get the full path to the item that was selected
 		var itemFullPath = Project.getSelectedItem().fullPath;
 
 		//determine if the file choosen is a directory or an individual file
-		if (File.getDirectoryPath(itemFullPath) == itemFullPath) {
+		if (FileUtils.getDirectoryPath(itemFullPath) == itemFullPath) {
 
 			//attempt is made to ftp a directory
-			console.log('Select FTP script file - not a directory');
+			osFtpCommon.consoleDebug('Select FTP script file - not a directory');
 
 			//show error dialog
 			osFtpDialog.showFailDialog(osFtpStrings.FAILURE_FTP_RUN_DIRECTORY);
@@ -213,33 +212,47 @@ define(function (require, exports) {
 	 * Handler for executing an added site
 	 */
 	function handleRunSite() {
-
 		//log that we were called
-		console.log('handleRunSite();');
+		osFtpCommon.consoleDebug('handleRunSite();');
+
+		var selectedFiles = [];
 
 		//get the command name
 		var name = this.getName();
 		name = name.substring(osFtpStrings.COMMAND_RUN_SITE_BASE_LABEL.length, name.length);
 
 		//log that we were called
-		console.log('handleRunSite(' + name + ');');
+		osFtpCommon.consoleDebug('handleRunSite(' + name + ');');
 
 		//site object associated with this command name
 		var thisSite = osFtpSitesManager.getSiteByName(name);
 
-		// get the list of the selected file
-		var selectedFiles = osFtpCommon.getSelectedFiles();
+		// get the selected Item
+		var selectedItem = Project.getSelectedItem();
 
 		//determine if the file choosen is a directory or an individual file
-		if (Project.getSelectedItem().isDirectory) {
+		if (selectedItem.isDirectory) {
 
-			//upload this directory
-			osFtpHandlersHelpers.uploadDirectory(thisSite, selectedFiles);
+			Project.getAllFiles().done(function(fileList){
+
+				for (var index in fileList){
+					var currentFile = fileList[index].fullPath;
+					if (currentFile.indexOf(selectedItem.fullPath) > -1){
+						selectedFiles.push(fileList[index]);
+					}
+				}
+
+				osFtpHandlersHelpers.uploadDirectory(thisSite, selectedFiles);
+			});
 
 		//an individual file was choose, build a script string and invoke node to run FTP and this script
 		} else {
 
+			var rootDir = Project.getProjectRoot().fullPath;
+			var relativePath = FileUtils.getRelativeFilename(rootDir, selectedItem.fullPath);
 			//build our ftp script
+			selectedFiles.push(osFtpCommon.relativePathToFile(relativePath, rootDir));
+
 			var ftpScript = osFtpScripts.generateUploadScript(selectedFiles, thisSite);
 			osFtpHandlersHelpers.invokeFtpScript(ftpScript, 1);
 		}

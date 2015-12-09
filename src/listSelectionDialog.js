@@ -10,7 +10,6 @@ define(function (require, exports){
 	var tree         = require("./tree");
 
 	exports.newDialog  = newDialog;
-	exports.testDialog = testDialog;
 
 	/**
 	 *
@@ -288,42 +287,5 @@ define(function (require, exports){
 
 	function newDialog(inputList, listTitle){
 		return new ListSelectionDialog(inputList, listTitle);
-	}
-
-
-	/**
-	 *  Testing function for dialog
-	 */
-
-
-	function testDialog(){
-
-		var inputList = [];
-		var dialog1;
-		var testingList = osftpCommon.getProjectFiles();
-
-		for (var i in testingList){
-			inputList.push(testingList[i].relativePath);
-		}
-		inputList.push('node-v4.2.1/test/fixtures/keys/0-dns-cert.pem');
-
-		if (testingList.length > 0){
-			dialog1 = newDialog(inputList, testingList[0].rootDir);
-		}
-		else {
-			dialog1 = newDialog(inputList);
-		}
-		dialog1.show();
-		dialog1.collapseAll();
-		dialog1.checkAll();
-
-		dialog1.dialog.done(function(buttonId){
-			if (buttonId == 'ok'){
-				var seletedList = dialog1.getSelectedList();
-				osftpCommon.consoleDebug(seletedList);
-			}
-			osftpCommon.consoleDebug('dialog is closed');
-		});
-
 	}
 });

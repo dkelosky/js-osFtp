@@ -7,7 +7,8 @@ define(function (require, exports) {
 	 */
 	var CommandManager = brackets.getModule('command/CommandManager');
 	var Dialog = brackets.getModule('widgets/Dialogs');
-
+	var Project = brackets.getModule('project/ProjectManager');
+	var FileUtils = brackets.getModule('file/FileUtils');
 
 	/**
 	 * Extension modules
@@ -193,9 +194,9 @@ define(function (require, exports) {
 		var dlgInputList = [];
 		var rootDir = osFtpStrings.SELECTED_EMPTY;
 		if (fileList.length > 0){
-			rootDir = fileList[0].rootDir;
+			rootDir = Project.getProjectRoot().fullPath;
 			for (var file in fileList){
-				dlgInputList.push(fileList[file].relativePath);
+				dlgInputList.push(FileUtils.getRelativeFilename(rootDir, fileList[file].fullPath));
 			}
 		}
 
