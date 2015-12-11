@@ -61,7 +61,7 @@ define(function (require, exports) {
 
             // set remote OS
             $('#osftp-ftp-site-serverType', $dialog).val(SERVER_TYPES.indexOf(inputSite.getRemoteOs()));
-            updateServerType()
+            updateServerType();
 
 			isEditMode = true;
 		} else {
@@ -202,7 +202,7 @@ define(function (require, exports) {
 
         $('#osftp-ftp-site-serverType', $dialog).change(function(){
             updateServerType();
-        })
+        });
 
 		$("input[type='checkbox']", $dialog).change(function(){
 			$("#osftp-ftp-site-chmodNumericValue", $dialog).val(getChmodModeString());

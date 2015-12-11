@@ -72,5 +72,6 @@ define(function (require, exports) {
 	exports.TREE_TYPE_ROOT = 'root';
 	exports.TREE_TYPE_DIR  = 'directory';
 	exports.TREE_TYPE_FILE = 'file';
+	exports.DEFAULT_REMOTE_OS = 'zOS';
 
 });

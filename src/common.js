@@ -1,7 +1,6 @@
 define(function (require, exports) {
 	'use strict';
 
-	var Project = brackets.getModule('project/ProjectManager');
 	var FileUtils = brackets.getModule('file/FileUtils');
 
 	var Strings     = require('strings');
@@ -12,8 +11,6 @@ define(function (require, exports) {
 	 * Exported functions
 	 */
 	exports.isSet = isSet;
-	exports.getSelectedFiles = getSelectedFiles;
-	exports.getProjectFiles = getProjectFiles;
 	exports.generateHtmlTable = generateHtmlTable;
 	exports.extractTableData = extractTableData;
 	exports.relativePathToFile = relativePathToFile;
@@ -56,111 +53,6 @@ define(function (require, exports) {
 		}
 
 		return true;
-	}
-
-	/**
-	 * Return list of files
-	 * @returns {Array[File]} return array of selected file with the following info:
-	 *      File.rootDir      : Root directory of the current open folder
-	 *      File.name         : file name
-	 *      File.fullDir      : Full directory of the file
-	 *      File.fullPath     : Full path of the file
-	 *      File.relativeDir  : Directory relative to root directory
-	 *      File.relativePath : File path relative to root directory
-	 */
-
-	function getSelectedFiles() {
-
-		consoleDebug('getSelectedFiles();');
-
-		var returnList = [];
-		var fileList = [];
-		var i;
-
-		// Get the root directory and selected item
-		var rootDir = Project.getProjectRoot().fullPath;
-		var selectedItem = Project.getSelectedItem();
-
-		// If item is a directory then will have to collect all of the files
-		//   that is under that directory.
-		if (selectedItem.isDirectory) {
-			var currentDir = selectedItem.fullPath;
-
-			Project.rerenderTree();
-
-			// Loop through all file in root directory to locate file that contain
-			//   the selected directory.
-			Project.getAllFiles(function (File) {
-				var currentFile = File.fullPath;
-				if (currentFile.indexOf(currentDir) > -1) {
-					fileList.push(File);
-				}
-			});
-		}
-		// If item is file then just add the file to the list.
-		else {
-			fileList.push(selectedItem);
-		}
-
-		// Format the return object
-		for (i = 0; i < fileList.length; i++) {
-
-			var object = {
-				rootDir: rootDir,
-				name: fileList[i].name,
-				fullDir: fileList[i].parentPath,
-				fullPath: fileList[i].fullPath,
-				relativeDir: FileUtils.getRelativeFilename(rootDir, fileList[i].parentPath),
-				relativePath: FileUtils.getRelativeFilename(rootDir, fileList[i].fullPath)
-			};
-
-			returnList.push(object);
-		}
-
-		for (i = 0; i < returnList.length; i++) {
-			consoleDebug(JSON.stringify(returnList[i]));
-		}
-
-		return returnList;
-	}
-
-	/**
-	 * Return list of all files in the current project
-	 * @returns {Array[File]} return array of selected file with the following info:
-	 *      File.rootDir      : Root directory of the current open folder
-	 *      File.name         : file name
-	 *      File.fullDir      : Full directory of the file
-	 *      File.fullPath     : Full path of the file
-	 *      File.relativeDir  : Directory relative to root directory
-	 *      File.relativePath : File path relative to root directory
-	 */
-
-	function getProjectFiles() {
-		consoleDebug('getProjectFiles()');
-
-		var returnList = [];
-
-		var rootDir = Project.getProjectRoot().fullPath;
-
-		Project.getAllFiles(function (File) {
-
-			var object = {
-				rootDir: rootDir,
-				name: File.name,
-				fullDir: File.parentPath,
-				fullPath: File.fullPath,
-				relativeDir: FileUtils.getRelativeFilename(rootDir, File.parentPath),
-				relativePath: FileUtils.getRelativeFilename(rootDir, File.fullPath)
-			};
-
-			returnList.push(object);
-		});
-
-        for (i = 0; i < returnList.length; i++) {
-			consoleDebug(JSON.stringify(returnList[i]));
-		}
-
-		return returnList;
 	}
 
 	function relativePathToFile(inputPath, inputRoot){

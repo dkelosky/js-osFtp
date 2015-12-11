@@ -85,7 +85,12 @@ define(function (require, exports) {
 			object.password);
 
 		newSite.setChmodStr(object.chmodStr);
-        newSite.setRemoteOs(object.remoteOs);
+
+		if (object.hasOwnProperty('remoteOs')){
+			newSite.setRemoteOs(object.remoteOs);
+		} else {
+			newSite.setRemoteOs(osFtpGlobals.DEFAULT_REMOTE_OS);
+		}
 
 		return newSite;
 	}
