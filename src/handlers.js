@@ -235,7 +235,7 @@ define(function (require, exports) {
 
 			Project.getAllFiles().done(function(fileList){
 
-				for (var index in fileList){
+				for (var index = 0; index < fileList.lenth; index++){
 					var currentFile = fileList[index].fullPath;
 					if (currentFile.indexOf(selectedItem.fullPath) > -1){
 						selectedFiles.push(fileList[index]);

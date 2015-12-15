@@ -195,8 +195,8 @@ define(function (require, exports) {
 		var rootDir = osFtpStrings.SELECTED_EMPTY;
 		if (fileList.length > 0){
 			rootDir = Project.getProjectRoot().fullPath;
-			for (var file in fileList){
-				dlgInputList.push(FileUtils.getRelativeFilename(rootDir, fileList[file].fullPath));
+			for (var index = 0; index < fileList.length; index++){
+				dlgInputList.push(FileUtils.getRelativeFilename(rootDir, fileList[index].fullPath));
 			}
 		}
 
