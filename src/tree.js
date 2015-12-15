@@ -120,7 +120,7 @@ define (function (require, exports){
 	TreeNode.prototype.getChildDirIndexByName = function (dirName){
 		var retIndex = -1;
 
-		for (var index in this.childDirs){
+		for (var index = 0; index < this.childDirs.length; index++){
 			if (this.childDirs[index].name === dirName){
 				retIndex = index;
 			}
@@ -135,7 +135,7 @@ define (function (require, exports){
 	TreeNode.prototype.getChildFileIndexByName = function (fileName){
 		var retIndex = -1;
 
-		for (var index in this.childFiles){
+		for (var index = 0; index < this.childFiles.length; index++){
 			if (this.childFiles[index] === fileName){
 				retIndex = index;
 			}
