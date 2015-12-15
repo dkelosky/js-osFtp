@@ -173,12 +173,12 @@ define (function (require, exports){
 		console.log('TreeNode.getChildren()');
 		var children = [];
 
-		for (var dir in this.childDirs){
+		for (var dir = 0; dir < this.childDirs.length; dir++){
 			children.push(this.childDirs[dir]);
 			children = children.concat(this.childDirs[dir].getChildren());
 		}
 
-		for (var file in this.childFiles){
+		for (var file = 0; file < this.childFiles.length; file++){
 			children.push(this.childFiles[file]);
 		}
 
@@ -283,7 +283,7 @@ define (function (require, exports){
 		var html = '';
 
 		// Generate node for directories
-		for (var dir in treeNode.childDirs){
+		for (var dir = 0; dir < treeNode.childDirs.length; dir++){
 			currNode = treeNode.childDirs[dir];
 			nodeId = treeNode.getRootNode().htmlId + '-node' + currNode.id ;
 
@@ -307,7 +307,7 @@ define (function (require, exports){
 		}
 
 		// Generate node for files
-		for (var file in treeNode.childFiles){
+		for (var file = 0; file < treeNode.childFiles.length; file++){
 			currNode = treeNode.childFiles[file];
 			nodeId = treeNode.getRootNode().htmlId + '-node' + currNode.id;
 
@@ -348,11 +348,11 @@ define (function (require, exports){
 			console.log('relativePath: ' + TreeNode.relativePath);
 			console.log('isSelected: ' + TreeNode.isSelected);
 
-			for (var child in TreeNode.childFiles){
+			for (var child = 0; child < TreeNode.childFiles; child++){
 				console.log('childFile ' + child + ': ' + TreeNode.childFiles[child]);
 			}
 
-			for (var childDir in TreeNode.childDirs){
+			for (var childDir = 0; childDir < TreeNode.childDirs.length; childDir++){
 				console.log('childDir ' + childDir + ': ' + TreeNode.childDirs[childDir]);
 				debugPrint(TreeNode.childDirs[childDir]);
 			}
