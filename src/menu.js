@@ -29,7 +29,7 @@ define(function(require, exports) {
    * @param {Boolean}  before         Indicator of whether or not a menu divider should be added before or after
    */
   function addToContextMenus(id, addMenuDivider, afterId, before) {
-	 console.log('addToContextMenus(' + id + ')');
+	 osFtpCommon.consoleDebug('addToContextMenus(' + id + ')');
 
     /**
      * Add to working set
@@ -70,7 +70,7 @@ define(function(require, exports) {
    * @param {Boolean} before      Indicator of whether or not a menu divider should be added before or after
    */
   function addContextMenuItem(contextMenu, id, afterId, before) {
-	console.log('addContextMenuItem(' + contextMenu + ', ' + id + ')');
+	osFtpCommon.consoleDebug('addContextMenuItem(' + contextMenu + ', ' + id + ')');
 
     //assume position is after
     var position = Menus.AFTER;

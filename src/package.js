@@ -16,6 +16,7 @@ define(function (require, exports, module) {
 	var osFtpDialog = require('src/dialog');
     var osInitFailDialog = require('text!templates/initFailureDialog.html');
 	var osFtpStrings = require('strings');
+	var osFtpCommon  = require('src/common');
 
 
 	/**
@@ -31,7 +32,7 @@ define(function (require, exports, module) {
 	function getPackage(callBack, parm1, parm2) {
 
 		//log this call
-		console.log('getPackage();');
+		osFtpCommon.consoleDebug('getPackage();');
 
 		//local vars
 		var osFtpPackageJson;
@@ -46,7 +47,7 @@ define(function (require, exports, module) {
     		var packageJson = JSON.parse(jsonText);
 
             //log this event
-            console.log('Invoking callback');
+            osFtpCommon.consoleDebug('Invoking callback');
 
             //invoke callback
             callBack(packageJson, parm1, parm2);
