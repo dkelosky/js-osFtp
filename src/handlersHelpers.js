@@ -52,7 +52,7 @@ define(function (require, exports) {
 	function addSite(site) {
 
 		//log this call
-		console.log('addSite(' + site.name + ');');
+		osFtpCommon.consoleDebug('addSite(' + site.name + ');');
 
 		if (osFtpSitesManager.getSitesArray().length > 0){
 			enableEditSite();
@@ -77,7 +77,7 @@ define(function (require, exports) {
 	 */
 
 	function removeSite(site) {
-		console.log('remove(' + site.name + ')');
+		osFtpCommon.consoleDebug('remove(' + site.name + ')');
 
 		//remove site from context menu
 		osFtpPackage.getPackage(function(packageJson, cmdId) {
@@ -103,7 +103,7 @@ define(function (require, exports) {
 	function enableEditSite() {
 
 		//log this call
-		console.log('enableEditSite();');
+		osFtpCommon.consoleDebug('enableEditSite();');
 
 		osFtpPackage.getPackage(function(packageJson) {
 
@@ -122,7 +122,7 @@ define(function (require, exports) {
 	 */
 	function disableEditSite() {
 		//log this call
-		console.log('disableEditSite();');
+		osFtpCommon.consoleDebug('disableEditSite();');
 
 		osFtpPackage.getPackage(function(packageJson) {
 
@@ -137,7 +137,7 @@ define(function (require, exports) {
      * Enable the FTP project command
 	 **/
 	function enableFtpProject(){
-		console.log('enableFtpProject()');
+		osFtpCommon.consoleDebug('enableFtpProject()');
 
 		osFtpPackage.getPackage(function(packageJson) {
 
@@ -154,7 +154,7 @@ define(function (require, exports) {
 	 * Disable FTP project command
 	 **/
 	function disableFtpProject(){
-		console.log('disableFtpProject()');
+		osFtpCommon.consoleDebug('disableFtpProject()');
 
 		osFtpPackage.getPackage(function(packageJson) {
 			var ftpProjectId = packageJson.name + osFtpGlobals.COMMAND_FTP_PROJECT_ID;
@@ -208,7 +208,7 @@ define(function (require, exports) {
 		selectDialog.dialog.done(function(buttonId){
 			if (buttonId === 'ok'){
 				//log that we are saving this site
-				console.log('Dialog closed with save');
+				osFtpCommon.consoleDebug('Dialog closed with save');
 
 				var selectedList = selectDialog.getSelectedList();
 				fileList = [];
@@ -217,7 +217,7 @@ define(function (require, exports) {
 					fileList.push(obj);
 				}
 
-				console.log(fileList);
+				osFtpCommon.consoleDebug(fileList);
 				//build our ftp script
 				var ftpScript = osFtpScripts.generateUploadScript(fileList, site);
 
@@ -238,7 +238,7 @@ define(function (require, exports) {
 		$('button[data-button-id="' + Dialog.DIALOG_BTN_CANCEL + '"').click(function () {
 
 			//log that the user wants to close
-			console.log('Dialog closed without save');
+			osFtpCommon.consoleDebug('Dialog closed without save');
 
 			//turn off listeners
 			disableListeners();
@@ -264,7 +264,7 @@ define(function (require, exports) {
 			if (event.which == osFtpGlobals.ESCAPE_KEY) {
 
 				//log that the user wants to close
-				console.log('Dialog escaped without save');
+				osFtpCommon.consoleDebug('Dialog escaped without save');
 
 				//turn off listeners
 				disableListeners();

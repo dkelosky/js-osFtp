@@ -9,7 +9,6 @@ define(function (require, exports, module) {
 	var FileUtils = brackets.getModule('file/FileUtils');
 	var FileSystem = brackets.getModule('filesystem/FileSystem');
 
-
 	/**
 	 * Extension modules
 	 */
@@ -28,9 +27,6 @@ define(function (require, exports, module) {
 	 * JSON object and two user parameters
 	 */
 	function getPackage(callBack, parm1, parm2) {
-
-		//log this call
-		console.log('getPackage();');
 
 		//local vars
 		var osFtpPackageJson;

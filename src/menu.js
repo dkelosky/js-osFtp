@@ -7,12 +7,10 @@ define(function(require, exports) {
    */
   var Menus = brackets.getModule('command/Menus');
 
-
   /**
    * Extension modules
    */
   var osFtpCommon = require('src/common');
-
 
   /**
    * Exported functions
