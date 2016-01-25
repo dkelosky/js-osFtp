@@ -15,7 +15,12 @@ define(function(require, exports) {
 
     var asciiTabledata;
 
+	/**
+	 * set dialog values.
+	 **/
+
     function setValues(values) {
+		osFtpCommon.consoleDebug('setValues()');
         $("*[settingsProperty]", $dialog).each(function() {
             var $this = $(this),
                 id = $this.attr("id"),
@@ -23,7 +28,7 @@ define(function(require, exports) {
                 tag = $this.prop("tagName").toLowerCase(),
                 property = $this.attr("settingsProperty");
 
-            console.log("SETTING PROPERTIES: " + id + " " + type + " " + tag + " " + property);
+            osFtpCommon.consoleDebug("SETTING PROPERTIES: " + id + " " + type + " " + tag + " " + property);
 
             if (type === "checkbox") {
                 $this.prop("checked", values[property]);
@@ -42,7 +47,12 @@ define(function(require, exports) {
         });
     }
 
+	/**
+	 * Collecting values from the dialog and save it to preferences
+	 **/
+
     function collectValues() {
+		osFtpCommon.consoleDebug('collectValues()');
         $("*[settingsProperty]", $dialog).each(function() {
             var $this = $(this),
                 id = $this.attr("id"),
@@ -71,8 +81,12 @@ define(function(require, exports) {
         Preferences.save();
     }
 
-    function assignActions() {
+	/**
+	 * Asigning action handler for the dialog
+	 **/
 
+    function assignActions() {
+		osFtpCommon.consoleDebug('assignActions()');
         $("button[data-button-id='add']", $dialog).on("click", function(e) {
             e.stopPropagation();
 
@@ -81,6 +95,7 @@ define(function(require, exports) {
             if (osFtpCommon.isSet(text)){
                 if (asciiTabledata.tableData.indexOf(text) == -1){
                     asciiTabledata.tableData.push(text);
+					asciiTabledata.tableData.sort();
                     refreshTransferAsciiTable();
                 }
             }
@@ -110,8 +125,12 @@ define(function(require, exports) {
         });
     }
 
-    function init() {
+	/**
+	 * Init dialog
+	 **/
 
+    function init() {
+		osFtpCommon.consoleDebug('init()');
         setValues(Preferences.getAll());
         assignActions();
 
@@ -121,7 +140,12 @@ define(function(require, exports) {
         });
     }
 
+	/**
+	 * Refresh transfer Ascci Table handler
+	 **/
+
     function refreshTransferAsciiTable(){
+		osFtpCommon.consoleDebug('refreshTransferAsciiTable()');
         var tableDivId = "osftp-settings-transferAsAsciiTable";
         var html = osFtpCommon.generateHtmlTable(asciiTabledata, tableDivId);
         $('#'+tableDivId, $dialog).html(html);
@@ -130,7 +154,12 @@ define(function(require, exports) {
         });
     }
 
+	/**
+	 * Show dialog
+	 **/
+
     function show() {
+		osFtpCommon.consoleDebug('show()');
         var compiledTemplate = Mustache.render(settingsDialogTemplate, Strings);
 
         dialog = Dialogs.showModalDialogUsingTemplate(compiledTemplate);

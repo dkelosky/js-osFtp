@@ -24,7 +24,7 @@ define(function (require, exports){
 
 		this.treeData = tree.newFileTree('ListSelectionDialog');
 
-		for (var i in inputList){
+		for (var i = 0; i < inputList.length; i++){
 			this.treeData.addRelativePath(inputList[i], true);
 		}
 	}
