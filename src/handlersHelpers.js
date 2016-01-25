@@ -214,7 +214,7 @@ define(function (require, exports) {
 
 				var selectedList = selectDialog.getSelectedList();
 				fileList = [];
-				for (var index in selectedList){
+				for (var index = 0; index < selectedList.length; index++){
 					var obj = osFtpCommon.relativePathToFile(selectedList[index], rootDir);
 					fileList.push(obj);
 				}
