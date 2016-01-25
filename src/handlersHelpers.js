@@ -52,7 +52,7 @@ define(function (require, exports) {
 	function addSite(site) {
 
 		//log this call
-		osFtpCommon.consoleDebug('addSite(' + site.name + ');');
+		osFtpCommon.consoleDebug('handlersHelpers.addSite(' + site.name + ');');
 
 		if (osFtpSitesManager.getSitesArray().length > 0){
 			enableEditSite();
@@ -77,7 +77,7 @@ define(function (require, exports) {
 	 */
 
 	function removeSite(site) {
-		osFtpCommon.consoleDebug('remove(' + site.name + ')');
+		osFtpCommon.consoleDebug('handlersHelpers.remove(' + site.name + ')');
 
 		//remove site from context menu
 		osFtpPackage.getPackage(function(packageJson, cmdId) {
@@ -122,7 +122,7 @@ define(function (require, exports) {
 	 */
 	function disableEditSite() {
 		//log this call
-		osFtpCommon.consoleDebug('disableEditSite();');
+		osFtpCommon.consoleDebug('handlersHelpers.disableEditSite();');
 
 		osFtpPackage.getPackage(function(packageJson) {
 
@@ -189,12 +189,14 @@ define(function (require, exports) {
 	 * @param {Object} site Object representing the site to upload to
 	 */
 	function uploadDirectory(site, fileList) {
+		osFtpCommon.consoleDebug("handlersHelpers.uploadDirectory()");
 
 		//show dialog
 		var dlgInputList = [];
 		var rootDir = osFtpStrings.SELECTED_EMPTY;
 		if (fileList.length > 0){
 			rootDir = Project.getProjectRoot().fullPath;
+
 			for (var index = 0; index < fileList.length; index++){
 				dlgInputList.push(FileUtils.getRelativeFilename(rootDir, fileList[index].fullPath));
 			}

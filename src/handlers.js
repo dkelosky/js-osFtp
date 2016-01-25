@@ -213,7 +213,7 @@ define(function (require, exports) {
 	 */
 	function handleRunSite() {
 		//log that we were called
-		osFtpCommon.consoleDebug('handleRunSite();');
+		osFtpCommon.consoleDebug('handlers.handleRunSite();');
 
 		var selectedFiles = [];
 
@@ -235,7 +235,7 @@ define(function (require, exports) {
 
 			Project.getAllFiles().done(function(fileList){
 
-				for (var index = 0; index < fileList.lenth; index++){
+				for (var index = 0; index < fileList.length; index++){
 					var currentFile = fileList[index].fullPath;
 					if (currentFile.indexOf(selectedItem.fullPath) > -1){
 						selectedFiles.push(fileList[index]);
