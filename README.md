@@ -48,7 +48,7 @@ The dialog input field descriptions  are:
 | Root        | Remote directory to ftp to                                                                                |
 | User        | User name                                                                                                 |
 | Password    | Password                                                                                                  |
-| Server Type | Option remote server OS used in conjunction with "Set permission" to attempt CHMOD against files.         |
+| Server Type | Optional remote server OS used in conjunction with "Set permission" to attempt CHMOD against files.         |
 
 ### FTP to a Created Site
 
