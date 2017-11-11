@@ -24,7 +24,7 @@ To install using Git:
 * Only basic error checking is performed.  Verify your first FTP for a newly defined site.
 * Retrieval from a remote site is not yet implemented.
 * FTP to a remote Windows machine is not supported
-* FTP from Linux is not supported
+* Only Windows hosts are supported.  We've only tested FTP from Windows to/from z/OS & Linux
 
 --- 
 ## FTP Files to a Remote Destination
